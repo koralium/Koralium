@@ -37,19 +37,13 @@ public class TestGrpcSmokeTest
     {
         server = new QueryServer();
         String accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlRlc3QgdGVzdCIsInVuaXF1ZV9uYW1lIjoidGVzdCIsImlhdCI6MTUxNjIzOTAyMn0.aF80OiteMckPhSQcAL549V4AcyKHJA8LUs4mhzBnf2w";
-        return GrpcQueryRunner.createGrpcQueryRunner("127.0.0.1:5015", ImmutableMap.of(), "grpc", "tpch", TpchTable.getTables(), null, accessToken);
+        return GrpcQueryRunner.createGrpcQueryRunner("127.0.0.1:5016", ImmutableMap.of(), "grpc", "default", TpchTable.getTables(), null, accessToken);
     }
 
     @AfterClass(alwaysRun = true)
     public void tearDown()
     {
         server.close();
-    }
-
-    @Test
-    public void testQuery()
-    {
-        assertQuery("select * from lineitem");
     }
 
     @Test
@@ -109,20 +103,6 @@ public class TestGrpcSmokeTest
         MaterializedResult result = computeActual("select Orderkey from orders order by comment limit 1");
 
         Assert.assertEquals(result, expectedResult);
-    }
-
-    @Test
-    public void testRightJoin()
-    {
-        //select * FROM (select * from grpc.default.company order by name) c right join grpc.default.employee e on e.companyid = c.companyid limit 1
-        //select e.name from grpc.default.employee e where e.companyid not in (select companyid from grupc.default.company limit 1)
-        MaterializedResult result = computeActual("select * from grpc.default.employee e inner join grpc.default.company c on e.companyid = c.companyid order by e.name limit 1");
-    }
-
-    @Test
-    public void testAggregation()
-    {
-        MaterializedResult result = computeActual("select * FROM (select sum(o.Orderkey), o.Custkey from orders o group by o.Custkey) o1 left join customer c on o1.Custkey = c.Custkey");
     }
 
     @Override

@@ -23,14 +23,15 @@ import io.prestosql.plugin.grpc.GrpcTable;
 import io.prestosql.plugin.grpc.GrpcTableHandle;
 import io.prestosql.plugin.grpc.GrpcTableIndex;
 import io.prestosql.plugin.grpc.GrpcType;
+import io.prestosql.plugin.grpc.KoraliumServiceGrpc;
 import io.prestosql.plugin.grpc.Presto;
-import io.prestosql.plugin.grpc.QueryServiceGrpc;
 import io.prestosql.spi.connector.ColumnHandle;
 import io.prestosql.spi.connector.ConnectorTableMetadata;
 import io.prestosql.spi.connector.SchemaTableName;
 import io.prestosql.spi.type.ArrayType;
 import io.prestosql.spi.type.RowType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +41,8 @@ import static java.util.Locale.ENGLISH;
 public class GrpcMetadataCache
         implements GrpcMetadataClient
 {
-    private final QueryServiceGrpc.QueryServiceBlockingStub client;
+    private static final String schemaName = "default";
+    private final KoraliumServiceGrpc.KoraliumServiceBlockingStub client;
     private final List<GrpcTable> tables;
     private final List<String> schemaNames;
     private final Map<SchemaTableName, GrpcTable> schemaTableNameToTable;
@@ -49,7 +51,7 @@ public class GrpcMetadataCache
 
     public GrpcMetadataCache(Channel channel)
     {
-        this.client = QueryServiceGrpc.newBlockingStub(channel);
+        this.client = KoraliumServiceGrpc.newBlockingStub(channel);
 
         Presto.TableMetadataResponse tablesResponse = client.getTables(Empty.getDefaultInstance());
         this.schemaNames = generateSchemaNames(tablesResponse);
@@ -78,11 +80,7 @@ public class GrpcMetadataCache
 
     private List<String> generateSchemaNames(Presto.TableMetadataResponse tableMetadataResponse)
     {
-        return tableMetadataResponse.getTablesList().stream()
-                .map(Presto.TableMetadata::getSchemaTableName)
-                .map(Presto.SchemaTableName::getSchemaName)
-                .distinct()
-                .collect(toImmutableList());
+        return ImmutableList.of(schemaName);
     }
 
     private List<GrpcTable> generateGrpcTables(Presto.TableMetadataResponse tableMetadataResponse)
@@ -94,8 +92,8 @@ public class GrpcMetadataCache
 
     private GrpcTable generateTable(Presto.TableMetadata tableMetadata)
     {
-        Presto.SchemaTableName grpcSchemaTableName = tableMetadata.getSchemaTableName();
-        SchemaTableName schemaTableName = new SchemaTableName(grpcSchemaTableName.getSchemaName(), grpcSchemaTableName.getTableName());
+        String name = tableMetadata.getName();
+        SchemaTableName schemaTableName = new SchemaTableName(schemaName, name);
 
         List<Presto.ColumnMetadata> columnsMetadata = tableMetadata.getColumnsList();
 
@@ -142,9 +140,9 @@ public class GrpcMetadataCache
 
     private List<GrpcColumnHandle> generateColumnHandle(Presto.ColumnMetadata columnMetadata, GrpcColumnHandle parent)
     {
-        Presto.PrestoType type = columnMetadata.getType();
+        Presto.KoraliumType type = columnMetadata.getType();
 
-        if (type.equals(Presto.PrestoType.OBJECT)) {
+        if (type.equals(Presto.KoraliumType.OBJECT)) {
             ImmutableList.Builder<RowType.Field> builder = ImmutableList.builder();
             ImmutableList.Builder<GrpcColumnHandle> childrenBuilder = new ImmutableList.Builder<>();
             List<Presto.ColumnMetadata> children = columnMetadata.getSubColumnsList();
@@ -155,11 +153,6 @@ public class GrpcMetadataCache
                     builder.add(RowType.field(child.getName(), childColumnHandle.getPrestoType()));
                     childrenBuilder.add(childColumnHandle);
                 }
-
-                //builder.add(RowType.field(child.getName(), GrpcType.valueOf(child.getType().getNumber()).getPrestoType()));
-                //builder.add(GrpcType.valueOf(child.getType().getNumber()).getPrestoType());
-                //childrenBuilder.addAll(generateColumnHandle(child, null));
-                //builder.addAll(generateColumnHandle(child, handle));
             }
 
             List<RowType.Field> fields = builder.build();
@@ -175,7 +168,7 @@ public class GrpcMetadataCache
             return ImmutableList.of(handle);
         }
 
-        if (type.equals(Presto.PrestoType.ARRAY)) {
+        if (type.equals(Presto.KoraliumType.ARRAY)) {
             Presto.ColumnMetadata subColumn = columnMetadata.getSubColumns(0);
             GrpcColumnHandle childColumnHandle = generateColumnHandle(subColumn, null).get(0);
 

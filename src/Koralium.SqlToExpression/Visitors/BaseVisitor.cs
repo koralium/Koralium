@@ -131,5 +131,22 @@ namespace Koralium.SqlToExpression.Visitors
 
             AddExpressionToStack(expression);
         }
+
+        public override void ExplicitVisit(BooleanIsNullExpression booleanIsNullExpression)
+        {
+            booleanIsNullExpression.Expression.Accept(this);
+
+            var expression = PopStack();
+
+
+            if (booleanIsNullExpression.IsNot)
+            {
+                AddExpressionToStack(Expression.NotEqual(expression, Expression.Constant(null)));
+            }
+            else
+            {
+                AddExpressionToStack(Expression.Equal(expression, Expression.Constant(null)));
+            }
+        }
     }
 }

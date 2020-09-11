@@ -1,5 +1,7 @@
-﻿using Koralium.SqlToExpression.Executors;
+﻿using Koralium.SqlToExpression.Exceptions;
+using Koralium.SqlToExpression.Executors;
 using Koralium.SqlToExpression.Metadata;
+using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages;
 using Koralium.SqlToExpression.Utils;
 //using Koralium.SqlToExpression.Visitors;
@@ -29,6 +31,27 @@ namespace Koralium.SqlToExpression
             _stageConverter = new StageConverter();
         }
 
+        public async ValueTask<object> ExecuteScalar(string sql, SqlParameters parameters = null, object data = null)
+        {
+            sql = OffsetLimitUtils.TransformQuery(sql);
+            var tree = parser.Parse(new StringReader(sql), out var errors);
+            var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata));
+            tree.Accept(mainVisitor);
+
+            //Convert into execute stages
+            var executeStages = _stageConverter.Convert(mainVisitor.Stages);
+
+            try
+            {
+                var result = await _queryExecutor.Execute(executeStages, data);
+                return result.Result.Cast<AnonType>()?.FirstOrDefault()?.P0;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -38,6 +61,11 @@ namespace Koralium.SqlToExpression
         /// <returns></returns>
         public ValueTask<QueryResult> Execute(string sql, SqlParameters parameters = null, object data = null)
         {
+            if (string.IsNullOrEmpty(sql))
+            {
+                throw new SqlErrorException("Empty query string");
+            }
+
             sql = OffsetLimitUtils.TransformQuery(sql);
             var tree = parser.Parse(new StringReader(sql), out var errors);
             var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata));

@@ -33,7 +33,10 @@ namespace Koralium.SqlToExpression.Visitors
         public override void ExplicitVisit(QuerySpecification query)
         {
             //FROM
-            _stages.AddRange(FromHelper.GetFromTableStage(query.FromClause, _visitorMetadata));
+            if(query.FromClause != null)
+            {
+                _stages.AddRange(FromHelper.GetFromTableStage(query.FromClause, _visitorMetadata));
+            }
 
             //WHERE
             if(query.WhereClause != null)

@@ -14,6 +14,7 @@
 package io.prestosql.plugin.grpc;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.ImmutableList;
 import io.prestosql.plugin.grpc.decoders.ArrayDecoder;
 import io.prestosql.plugin.grpc.decoders.BoolDecoder;
 import io.prestosql.plugin.grpc.decoders.DoubleDecoder;
@@ -32,15 +33,18 @@ import io.prestosql.plugin.grpc.encoders.Int64Encoder;
 import io.prestosql.plugin.grpc.encoders.IntEncoder;
 import io.prestosql.plugin.grpc.encoders.StringEncoder;
 import io.prestosql.plugin.grpc.encoders.TimestampEncoder;
+import io.prestosql.spi.type.ArrayType;
 import io.prestosql.spi.type.BigintType;
 import io.prestosql.spi.type.BooleanType;
 import io.prestosql.spi.type.DoubleType;
 import io.prestosql.spi.type.IntegerType;
 import io.prestosql.spi.type.RealType;
+import io.prestosql.spi.type.RowType;
 import io.prestosql.spi.type.TimestampType;
 import io.prestosql.spi.type.Type;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static io.prestosql.spi.type.VarcharType.createUnboundedVarcharType;
@@ -94,6 +98,35 @@ public enum GrpcType
     public static GrpcType valueOf(int pageType)
     {
         return (GrpcType) map.get(pageType);
+    }
+
+    //Creates presto types from column metadata
+    public static Type CreatePrestoType(Presto.ColumnMetadata columnMetadata)
+    {
+        Presto.KoraliumType type = columnMetadata.getType();
+
+        if (type.equals(Presto.KoraliumType.OBJECT)) {
+            ImmutableList.Builder<RowType.Field> builder = ImmutableList.builder();
+            List<Presto.ColumnMetadata> children = columnMetadata.getSubColumnsList();
+            for (Presto.ColumnMetadata child : children) {
+                Type childPrestoType = CreatePrestoType(child);
+                builder.add(RowType.field(child.getName(), childPrestoType));
+            }
+
+            List<RowType.Field> fields = builder.build();
+
+            return RowType.from(fields);
+        }
+
+        if (type.equals(Presto.KoraliumType.ARRAY)) {
+            Presto.ColumnMetadata subColumn = columnMetadata.getSubColumns(0);
+            Type childType = CreatePrestoType(subColumn);
+
+            ArrayType arrayType = new ArrayType(childType);
+            return arrayType;
+        }
+
+        return GrpcType.valueOf(type.getNumber()).getPrestoType();
     }
 
     public int getId()

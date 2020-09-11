@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using Koralium.Core.Encoders;
 using Koralium.Core.Interfaces;
 using Koralium.Core.Metadata;
 using Koralium.Grpc;
@@ -29,6 +30,7 @@ namespace Koralium.Core.Services
             _metadataStore = metadataStore;
             _serviceProvider = serviceProvider;
         }
+
         public override Task<TableMetadataResponse> GetTables(Empty request, ServerCallContext context)
         {
             return Task.FromResult(_metadataStore.GetMetadataResponse());
@@ -38,7 +40,7 @@ namespace Koralium.Core.Services
         {
             try
             {
-                Channel<Page> channel = Channel.CreateUnbounded<Page>();
+                Channel<Page> channel = System.Threading.Channels.Channel.CreateUnbounded<Page>();
 
                 var getDataTask = Task.Run(async () =>
                 {
@@ -71,6 +73,12 @@ namespace Koralium.Core.Services
             }
         }
 
+        public override async Task<Scalar> QueryScalar(QueryRequest request, ServerCallContext context)
+        {
+            var result = await _koraliumExecutor.ExecuteScalar(request, context.GetHttpContext());
+            return ScalarEncoder.EncodeScalarResult(result);
+        }
+
         public override async Task GetIndex(IndexRequest request, IServerStreamWriter<Page> responseStream, ServerCallContext context)
         {
             var table = _metadataStore.GetTable(request.TableId);
@@ -85,7 +93,7 @@ namespace Koralium.Core.Services
 
             var resolver = (IIndexResolver)_serviceProvider.GetService(index.Resolver);
 
-            Channel<Page> channel = Channel.CreateUnbounded<Page>();
+            Channel<Page> channel = System.Threading.Channels.Channel.CreateUnbounded<Page>();
 
             var getDataTask = Task.Run(async () =>
             {

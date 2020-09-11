@@ -19,20 +19,20 @@ import io.grpc.stub.MetadataUtils;
 import io.grpc.stub.StreamObserver;
 import io.prestosql.plugin.grpc.client.PrestoGrpcClient;
 import io.prestosql.plugin.grpc.encoders.IEncoder;
-import io.prestosql.plugin.grpc.utils.GrpcColumnReverter;
 import io.prestosql.spi.block.PageBuilderStatus;
 import io.prestosql.spi.connector.ConnectorSession;
 import io.prestosql.spi.connector.RecordCursor;
 import io.prestosql.spi.connector.RecordSet;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GrpcIndexPageSource
         extends GrpcBasePageSource
 {
     private final ConnectorSession session;
 
-    private final QueryServiceGrpc.QueryServiceStub client;
+    private final KoraliumServiceGrpc.KoraliumServiceStub client;
 
     public GrpcIndexPageSource(
             ConnectorSession session,
@@ -52,9 +52,9 @@ public class GrpcIndexPageSource
             metadata.put(Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER), "Bearer " + authToken);
         }
 
-        this.client = MetadataUtils.attachHeaders(QueryServiceGrpc.newStub(prestoGrpcClient.getChannel()), metadata);
+        this.client = MetadataUtils.attachHeaders(KoraliumServiceGrpc.newStub(prestoGrpcClient.getChannel()), metadata);
 
-        List<GrpcExecutionColumn> executionColumns = GrpcColumnReverter.buildColumnsTree(outputColumns);
+        List<String> fields = outputColumns.stream().map(x -> x.getColumnName()).collect(Collectors.toList());
 
         ImmutableList.Builder<IEncoder> encodersBuilder = new ImmutableList.Builder<>();
 
@@ -85,12 +85,12 @@ public class GrpcIndexPageSource
         }
 
         Presto.Page recordsPage = pageBuilder.setColumns(blocksBuilder.build()).build();
-        executeQuery(indexHandle, executionColumns, recordsPage);
+        executeQuery(indexHandle, fields, recordsPage);
     }
 
     private void executeQuery(
             GrpcIndexHandle indexHandle,
-            List<GrpcExecutionColumn> executionColumns,
+            List<String> fields,
             Presto.Page recordsPage)
     {
         Presto.IndexRequest.Builder requestBuilder = Presto.IndexRequest.newBuilder()
@@ -99,10 +99,7 @@ public class GrpcIndexPageSource
                 .setIndexId(indexHandle.getIndexId())
                 .setRecords(recordsPage);
 
-        Presto.ColumnSelect.Builder selectBuilder = Presto.ColumnSelect.newBuilder();
-        addColumnsToSelect(executionColumns, selectBuilder);
-
-        requestBuilder.setSelect(selectBuilder.build());
+        requestBuilder.addAllFields(fields);
 
         Presto.IndexRequest request = requestBuilder.build();
 

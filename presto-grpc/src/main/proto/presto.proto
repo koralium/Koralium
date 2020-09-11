@@ -3,23 +3,14 @@
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
-option csharp_namespace = "QueryProtocolGrpc";
+option csharp_namespace = "Koralium.Grpc";
 option java_package = "io.prestosql.plugin.grpc";
 
-service QueryService {
+service KoraliumService {
     rpc Query (QueryRequest) returns (stream Page);
+    rpc QueryScalar (QueryRequest) returns (Scalar);
     rpc GetTables (google.protobuf.Empty) returns (TableMetadataResponse);
-    rpc GetCount (CountRequest) returns (CountResponse);
     rpc GetIndex (IndexRequest) returns (stream Page);
-}
-
-message CountRequest {
-    int32 tableId = 1;
-    string filter = 2;
-}
-
-message CountResponse {
-    int64 count = 1;
 }
 
 //A page contains a subset of the result of a query
@@ -35,6 +26,9 @@ message Page {
 
     //The row count returned
     uint32 rowCount = 4;
+
+    //Column metadata of all the returned columns
+    repeated ColumnMetadata metadata = 5;
 }
 
 message Columns {
@@ -48,11 +42,11 @@ message Block {
     repeated uint32 nulls = 1;
     oneof block {
      // Primitives
-     DoubleBlock doubles = 2; 
-     FloatBlock floats = 3; 
-     Int32Block ints = 4; 
-     Int64Block longs = 5; 
-     BoolBlock bools = 6; 
+     DoubleBlock doubles = 2;
+     FloatBlock floats = 3;
+     Int32Block ints = 4;
+     Int64Block longs = 5;
+     BoolBlock bools = 6;
      TimestampBlock timestamps = 7;
 
      // References
@@ -129,7 +123,7 @@ message StringColumn {
 
     //The strings themselves
     repeated string strings = 2;
-    
+
     //Boolean that marks if the previous strings should be forgotten
     //This happens when too many unique strings exist
     bool clearPrevious = 3;
@@ -152,7 +146,7 @@ message ObjectColumn {
 
     //The objects themselves
     Columns objects = 2;
-    
+
     //Boolean that marks if the previous objects should be forgotten
     //This happens when too many unique objects exist
     bool clearPrevious = 3;
@@ -168,66 +162,44 @@ message ObjectColumn {
     START: QUERY REQUEST
 */
 message QueryRequest {
-    int32 tableId = 1;
+    string query = 1;
     int32 maxBatchSize = 2;
-    ColumnSelect select = 3;
-    int32 limit = 4;
-    int32 skip = 5;
-    string filter = 6;
-    repeated Sort orderby = 7;
+    repeated Parameter parameters = 3;
 }
 
-message Sort {
-    int32 columnId = 1;
-    bool descending = 2;
+message Scalar {
+    oneof value {
+      double double = 2;
+      float float = 3;
+      int32 int = 4;
+      int64 long = 5;
+      bool bool = 6;
+      google.protobuf.Timestamp timestamp = 7;
+      string string = 8;
+	}
 }
 
-message ColumnSelect {
-    repeated int32 selectColumns = 1;
-    repeated ObjectColumnSelect objects = 2;
-    repeated ArrayColumnSelect arrays = 3;
-}
+message Parameter {
+    string name = 1;
 
-message ObjectColumnSelect {
-    int32 columnId = 1;
-    ColumnSelect selects = 2;
-}
-
-message ArrayColumnSelect {
-    int32 columnId = 1;
-    ColumnSelect selects = 2;
+    Scalar value = 2;
 }
 /*
     END: QUERY REQUEST
 */
 
-/*
-    START: INDEX REQUEST
-*/
 message IndexRequest {
     int32  tableId = 1;
     int32 indexId = 2;
     int32 maxBatchSize = 3;
-    ColumnSelect select = 4;
+    repeated string fields = 4;
     Page records = 5;
-    //Limit per record how many results should be given
-    //int32 limit = 6;
-
-    //Should the first amount of elements be skipped, and how many
-    //int32 skip = 7;
-
-    //Should the total count be included?
-    //This is the count before taking the limit
-    //bool includeCount = 8;
 }
-/*
-    END: INDEX REQUEST
-*/
 
 /*
     START: METADATA
 */
-enum PrestoType {
+enum KoraliumType {
     DOUBLE = 0;
     FLOAT = 1;
     INT32 = 2;
@@ -240,7 +212,7 @@ enum PrestoType {
 }
 
 message TableMetadata {
-    SchemaTableName schemaTableName = 1;
+    string name = 1;
     repeated ColumnMetadata columns = 2;
     int32 tableId = 3;
     repeated IndexMetadata indicies = 4;
@@ -252,15 +224,10 @@ message IndexMetadata {
     string name = 3;
 }
 
-message SchemaTableName {
-  string schemaName = 1;
-  string tableName = 2;
-}
-
 message ColumnMetadata {
     string name = 1;
     int32 columnId = 2;
-    PrestoType type = 3;
+    KoraliumType type = 3;
 
      //If the column is in a sub object this is the parent column id
      //The column data will be under the parent column id

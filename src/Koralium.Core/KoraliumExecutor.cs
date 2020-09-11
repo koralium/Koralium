@@ -22,5 +22,10 @@ namespace Koralium.Core
         {
             return _sqlExecutor.Execute(sql, sqlParameters, new TableResolverData(httpContext, _serviceProvider));
         }
+
+        public ValueTask<object> ExecuteScalar(string sql, SqlParameters sqlParameters, HttpContext httpContext)
+        {
+            return _sqlExecutor.ExecuteScalar(sql, sqlParameters, new TableResolverData(httpContext, _serviceProvider));
+        }
     }
 }

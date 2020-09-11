@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Koralium.SqlToExpression.Exceptions;
+using NUnit.Framework;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -536,5 +537,110 @@ namespace Koralium.SqlToExpression.Tests
 
             AssertAreEqual(expected, result.Result);
         }
+
+        [Test]
+        public async Task TestCount()
+        {
+            var result = await SqlExecutor.Execute($"SELECT count(*) FROM customer");
+
+            var expected = TpchData.Customers
+                .GroupBy(x => 1)
+                .Select(x => new { count = x.Count() })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestExecuteScalar()
+        {
+            var result = await SqlExecutor.ExecuteScalar($"SELECT count(*) FROM customer");
+
+            var expected = TpchData.Customers.Count;
+
+            Assert.That(result, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public async Task TestIsNull()
+        {
+            var result = await SqlExecutor.Execute("SELECT count(*) FROM customer where name IS NULL");
+
+            var expected = TpchData.Customers
+                .Where(x => x.Name == null)
+                .Select(x => new { x.Name })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestIsNotNull()
+        {
+            var result = await SqlExecutor.Execute("SELECT name FROM customer where name IS NOT NULL");
+
+            var expected = TpchData.Customers
+                .Where(x => x.Name != null)
+                .Select(x => new { x.Name })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestMultiStatement()
+        {
+            var result = await SqlExecutor.Execute("SELECT name FROM customer where name IS NOT NULL; SELECT TOP (10) name from customer");
+
+            var expected = TpchData.Customers
+                .Where(x => x.Name != null)
+                .Select(x => new { x.Name })
+                .Take(10)
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public void TestEmptyQuery()
+        {
+            Assert.That(async () =>
+            {
+                await SqlExecutor.Execute("");
+            }, Throws.TypeOf<SqlErrorException>());
+        }
+
+        /// <summary>
+        /// This test checks that it is still possible to null check primitives even though it is equal to no returns
+        /// </summary>
+        /// <returns></returns>
+        [Test]
+        public async Task TestPrimitiveEqualsNull()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey FROM \"order\" WHERE Orderkey = null");
+
+            var expected = TpchData.Orders
+                .Where(x => false)
+                .Select(x => new { x.Orderkey })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestStringComparisonGreaterAndLessThan()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority >= '5-L' AND Orderpriority < '5-M'");
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderpriority.StartsWith("5-L"))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        //select name from customer where name > 'customer#000001500'
+        //Gives the wrong results
     }
 }

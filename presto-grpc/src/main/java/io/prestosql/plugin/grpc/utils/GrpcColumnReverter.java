@@ -13,19 +13,12 @@
  */
 package io.prestosql.plugin.grpc.utils;
 
-import io.prestosql.plugin.grpc.GrpcColumnHandle;
 import io.prestosql.plugin.grpc.GrpcExecutionColumn;
 import io.prestosql.plugin.grpc.GrpcType;
+import io.prestosql.plugin.grpc.Presto;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static com.google.common.collect.ImmutableList.toImmutableList;
 
 public final class GrpcColumnReverter
 {
@@ -34,75 +27,22 @@ public final class GrpcColumnReverter
         //NOOP
     }
 
-    public static List<GrpcExecutionColumn> buildColumnsTree(List<GrpcColumnHandle> columns)
+    public static List<GrpcExecutionColumn> BuildExecutionColumns(List<Presto.ColumnMetadata> columns)
     {
-        Map<GrpcColumnHandle, GrpcExecutionColumn> lookup = new HashMap<>();
-
+        List<GrpcExecutionColumn> output = new ArrayList<>();
         for (int i = 0; i < columns.size(); i++) {
-            GrpcColumnHandle handle = columns.get(i);
-            lookup.put(handle, new GrpcExecutionColumn(handle.getGrpcType(), handle.getColumnId(), i, handle.getPrestoType()));
-        }
+            Presto.ColumnMetadata column = columns.get(i);
 
-        Set<GrpcExecutionColumn> outColumns = new HashSet<>();
-        Set<GrpcExecutionColumn> outObjects = new HashSet<>();
-        Set<GrpcExecutionColumn> outArrays = new HashSet<>();
-        for (GrpcColumnHandle handle : columns) {
-            GrpcExecutionColumn self = lookup.get(handle);
+            GrpcType type = GrpcType.valueOf(column.getType().getNumber());
+            GrpcExecutionColumn executionColumn = new GrpcExecutionColumn(type, column.getColumnId(), i, GrpcType.CreatePrestoType(column));
 
-            if (handle.getGrpcType() == GrpcType.OBJECT) {
-                List<GrpcColumnHandle> children = handle.getChildren();
+            List<GrpcExecutionColumn> children = BuildExecutionColumns(column.getSubColumnsList());
 
-                for (GrpcExecutionColumn child : buildColumnsTree(children)) {
-                    self.addChild(child);
-                }
-                outObjects.add(self);
+            for (GrpcExecutionColumn child : children) {
+                executionColumn.addChild(child);
             }
-            else if (handle.getGrpcType() == GrpcType.ARRAY) {
-                List<GrpcColumnHandle> children = handle.getChildren();
-
-                for (GrpcExecutionColumn child : buildColumnsTree(children)) {
-                    self.addChild(child);
-                }
-                outArrays.add(self);
-            }
-            else {
-                outColumns.add(self);
-            }
+            output.add(executionColumn);
         }
-        List<GrpcExecutionColumn> sortedList = outColumns.stream()
-                .sorted(Comparator.comparing(GrpcExecutionColumn::getReturnId, Integer::compareTo))
-                .collect(Collectors.toList());
-
-        sortedList.addAll(outObjects.stream()
-                .sorted(Comparator.comparing(GrpcExecutionColumn::getReturnId, Integer::compareTo))
-                .collect(toImmutableList()));
-
-        sortedList.addAll(outArrays.stream()
-                .sorted(Comparator.comparing(GrpcExecutionColumn::getReturnId, Integer::compareTo))
-                .collect(toImmutableList()));
-
-        //Sort the child objects as well
-        sortedList.forEach(GrpcExecutionColumn::finish);
-
-        return sortedList;
-    }
-
-    private static GrpcExecutionColumn buildColumnsTree(GrpcExecutionColumn child, GrpcColumnHandle handle, Map<GrpcColumnHandle, GrpcExecutionColumn> lookup)
-    {
-        if (lookup.containsKey(handle)) {
-            GrpcExecutionColumn returnColumn = lookup.get(handle);
-            returnColumn.addChild(child);
-            return returnColumn;
-        }
-
-        GrpcExecutionColumn column = new GrpcExecutionColumn(handle.getGrpcType(), handle.getColumnId(), -1, handle.getPrestoType());
-        lookup.put(handle, column);
-        column.addChild(child);
-
-        if (handle.getParent() != null) {
-            GrpcExecutionColumn parent = buildColumnsTree(column, handle.getParent(), lookup);
-            return parent;
-        }
-        return column;
+        return output;
     }
 }

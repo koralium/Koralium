@@ -18,17 +18,17 @@ import io.grpc.stub.MetadataUtils;
 import io.grpc.stub.StreamObserver;
 import io.prestosql.plugin.grpc.client.FilterExtractor;
 import io.prestosql.plugin.grpc.client.PrestoGrpcClient;
+import io.prestosql.plugin.grpc.client.QueryBuilder;
 import io.prestosql.spi.block.PageBuilderStatus;
 import io.prestosql.spi.connector.ConnectorSession;
 import io.prestosql.spi.predicate.TupleDomain;
 
 import java.util.List;
-import java.util.Optional;
 
 public class GrpcPageSource
         extends GrpcBasePageSource
 {
-    private final QueryServiceGrpc.QueryServiceStub client;
+    private final KoraliumServiceGrpc.KoraliumServiceStub client;
 
     public GrpcPageSource(ConnectorSession session,
                           List<GrpcColumnHandle> columns,
@@ -47,25 +47,34 @@ public class GrpcPageSource
             metadata.put(Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER), "Bearer " + authToken);
         }
 
-        this.client = MetadataUtils.attachHeaders(QueryServiceGrpc.newStub(prestoGrpcClient.getChannel()), metadata);
+        this.client = MetadataUtils.attachHeaders(KoraliumServiceGrpc.newStub(prestoGrpcClient.getChannel()), metadata);
 
         if (columns.size() == 0) {
-            executeCount(tableHandle, filter);
+            String query = new QueryBuilder().buildCountQuery(tableHandle.getTableName(), filter);
+
+            executeCount(query);
         }
         else {
-            executeQuery(tableHandle, columns, getExecutionColumns(), filter, tableHandle.getSortOrder());
+            String query = new QueryBuilder().buildQuery(
+                    columns,
+                    tableHandle.getTableName(),
+                    filter,
+                    tableHandle.getSortOrder(),
+                    tableHandle.getLimit());
+
+            executeQuery(query);
         }
     }
 
-    private void executeCount(GrpcTableHandle tableHandle, String filter)
+    private void executeCount(String query)
     {
-        Presto.CountRequest.Builder countRequestBuilder = Presto.CountRequest.newBuilder();
-        countRequestBuilder.setTableId(tableHandle.getTableId());
-        countRequestBuilder.setFilter(filter);
+        Presto.QueryRequest.Builder requestBuilder = Presto.QueryRequest.newBuilder()
+                .setMaxBatchSize(PageBuilderStatus.DEFAULT_MAX_PAGE_SIZE_IN_BYTES)
+                .setQuery(query);
 
-        StreamObserver<Presto.CountResponse> responseObserver = new StreamObserver<Presto.CountResponse>() {
+        StreamObserver<Presto.Scalar> responseObserver = new StreamObserver<>() {
             @Override
-            public void onNext(Presto.CountResponse summary)
+            public void onNext(Presto.Scalar summary)
             {
                 addCompletedCount(summary);
             }
@@ -85,38 +94,14 @@ public class GrpcPageSource
             }
         };
 
-        client.getCount(countRequestBuilder.build(), responseObserver);
+        client.queryScalar(requestBuilder.build(), responseObserver);
     }
 
-    private void executeQuery(
-            GrpcTableHandle tableHandle,
-            List<GrpcColumnHandle> columns,
-            List<GrpcExecutionColumn> executionColumns,
-            String filter,
-            Optional<List<GrpcSortItem>> sortOrder)
+    private void executeQuery(String query)
     {
         Presto.QueryRequest.Builder requestBuilder = Presto.QueryRequest.newBuilder()
                 .setMaxBatchSize(PageBuilderStatus.DEFAULT_MAX_PAGE_SIZE_IN_BYTES)
-                .setTableId(tableHandle.getTableId());
-
-        Presto.ColumnSelect.Builder selectBuilder = Presto.ColumnSelect.newBuilder();
-        addColumnsToSelect(executionColumns, selectBuilder);
-
-        requestBuilder.setSelect(selectBuilder.build());
-        requestBuilder.setFilter(filter);
-
-        if (tableHandle.getLimit().isPresent()) {
-            requestBuilder.setLimit((int) tableHandle.getLimit().getAsLong());
-        }
-
-        if (sortOrder.isPresent()) {
-            for (GrpcSortItem sortItem : sortOrder.get()) {
-                Presto.Sort.Builder sortBuilder = Presto.Sort.newBuilder();
-                sortBuilder.setColumnId(sortItem.getColumnHandle().getColumnId());
-                sortBuilder.setDescending(!sortItem.getSortOrder().isAscending());
-                requestBuilder.addOrderby(sortBuilder.build());
-            }
-        }
+                .setQuery(query);
 
         Presto.QueryRequest request = requestBuilder.build();
 

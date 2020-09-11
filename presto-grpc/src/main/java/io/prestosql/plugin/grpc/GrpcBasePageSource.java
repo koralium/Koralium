@@ -32,22 +32,22 @@ import java.util.concurrent.atomic.AtomicLong;
 public class GrpcBasePageSource
         implements ConnectorPageSource
 {
+    private ConnectorSession session;
     private long completedBytes;
     private final AtomicLong readTimeNanos = new AtomicLong(0);
     private final long readStart;
     private final AtomicBoolean finished;
+    private final ConcurrentLinkedQueue<Presto.Scalar> completedCount = new ConcurrentLinkedQueue<>();
     private final ConcurrentLinkedQueue<Presto.Page> completedBatches = new ConcurrentLinkedQueue<>();
-    private final ConcurrentLinkedQueue<Presto.CountResponse> completedCount = new ConcurrentLinkedQueue<>();
     private final BlockBuilder[] columnBuilders;
-    private final List<GrpcDecoder> decoders;
-    private final List<Integer> decoderToColumnId;
-    private final List<GrpcExecutionColumn> executionColumns;
+    private List<GrpcDecoder> decoders;
     private Throwable error;
 
     public GrpcBasePageSource(
             ConnectorSession session,
             List<GrpcColumnHandle> columns)
     {
+        this.session = session;
         readStart = System.nanoTime();
         readTimeNanos.set(0);
         finished = new AtomicBoolean();
@@ -56,69 +56,16 @@ public class GrpcBasePageSource
                 .map(GrpcColumnHandle::getType)
                 .map(type -> type.createBlockBuilder(null, 1))
                 .toArray(BlockBuilder[]::new);
-
-        executionColumns = GrpcColumnReverter.buildColumnsTree(columns);
-
-        ImmutableList.Builder<Integer> decoderToColumnIdBuilder = new ImmutableList.Builder<>();
-        ImmutableList.Builder<GrpcDecoder> decodersBuilder = new ImmutableList.Builder<>();
-
-        for (int i = 0; i < executionColumns.size(); i++) {
-            GrpcExecutionColumn column = executionColumns.get(i);
-
-            decoderToColumnIdBuilder.add(column.getReturnId());
-            decodersBuilder.add(column.getGrpcType().getDecoder().create(column.getColumnId(), column, session));
-        }
-
-        decoders = decodersBuilder.build();
-        decoderToColumnId = decoderToColumnIdBuilder.build();
     }
 
-    protected List<GrpcExecutionColumn> getExecutionColumns()
+    protected void addCompletedCount(Presto.Scalar countResponse)
     {
-        return executionColumns;
-    }
-
-    protected void addColumnsToSelect(List<GrpcExecutionColumn> columns, Presto.ColumnSelect.Builder selectBuilder)
-    {
-        for (int i = 0; i < columns.size(); i++) {
-            GrpcExecutionColumn column = columns.get(i);
-            if (column.isObject()) {
-                Presto.ObjectColumnSelect.Builder objectColumnSelectBuilder = Presto.ObjectColumnSelect.newBuilder();
-
-                objectColumnSelectBuilder.setColumnId(column.getColumnId());
-                Presto.ColumnSelect.Builder childSelectBuilder = Presto.ColumnSelect.newBuilder();
-
-                addColumnsToSelect(column.getChildren(), childSelectBuilder);
-
-                objectColumnSelectBuilder.setSelects(childSelectBuilder.build());
-
-                selectBuilder.addObjects(objectColumnSelectBuilder.build());
-            }
-            else if (column.isArray()) {
-                Presto.ArrayColumnSelect.Builder arrayColumnSelectBuilder = Presto.ArrayColumnSelect.newBuilder();
-
-                arrayColumnSelectBuilder.setColumnId(column.getColumnId());
-                Presto.ColumnSelect.Builder childSelectBuilder = Presto.ColumnSelect.newBuilder();
-
-                addColumnsToSelect(column.getChildren(), childSelectBuilder);
-                arrayColumnSelectBuilder.setSelects(childSelectBuilder.build());
-
-                selectBuilder.addArrays(arrayColumnSelectBuilder.build());
-            }
-            else {
-                selectBuilder.addSelectColumns(column.getColumnId());
-            }
-        }
+        completedCount.add(countResponse);
     }
 
     protected void addCompletedBatch(Presto.Page page)
     {
         completedBatches.add(page);
-    }
-
-    protected void addCompletedCount(Presto.CountResponse countResponse)
-    {
-        completedCount.add(countResponse);
     }
 
     protected void setError(Throwable error)
@@ -159,13 +106,31 @@ public class GrpcBasePageSource
         if (columnBuilders.length == 0) {
             return null;
         }
+
+        //If the page contains column metadata
+        //Use it to create the decoders
+        if (page.getMetadataCount() > 0) {
+            List<Presto.ColumnMetadata> columnMetadatas = page.getMetadataList();
+
+            List<GrpcExecutionColumn> executionColumns = GrpcColumnReverter.BuildExecutionColumns(columnMetadatas);
+
+            ImmutableList.Builder<GrpcDecoder> decodersBuilder = new ImmutableList.Builder<>();
+
+            for (int i = 0; i < executionColumns.size(); i++) {
+                GrpcExecutionColumn column = executionColumns.get(i);
+
+                decodersBuilder.add(column.getGrpcType().getDecoder().create(column.getColumnId(), column, session));
+            }
+            decoders = decodersBuilder.build();
+        }
+
         Presto.Columns batch = page.getColumns();
         //normal columns are always first
         int blockId = 0;
         for (; blockId < decoders.size(); blockId++) {
             //Reset the decoder before reading a new page
             decoders.get(blockId).newPage(page);
-            decoders.get(blockId).decode(batch.getBlocks(blockId), columnBuilders[decoderToColumnId.get(blockId)], page);
+            decoders.get(blockId).decode(batch.getBlocks(blockId), columnBuilders[blockId], page);
         }
 
         completedBytes += Arrays.stream(columnBuilders)
@@ -188,8 +153,8 @@ public class GrpcBasePageSource
             throw new RuntimeException(error);
         }
         if (!completedCount.isEmpty()) {
-            Presto.CountResponse countResponse = completedCount.poll();
-            return new Page((int) countResponse.getCount());
+            Presto.Scalar countResponse = completedCount.poll();
+            return new Page(countResponse.getInt());
         }
         if (!completedBatches.isEmpty()) {
             Presto.Page page = completedBatches.poll();

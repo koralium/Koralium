@@ -23,6 +23,11 @@ namespace Koralium.Core
             _metadataStore = metadataStore;
         }
 
+        public ValueTask<object> ExecuteScalar(QueryRequest queryRequest, HttpContext httpContext)
+        {
+            return _koraliumExecutor.ExecuteScalar(queryRequest.Query, null, httpContext);
+        }
+
         public async Task Execute(QueryRequest queryRequest, HttpContext httpContext, ChannelWriter<Page> channelWriter)
         {
             var result = await _koraliumExecutor.Execute(queryRequest.Query, null, httpContext);

@@ -1,4 +1,5 @@
-﻿using Koralium.Core.Interfaces;
+﻿using Grpc.Core;
+using Koralium.Core.Interfaces;
 using Koralium.Core.Metadata;
 using Koralium.Core.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -68,8 +69,7 @@ namespace Koralium.Core.Resolvers
                 }
                 if (!authContext.HasSucceeded)
                 {
-                    //TODO: make good exception
-                    throw new Exception("");
+                    throw new RpcException(new Status(StatusCode.Unauthenticated, "Authorization failed"));
                 }
             }
         }

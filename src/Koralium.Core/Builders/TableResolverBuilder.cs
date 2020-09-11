@@ -73,5 +73,29 @@ namespace Koralium.Core.Builders
             return existingColumn;
         }
 
+        public ITableResolverBuilder<Entity> AddIndexResolver<Resolver, Key1, Key2>(Expression<Func<Entity, Key1>> property1, Expression<Func<Entity, Key2>> property2, string indexName = null) where Resolver : IndexResolver<Entity, Key1, Key2>
+        {
+            var existingColumn1 = GetIndexColumn(property1);
+            var existingColumn2 = GetIndexColumn(property2);
+
+            if (indexName == null)
+            {
+                indexName = MetadataHelper.GenerateIndexName(existingColumn1.Metadata.Name, existingColumn2.Metadata.Name);
+            }
+
+            IndexMetadata indexMetadata = new IndexMetadata
+            {
+                IndexId = indicies.Count,
+                Name = indexName
+            };
+
+            indexMetadata.Columns.Add(existingColumn1.Metadata);
+            indexMetadata.Columns.Add(existingColumn2.Metadata);
+
+            indicies.Add(new TableIndex(typeof(Resolver), indicies.Count, new List<TableColumn>() { existingColumn1, existingColumn2 }, indexName, indexMetadata));
+
+            return this;
+            throw new NotImplementedException();
+        }
     }
 }

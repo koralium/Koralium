@@ -221,7 +221,7 @@ namespace Koralium.Core.Utils
             //throw new DecoderNotFoundException(prestoType);
         }
 
-        internal static IDecoder GetDecoder(KoraliumType type)
+        public static IDecoder GetDecoder(KoraliumType type)
         {
             switch (type)
             {

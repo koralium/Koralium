@@ -1,24 +1,33 @@
 ﻿using Koralium.SqlToExpression.Models;
 using System;
 using System.Linq.Expressions;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Koralium.SqlToExpression.Utils
 {
     public static class PredicateUtils
     {
+        private static readonly MethodInfo StringCompareTo = typeof(string).GetMethod("CompareTo", new Type[] { typeof(string) });
 
         internal static void ConvertExpressionTypes(ref Expression leftExpression, ref Expression rightExpression)
         {
             {
                 if (leftExpression is ConstantExpression constantExpressionLeft && !constantExpressionLeft.Type.Equals(rightExpression.Type))
                 {
-                    var changedTypeValue = Convert.ChangeType(constantExpressionLeft.Value, rightExpression.Type);
-                    leftExpression = Expression.Constant(changedTypeValue);
+                    if(constantExpressionLeft.Value != null)
+                    {
+                        var changedTypeValue = Convert.ChangeType(constantExpressionLeft.Value, rightExpression.Type);
+                        leftExpression = Expression.Constant(changedTypeValue);
+                    }
                 }
                 else if (rightExpression is ConstantExpression constantExpressionRight && !constantExpressionRight.Type.Equals(leftExpression.Type))
                 {
-                    var changedTypeValue = Convert.ChangeType(constantExpressionRight.Value, leftExpression.Type);
-                    rightExpression = Expression.Constant(changedTypeValue);
+                    if(constantExpressionRight.Value != null)
+                    {
+                        var changedTypeValue = Convert.ChangeType(constantExpressionRight.Value, leftExpression.Type);
+                        rightExpression = Expression.Constant(changedTypeValue);
+                    }
                 }
                 //Check if variable references
                 else if (leftExpression is MemberExpression memberExpressionLeft &&
@@ -50,45 +59,20 @@ namespace Koralium.SqlToExpression.Utils
             }
         }
 
-        public static Expression CreateComparisonExpression(Expression leftExpression, Expression rightExpression, BooleanComparisonType comparisonType)
+        private static bool IsConstantNull(Expression expression)
         {
-            ConvertExpressionTypes(ref leftExpression, ref rightExpression);
-
-            Expression expression = null;
-            switch (comparisonType)
-            {
-                case BooleanComparisonType.Equals:
-                    expression = Expression.Equal(leftExpression, rightExpression);
-                    break;
-                case BooleanComparisonType.GreaterThan:
-                    expression = Expression.GreaterThan(leftExpression, rightExpression);
-                    break;
-                case BooleanComparisonType.GreaterThanOrEqualTo:
-                    expression = Expression.GreaterThanOrEqual(leftExpression, rightExpression);
-                    break;
-                case BooleanComparisonType.LessThan:
-                    expression = Expression.LessThan(leftExpression, rightExpression);
-                    break;
-                case BooleanComparisonType.LessThanOrEqualTo:
-                    expression = Expression.LessThanOrEqual(leftExpression, rightExpression);
-                    break;
-                case BooleanComparisonType.NotEqualToBrackets:
-                    expression = Expression.NotEqual(leftExpression, rightExpression);
-                    break;
-                case BooleanComparisonType.NotEqualToExclamation:
-                    expression = Expression.NotEqual(leftExpression, rightExpression);
-                    break;
-                case BooleanComparisonType.NotGreaterThan:
-                    expression = Expression.Not(Expression.GreaterThan(leftExpression, rightExpression));
-                    break;
-                case BooleanComparisonType.NotLessThan:
-                    expression = Expression.Not(Expression.LessThan(leftExpression, rightExpression));
-                    break;
-            }
-            return expression;
+            return expression is ConstantExpression constantExpression && constantExpression.Value == null;
         }
 
+        private static void StringComparision(ref Expression left, ref Expression right)
+        {
+            left = Expression.Call(
+                instance: left,
+                method: StringCompareTo,
+                arguments: new[] { right });
 
+            right = Expression.Constant(0);
+        }
 
         public static Expression CreateComparisonExpression(Expression leftExpression, Expression rightExpression, Microsoft.SqlServer.TransactSql.ScriptDom.BooleanComparisonType comparisonType)
         {
@@ -98,18 +82,39 @@ namespace Koralium.SqlToExpression.Utils
             switch (comparisonType)
             {
                 case Microsoft.SqlServer.TransactSql.ScriptDom.BooleanComparisonType.Equals:
+                    //Null equal primitive cant be done, automatic false
+                    if ((IsConstantNull(leftExpression) && rightExpression.Type.IsPrimitive) || (IsConstantNull(rightExpression) && leftExpression.Type.IsPrimitive))
+                    {
+                        return Expression.Constant(false);
+                    }
                     expression = Expression.Equal(leftExpression, rightExpression);
                     break;
                 case Microsoft.SqlServer.TransactSql.ScriptDom.BooleanComparisonType.GreaterThan:
+                    if (leftExpression.Type.Equals(typeof(string)))
+                    {
+                        StringComparision(ref leftExpression, ref rightExpression);
+                    }
                     expression = Expression.GreaterThan(leftExpression, rightExpression);
                     break;
                 case Microsoft.SqlServer.TransactSql.ScriptDom.BooleanComparisonType.GreaterThanOrEqualTo:
+                    if (leftExpression.Type.Equals(typeof(string)))
+                    {
+                        StringComparision(ref leftExpression, ref rightExpression);
+                    }
                     expression = Expression.GreaterThanOrEqual(leftExpression, rightExpression);
                     break;
                 case Microsoft.SqlServer.TransactSql.ScriptDom.BooleanComparisonType.LessThan:
+                    if (leftExpression.Type.Equals(typeof(string)))
+                    {
+                        StringComparision(ref leftExpression, ref rightExpression);
+                    }
                     expression = Expression.LessThan(leftExpression, rightExpression);
                     break;
                 case Microsoft.SqlServer.TransactSql.ScriptDom.BooleanComparisonType.LessThanOrEqualTo:
+                    if (leftExpression.Type.Equals(typeof(string)))
+                    {
+                        StringComparision(ref leftExpression, ref rightExpression);
+                    }
                     expression = Expression.LessThanOrEqual(leftExpression, rightExpression);
                     break;
                 case Microsoft.SqlServer.TransactSql.ScriptDom.BooleanComparisonType.NotEqualToBrackets:

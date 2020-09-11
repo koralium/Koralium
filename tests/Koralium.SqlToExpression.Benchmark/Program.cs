@@ -34,18 +34,6 @@ namespace Koralium.SqlToExpression.Benchmark
             sql150Parser = new TSql150Parser(true);
         }
 
-        //[Benchmark]
-        //public void ANTLRParserOnlySimpleSelect()
-        //{
-        //    Parser.Parse("select name from project");
-        //}
-
-        //[Benchmark]
-        //public void ANTLRParserOnlyAdvancedSelect()
-        //{
-        //    Parser.Parse("select sum(p.id), p.name from project p where p.name = 'alex' and (p.id = 1 OR p.id = 2) group by name");
-        //}
-
         [Benchmark]
         public void MicrosoftSQLParser()
         {

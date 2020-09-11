@@ -59,11 +59,11 @@ public final class FilterExtractor
     private static String buildPredicate(ConnectorSession session, Domain domain, GrpcColumnHandle column)
     {
         if (domain.getValues().isNone()) {
-            return column.getColumnName() + " eq null";
+            return column.getColumnName() + " = null";
         }
 
         if (domain.getValues().isAll()) {
-            return column.getColumnName() + " ne null";
+            return column.getColumnName() + " = null";
         }
 
         return buildRangeQuery(session, domain, column);
@@ -90,10 +90,10 @@ public final class FilterExtractor
                                 String lowBound = typeConverter.toFilter(range.getLow().getValue());
                                 switch (range.getLow().getBound()) {
                                     case ABOVE:
-                                        innerRangeConjucts.add(columnName + " gt " + lowBound);
+                                        innerRangeConjucts.add(columnName + " > " + lowBound);
                                         break;
                                     case EXACTLY:
-                                        innerRangeConjucts.add(columnName + " ge " + lowBound);
+                                        innerRangeConjucts.add(columnName + " >= " + lowBound);
                                         break;
                                     case BELOW:
                                         throw new VerifyException("Low Marker should never use BELOW bound");
@@ -107,35 +107,35 @@ public final class FilterExtractor
                                     case ABOVE:
                                         throw new VerifyException("High Marker should never use ABOVE bound");
                                     case EXACTLY:
-                                        innerRangeConjucts.add(columnName + " le " + highBound);
+                                        innerRangeConjucts.add(columnName + " <= " + highBound);
                                         break;
                                     case BELOW:
-                                        innerRangeConjucts.add(columnName + " lt " + highBound);
+                                        innerRangeConjucts.add(columnName + " < " + highBound);
                                         break;
                                     default:
                                         throw new AssertionError("Unhandled bound: " + range.getHigh().getBound());
                                 }
                             }
-                            rangeConjuncts.add(Joiner.on(" and ").join(innerRangeConjucts));
+                            rangeConjuncts.add(Joiner.on(" AND ").join(innerRangeConjucts));
                         }
                     }
 
                     String singlePredicate = null;
                     if (!singleValues.isEmpty()) {
                         List<String> equalStatements = singleValues.stream()
-                                .map(x -> columnName + " eq " + x)
+                                .map(x -> columnName + " = " + x)
                                 .collect(Collectors.toList());
 
-                        singlePredicate = Joiner.on(" or ").join(equalStatements);
+                        singlePredicate = Joiner.on(" OR ").join(equalStatements);
                     }
 
                     String rangePredicate = null;
                     if (!rangeConjuncts.isEmpty()) {
-                        rangePredicate = Joiner.on(" or ").join(rangeConjuncts);
+                        rangePredicate = Joiner.on(" OR ").join(rangeConjuncts);
                     }
 
                     if (singlePredicate != null && rangePredicate != null) {
-                        return singlePredicate + " or " + rangePredicate;
+                        return singlePredicate + " OR " + rangePredicate;
                     }
                     if (singlePredicate != null) {
                         return singlePredicate;

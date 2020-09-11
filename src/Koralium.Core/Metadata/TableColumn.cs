@@ -58,7 +58,8 @@ namespace Koralium.Core.Metadata
             ColumnMetadata column = new ColumnMetadata()
             {
                 ColumnId = globalIndex++,
-                Name = Name
+                Name = Name,
+                Type = Metadata.Type
             };
 
             foreach (var child in Children)

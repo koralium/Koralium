@@ -1,4 +1,5 @@
 ﻿using Koralium.Core.Resolvers;
+using Koralium.WebTests.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace Koralium.WebTests
                         Name = "alex",
                         Company = new Company()
                         {
-                            Id = "1",
+                            CompanyId = "1",
                             Name = "Test company"
                         }
                     },

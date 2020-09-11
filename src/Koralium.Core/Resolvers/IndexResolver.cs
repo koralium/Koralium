@@ -94,4 +94,55 @@ namespace Koralium.Core.Resolvers
 
         protected abstract Task<IEnumerable<Entity>> GetQueryableData(IReadOnlyList<Key1> keys, Expression<Func<Entity, Entity>> selectExpression);
     }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2436:Types and methods should not have too many generic parameters", Justification = "Required to get the correct data type for indices")]
+    public abstract class IndexResolver<Entity, Key1, Key2> : IndexResolver<Entity>
+    {
+        protected override async Task<IEnumerable<Entity>> GetData(
+            Page records,
+            IndexRequest request,
+            KoraliumTable table,
+            TableIndex index,
+            Expression<Func<Entity, Entity>> selectExpression)
+        {
+            var decoders = index.Columns.Select(x => x.Decoder.Create(x.Metadata.ColumnId, x)).ToList();
+
+            (Key1, Key2)[] array = new (Key1, Key2)[records.RowCount];
+
+            if (records.Columns.Blocks.Count != 2)
+            {
+                //TODO
+                throw new Exception();
+                //throw new ColumnCountMissmatchException(2, records.Columns.Blocks.Count);
+            }
+
+            decoders.ForEach(x => x.NewPage(records));
+
+            decoders[0].Decode(records.Columns.Blocks[0], (index, val) =>
+            {
+                if (index > records.RowCount)
+                {
+                    //TODO
+                    throw new Exception();
+                    //throw new RowCountMissmatchException((int)records.RowCount, index);
+                }
+                array[index].Item1 = (Key1)val;
+            });
+
+            decoders[1].Decode(records.Columns.Blocks[1], (index, val) =>
+            {
+                if (index > records.RowCount)
+                {
+                    //TODO
+                    throw new Exception();
+                    //throw new RowCountMissmatchException((int)records.RowCount, index);
+                }
+                array[index].Item2 = (Key2)val;
+            });
+
+            return await GetQueryableData(array, selectExpression);
+        }
+
+        protected abstract Task<IEnumerable<Entity>> GetQueryableData(IReadOnlyList<(Key1, Key2)> keys, Expression<Func<Entity, Entity>> selectExpression);
+    }
 }

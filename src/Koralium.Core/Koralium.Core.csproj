@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Protos\koralium.proto" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" Version="2.31.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="3.1.7" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
@@ -16,11 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Koralium.Shared\Koralium.Shared.csproj" />
     <ProjectReference Include="..\Koralium.SqlToExpression\Koralium.SqlToExpression.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Protobuf Include="Protos\koralium.proto" />
   </ItemGroup>
 
 </Project>

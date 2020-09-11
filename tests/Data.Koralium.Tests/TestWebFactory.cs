@@ -1,0 +1,62 @@
+﻿using Grpc.Net.Client;
+using Koralium.WebTests;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.Hosting;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Text;
+
+namespace Data.Koralium.Tests
+{
+    public class TestWebFactory : IDisposable
+    {
+        readonly IHost host;
+
+        public TestWebFactory()
+        {
+            host = WebHostBuilder().Build(); //Create the server
+            host.Start();
+            AppContext.SetSwitch(
+                "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+        }
+
+        private IHostBuilder WebHostBuilder()
+        {
+            return Host.CreateDefaultBuilder()
+                        .ConfigureWebHostDefaults(webBuilder =>
+                        {
+                            webBuilder
+                            .ConfigureKestrel(c =>
+                            {
+                                // we will update the following line later to enable SSL
+                                // Note: TLS with HTTP/2 isn't supported in mac
+                                // Wait for next version of macOS
+                                c.Listen(IPEndPoint.Parse("0.0.0.0:5016"), l => l.Protocols = HttpProtocols.Http2);
+                            })
+                            .UseStartup<Startup>();
+                        });
+        }
+
+        public string GetUrl()
+        {
+            return "http://localhost:5016";
+        }
+
+        public GrpcChannel GetChannel()
+        {
+            return GrpcChannel.ForAddress("http://localhost:5016");
+        }
+
+        public void Stop()
+        {
+            host.StopAsync().Wait();
+        }
+
+        public void Dispose()
+        {
+            Stop();
+        }
+    }
+}

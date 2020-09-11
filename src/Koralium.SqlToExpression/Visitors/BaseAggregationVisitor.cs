@@ -27,8 +27,28 @@ namespace Koralium.SqlToExpression.Visitors
                 case "avg":
                     //HandleAvg(functionCall);
                     break;
+                case "count":
+                    HandleCount(functionCall);
+                    break;
                 default:
                     throw new NotSupportedException(functionCall.FunctionName.Value);
+            }
+        }
+
+        private void HandleCount(FunctionCall functionCall)
+        {
+            var parameters = functionCall.Parameters;
+            if (parameters.Count != 1)
+            {
+                throw new NotSupportedException("Count can only take a single parameter");
+            }
+
+            var parameter = parameters[0];
+            //check if it is a wildcard count
+            if (parameter is ColumnReferenceExpression reference && reference.ColumnType == ColumnType.Wildcard)
+            {
+                AddExpressionToStack(AggregationUtils.CallCount(_previousStage));
+                AddNameToStack($"count(*)");
             }
         }
 

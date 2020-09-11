@@ -13,7 +13,15 @@ namespace Koralium.SqlToExpression.Utils
     {
         private static readonly Dictionary<Type, MethodInfo> sumDictionary = BuildSumDictionary();
         private static readonly Dictionary<Type, MethodInfo> avgDictionary = BuildAvgDictionary();
+        private static readonly MethodInfo CountWildcardMethod = GetCountWildcardMethod();
 
+
+        private static MethodInfo GetCountWildcardMethod()
+        {
+            var countMethods = typeof(Enumerable).GetMethods().Where(x => x.Name == "Count" && x.GetParameters().Length == 1).ToList();
+
+            return countMethods.First();
+        }
 
         private static Dictionary<Type, MethodInfo> BuildSumDictionary()
         {
@@ -77,6 +85,16 @@ namespace Koralium.SqlToExpression.Utils
             }
 
             throw new NotSupportedException($"Cannot do average on the type {inputType.Name}");
+        }
+
+        public static Expression CallCount(GroupedStage groupedStage)
+        {
+            var groupedCountMethod = CountWildcardMethod.MakeGenericMethod(groupedStage.ValueType);
+            var call = Expression.Call(
+                instance: null,
+                method: groupedCountMethod,
+                arguments: new Expression[] { groupedStage.ParameterExpression});
+            return call;
         }
 
         public static Expression CallSum(Expression expression, GroupedStage groupedStage)
