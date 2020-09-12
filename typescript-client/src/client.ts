@@ -5,6 +5,7 @@ import { QueryRequest, Page, ColumnMetadata } from "../generated/koralium_pb";
 import { IDecoder } from "./decoders/decoder";
 import { getDecoder } from "./decoders/decoders";
 import decodeScalar from "./decoders/ScalarDecoder";
+import encodeParameters from "./encoders/parameterEncoder";
 
 export default class KoraliumClient {
   client: KoraliumServiceClient;
@@ -43,10 +44,14 @@ export default class KoraliumClient {
     });
   }
 
-  async query(sql: string) {
+  async query(sql: string, parameters?: {}) {
     const queryRequest = new QueryRequest();
     queryRequest.setQuery(sql);
     queryRequest.setMaxbatchsize(1000000);
+
+    if (parameters) {
+      queryRequest.setParametersList(encodeParameters(parameters));
+    }
 
     let stream = this.client.query(queryRequest);
 

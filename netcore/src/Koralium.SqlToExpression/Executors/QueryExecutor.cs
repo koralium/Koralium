@@ -1,0 +1,123 @@
+﻿using Koralium.SqlToExpression.Executors.Offset;
+using Koralium.SqlToExpression.Stages.ExecuteStages;
+using System.Collections.Immutable;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Koralium.SqlToExpression.Executors
+{
+    public class QueryExecutor : IQueryExecutor
+    {
+        private readonly ITableResolver _tableResolver;
+        private readonly IFromTableExecutorFactory _fromTableExecutorFactory;
+        private readonly IWhereExecutorFactory _whereExecutorFactory;
+        private readonly IGroupByExecutorFactory _groupByExecutorFactory;
+        private readonly ISelectExecutorFactory _selectExecutorFactory;
+        private readonly IOrderByExecutorFactory _orderByExecutorFactory;
+        private readonly IOffsetExecutorFactory _offsetExecutorFactory;
+        private readonly IDistinctExecutorFactory _distinctExecutorFactory;
+
+        IQueryable queryable = null;
+        IImmutableList<ColumnMetadata> columns = null;
+        object data = null;
+
+        public QueryExecutor(
+            ITableResolver tableResolver,
+            IFromTableExecutorFactory fromTableExecutorFactory,
+            IWhereExecutorFactory whereExecutorFactory,
+            IGroupByExecutorFactory groupByExecutorFactory,
+            ISelectExecutorFactory selectExecutorFactory,
+            IOrderByExecutorFactory orderByExecutorFactory,
+            IOffsetExecutorFactory offsetExecutorFactory,
+            IDistinctExecutorFactory distinctExecutorFactory
+            )
+        {
+            Debug.Assert(tableResolver != null);
+            Debug.Assert(fromTableExecutorFactory != null);
+            Debug.Assert(whereExecutorFactory != null);
+            Debug.Assert(groupByExecutorFactory != null);
+            Debug.Assert(selectExecutorFactory != null);
+            Debug.Assert(orderByExecutorFactory != null);
+            Debug.Assert(offsetExecutorFactory != null);
+            Debug.Assert(distinctExecutorFactory != null);
+
+            _tableResolver = tableResolver;
+            _fromTableExecutorFactory = fromTableExecutorFactory;
+            _whereExecutorFactory = whereExecutorFactory;
+            _groupByExecutorFactory = groupByExecutorFactory;
+            _selectExecutorFactory = selectExecutorFactory;
+            _orderByExecutorFactory = orderByExecutorFactory;
+            _offsetExecutorFactory = offsetExecutorFactory;
+            _distinctExecutorFactory = distinctExecutorFactory;
+        }
+
+        public async ValueTask<QueryResult> Execute(IImmutableList<IExecuteStage> stages, object data)
+        {
+            this.data = data;
+            foreach (var stage in stages)
+            {
+                queryable = await stage.Accept(this);
+            }
+
+            Debug.Assert(columns != null);
+            Debug.Assert(queryable != null);
+
+            return new QueryResult(queryable, columns);
+        }
+
+        public ValueTask<IQueryable> Visit(ExecuteFromTableStage executeFromTableStage)
+        {
+            var fromTableExecutor = _fromTableExecutorFactory.GetFromTableExecutor(executeFromTableStage);
+
+            return fromTableExecutor.Execute(_tableResolver, executeFromTableStage, data);
+        }
+
+        public ValueTask<IQueryable> Visit(ExecuteGroupByStage executeGroupByStage)
+        {
+            Debug.Assert(queryable != null);
+            var groupByExecutor = _groupByExecutorFactory.GetGroupByExecutor(executeGroupByStage);
+
+            return groupByExecutor.Execute(queryable, executeGroupByStage);
+        }
+
+        public ValueTask<IQueryable> Visit(ExecuteOrderByStage executeOrderByStage)
+        {
+            Debug.Assert(queryable != null);
+            var orderByExecutor = _orderByExecutorFactory.GetOrderByExecutor(executeOrderByStage);
+
+            return orderByExecutor.Execute(queryable, executeOrderByStage);
+        }
+
+        public async ValueTask<IQueryable> Visit(ExecuteSelectStage executeSelectStage)
+        {
+            Debug.Assert(queryable != null);
+            var selectExecutor = _selectExecutorFactory.GetSelectExecutor(executeSelectStage);
+
+            var selectResult = await selectExecutor.Execute(queryable, executeSelectStage);
+            columns = selectResult.Columns;
+
+            return selectResult.Queryable;
+        }
+
+        public ValueTask<IQueryable> Visit(ExecuteWhereStage executeWhereStage)
+        {
+            Debug.Assert(queryable != null);
+            var whereExecutor = _whereExecutorFactory.GetWhereExecutor(executeWhereStage);
+
+            return whereExecutor.Execute(queryable, executeWhereStage);
+        }
+
+        public ValueTask<IQueryable> Visit(ExecuteOffsetStage executeOffsetStage)
+        {
+            var offsetExecutor = _offsetExecutorFactory.GetOffsetExecutor(executeOffsetStage);
+            return offsetExecutor.Execute(queryable, executeOffsetStage);
+        }
+
+        public ValueTask<IQueryable> Visit(ExecuteDistinctStage executeDistinctStage)
+        {
+            var distinctExecutor = _distinctExecutorFactory.GetDistinctExecutor(executeDistinctStage);
+            return distinctExecutor.Execute(queryable, executeDistinctStage);
+        }
+    }
+}

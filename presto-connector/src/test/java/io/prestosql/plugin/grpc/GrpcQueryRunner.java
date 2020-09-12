@@ -1,0 +1,126 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.prestosql.plugin.grpc;
+
+import com.google.common.collect.ImmutableMap;
+import io.airlift.log.Logger;
+import io.prestosql.Session;
+import io.prestosql.metadata.QualifiedObjectName;
+import io.prestosql.plugin.tpch.TpchPlugin;
+import io.prestosql.spi.security.Identity;
+import io.prestosql.spi.type.TimeZoneKey;
+import io.prestosql.testing.DistributedQueryRunner;
+import io.prestosql.testing.QueryRunner;
+import io.prestosql.testing.TestingPrestoClient;
+import io.prestosql.tpch.TpchTable;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
+
+import static io.prestosql.plugin.tpch.TpchMetadata.TINY_SCHEMA_NAME;
+import static io.prestosql.testing.TestingSession.testSessionBuilder;
+import static java.lang.String.format;
+import static java.util.Locale.ENGLISH;
+
+public final class GrpcQueryRunner
+{
+    private GrpcQueryRunner() {}
+
+    private static final Logger LOG = Logger.get(GrpcQueryRunner.class);
+
+    private static final String TPCH_SCHEMA = "tpch";
+
+    public static DistributedQueryRunner createGrpcQueryRunner(
+            String uri,
+            Map<String, String> extraProperties,
+            String catalog,
+            String schema,
+            Iterable<TpchTable<?>> tables,
+            QueryServer server,
+            String authToken) throws Exception
+    {
+        DistributedQueryRunner queryRunner = null;
+
+        queryRunner = DistributedQueryRunner.builder(createSession(catalog, schema, authToken))
+                .setExtraProperties(extraProperties)
+                .build();
+
+        queryRunner.installPlugin(new TpchPlugin());
+        queryRunner.createCatalog("tpch", "tpch");
+
+        TestingGrpcConnectorFactory testFactory = new TestingGrpcConnectorFactory();
+
+        TestingPrestoClient prestoClient = queryRunner.getClient();
+
+        for (TpchTable<?> table : tables) {
+            getTpchTopic(prestoClient, table);
+        }
+
+        if (server != null) {
+            server.start();
+
+            uri = server.getHost() + ":" + server.getPort();
+        }
+
+        installGrpcPlugin(uri, queryRunner, testFactory);
+
+        return queryRunner;
+    }
+
+    private static void getTpchTopic(TestingPrestoClient prestoClient, TpchTable<?> table) throws FileNotFoundException
+    {
+        CsvOutput csvOutput = new CsvOutput();
+        DataLoader loader = new DataLoader(
+                prestoClient.getServer(),
+                prestoClient.getDefaultSession(),
+                table.getTableName().toLowerCase(ENGLISH),
+                TPCH_SCHEMA,
+                csvOutput);
+
+        loader.execute(format("SELECT * from %s", new QualifiedObjectName(TPCH_SCHEMA, TINY_SCHEMA_NAME, table.getTableName().toLowerCase(ENGLISH))));
+
+        //Create the tmpData directory if it does not exist
+        File file = new File("./tmpData");
+        boolean dirCreated = file.mkdir();
+
+        csvOutput.print("./tmpData/" + table.getTableName() + ".csv");
+    }
+
+    private static void installGrpcPlugin(String uri, QueryRunner queryRunner, TestingGrpcConnectorFactory factory)
+    {
+        queryRunner.installPlugin(new GrpcPlugin(factory));
+        Map<String, String> config = ImmutableMap.<String, String>builder()
+                .put("grpc.url", uri)
+                .build();
+
+        queryRunner.createCatalog("grpc", "grpc", config);
+    }
+
+    public static Session createSession(String catalog, String schema, String authToken)
+    {
+        HashMap<String, String> extraCredentials = new HashMap<>();
+        if (authToken != null) {
+            extraCredentials.put("auth_token", authToken);
+        }
+        Identity rootIdentity = Identity.forUser("root").withAdditionalExtraCredentials(extraCredentials).build();
+        return testSessionBuilder().setTimeZoneKey(TimeZoneKey.UTC_KEY).setCatalog(catalog).setSchema(schema).setIdentity(rootIdentity).build();
+    }
+
+    public static Session createSession(String schema)
+    {
+        return testSessionBuilder().setCatalog("grpc").setSchema(schema).build();
+    }
+}

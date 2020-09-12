@@ -36,6 +36,7 @@ const grpc = __importStar(require("grpc"));
 const koralium_pb_1 = require("../generated/koralium_pb");
 const decoders_1 = require("./decoders/decoders");
 const ScalarDecoder_1 = __importDefault(require("./decoders/ScalarDecoder"));
+const parameterEncoder_1 = __importDefault(require("./encoders/parameterEncoder"));
 class KoraliumClient {
     constructor(url) {
         this.client = new koralium_grpc_pb_1.KoraliumServiceClient(url, grpc.credentials.createInsecure());
@@ -63,11 +64,14 @@ class KoraliumClient {
             });
         });
     }
-    query(sql) {
+    query(sql, parameters) {
         return __awaiter(this, void 0, void 0, function* () {
             const queryRequest = new koralium_pb_1.QueryRequest();
             queryRequest.setQuery(sql);
             queryRequest.setMaxbatchsize(1000000);
+            if (parameters) {
+                queryRequest.setParametersList(parameterEncoder_1.default(parameters));
+            }
             let stream = this.client.query(queryRequest);
             const objects = [];
             let decoders = [];

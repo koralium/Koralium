@@ -25,7 +25,7 @@ var recursiveAsyncReadLine = function () {
         return __awaiter(this, void 0, void 0, function* () {
             if (answer == 'exit') //we need some base case, for recursion
                 return rl.close(); //closing RL and returning from function.
-            var results = yield client.query(answer);
+            var results = yield client.query(answer, { '@name': 'alex', '@id': 1 });
             log(results);
             recursiveAsyncReadLine(); //Calling this function again to ask new question
         });
