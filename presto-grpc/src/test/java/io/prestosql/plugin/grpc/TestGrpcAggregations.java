@@ -28,7 +28,7 @@ public class TestGrpcAggregations
     protected QueryRunner createQueryRunner() throws Exception
     {
         server = new QueryServer();
-        return GrpcQueryRunner.createGrpcQueryRunner("127.0.0.1:5015", ImmutableMap.of(), "grpc", "tpch", TpchTable.getTables(), server, null);
+        return GrpcQueryRunner.createGrpcQueryRunner("127.0.0.1:5016", ImmutableMap.of(), "grpc", "default", TpchTable.getTables(), null, null);
     }
 
     @AfterClass(alwaysRun = true)

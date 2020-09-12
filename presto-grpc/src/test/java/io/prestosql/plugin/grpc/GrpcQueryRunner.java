@@ -19,6 +19,7 @@ import io.prestosql.Session;
 import io.prestosql.metadata.QualifiedObjectName;
 import io.prestosql.plugin.tpch.TpchPlugin;
 import io.prestosql.spi.security.Identity;
+import io.prestosql.spi.type.TimeZoneKey;
 import io.prestosql.testing.DistributedQueryRunner;
 import io.prestosql.testing.QueryRunner;
 import io.prestosql.testing.TestingPrestoClient;
@@ -115,7 +116,7 @@ public final class GrpcQueryRunner
             extraCredentials.put("auth_token", authToken);
         }
         Identity rootIdentity = Identity.forUser("root").withAdditionalExtraCredentials(extraCredentials).build();
-        return testSessionBuilder().setCatalog(catalog).setSchema(schema).setIdentity(rootIdentity).build();
+        return testSessionBuilder().setTimeZoneKey(TimeZoneKey.UTC_KEY).setCatalog(catalog).setSchema(schema).setIdentity(rootIdentity).build();
     }
 
     public static Session createSession(String schema)

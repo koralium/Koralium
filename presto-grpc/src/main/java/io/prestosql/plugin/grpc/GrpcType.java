@@ -64,7 +64,7 @@ public enum GrpcType
     @JsonProperty("STRING")
     STRING(createUnboundedVarcharType(), 5, new StringDecoder(), new StringEncoder()),
     @JsonProperty("TIMESTAMP")
-    TIMESTAMP(TimestampType.TIMESTAMP, 6, new TimestampDecoder(), new TimestampEncoder()),
+    TIMESTAMP(TimestampType.TIMESTAMP_MILLIS, 6, new TimestampDecoder(), new TimestampEncoder()),
     @JsonProperty("OBJECT")
     OBJECT(null, 7, new ObjectTypeDecoder(), null), //Object is not used as a presto out type
     @JsonProperty("ARRAY")

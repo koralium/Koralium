@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Data.Koralium\Data.Koralium.csproj" />
+    <ProjectReference Include="..\..\src\Data.Koralium\Data.Koralium.csproj" />
     <ProjectReference Include="..\Koralium.WebTests\Koralium.WebTests.csproj" />
   </ItemGroup>
 

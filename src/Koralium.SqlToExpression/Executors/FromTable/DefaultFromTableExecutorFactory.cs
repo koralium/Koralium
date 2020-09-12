@@ -1,12 +1,13 @@
 ﻿using Koralium.SqlToExpression.Stages.ExecuteStages;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Koralium.SqlToExpression.Executors
 {
     public class DefaultFromTableExecutorFactory : IFromTableExecutorFactory
     {
-        private static Dictionary<Type, IFromTableExecutor> executors = new Dictionary<Type, IFromTableExecutor>();
+        private static ConcurrentDictionary<Type, IFromTableExecutor> executors = new ConcurrentDictionary<Type, IFromTableExecutor>();
 
         public IFromTableExecutor GetFromTableExecutor(ExecuteFromTableStage executeFromTableStage)
         {
@@ -14,7 +15,7 @@ namespace Koralium.SqlToExpression.Executors
             {
                 var t = typeof(DefaultFromTableExecutor<>).MakeGenericType(executeFromTableStage.EntityType);
                 executor = (IFromTableExecutor)Activator.CreateInstance(t);
-                executors.Add(executeFromTableStage.EntityType, executor);
+                executors.TryAdd(executeFromTableStage.EntityType, executor);
             }
             return executor;
         }

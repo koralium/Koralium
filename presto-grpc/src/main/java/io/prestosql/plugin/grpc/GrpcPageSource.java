@@ -20,27 +20,41 @@ import io.prestosql.plugin.grpc.client.FilterExtractor;
 import io.prestosql.plugin.grpc.client.PrestoGrpcClient;
 import io.prestosql.plugin.grpc.client.QueryBuilder;
 import io.prestosql.spi.block.PageBuilderStatus;
+import io.prestosql.spi.connector.ColumnHandle;
 import io.prestosql.spi.connector.ConnectorSession;
+import io.prestosql.spi.connector.DynamicFilter;
 import io.prestosql.spi.predicate.TupleDomain;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class GrpcPageSource
         extends GrpcBasePageSource
 {
     private final KoraliumServiceGrpc.KoraliumServiceStub client;
+    private final DynamicFilter dynamicFilter;
+    private final List<GrpcColumnHandle> columns;
+    private final TupleDomain<GrpcColumnHandle> constraint;
+    private final GrpcTableHandle tableHandle;
+    private boolean querySent = false;
 
     public GrpcPageSource(ConnectorSession session,
                           List<GrpcColumnHandle> columns,
                           PrestoGrpcClient prestoGrpcClient,
                           GrpcTableHandle tableHandle,
                           GrpcSplit split,
-                          TupleDomain<GrpcColumnHandle> constraint)
+                          TupleDomain<GrpcColumnHandle> constraint,
+                          DynamicFilter dynamicFilter)
     {
         super(session, columns);
 
+        this.dynamicFilter = dynamicFilter;
+        this.columns = columns;
+        this.constraint = constraint;
+        this.tableHandle = tableHandle;
+
         String authToken = session.getIdentity().getExtraCredentials().get("auth_token");
-        String filter = FilterExtractor.getFilter(session, constraint);
+
         Metadata metadata = new Metadata();
 
         if (authToken != null) {
@@ -48,22 +62,6 @@ public class GrpcPageSource
         }
 
         this.client = MetadataUtils.attachHeaders(KoraliumServiceGrpc.newStub(prestoGrpcClient.getChannel()), metadata);
-
-        if (columns.size() == 0) {
-            String query = new QueryBuilder().buildCountQuery(tableHandle.getTableName(), filter);
-
-            executeCount(query);
-        }
-        else {
-            String query = new QueryBuilder().buildQuery(
-                    columns,
-                    tableHandle.getTableName(),
-                    filter,
-                    tableHandle.getSortOrder(),
-                    tableHandle.getLimit());
-
-            executeQuery(query);
-        }
     }
 
     private void executeCount(String query)
@@ -128,5 +126,43 @@ public class GrpcPageSource
         };
 
         client.query(request, responseObserver);
+    }
+
+    @Override
+    public CompletableFuture<?> isBlocked() {
+        if(!dynamicFilter.isComplete()){
+            return dynamicFilter.isBlocked();
+        }
+        return super.isBlocked();
+    }
+
+    @Override
+    protected boolean readyForNextPage() {
+        if (!dynamicFilter.isComplete()) {
+            return false;
+        }
+
+        if(!querySent) {
+            TupleDomain<GrpcColumnHandle> dynamicConstraint = dynamicFilter.getCurrentPredicate().transform(GrpcColumnHandle.class::cast);
+            String filter = FilterExtractor.getFilter(session, constraint.intersect(dynamicConstraint));
+            if (columns.size() == 0) {
+                String query = new QueryBuilder().buildCountQuery(tableHandle.getTableName(), filter);
+
+                executeCount(query);
+            }
+            else {
+                String query = new QueryBuilder().buildQuery(
+                        columns,
+                        tableHandle.getTableName(),
+                        filter,
+                        tableHandle.getSortOrder(),
+                        tableHandle.getLimit());
+
+                executeQuery(query);
+            }
+            querySent = true;
+        }
+
+        return super.readyForNextPage();
     }
 }

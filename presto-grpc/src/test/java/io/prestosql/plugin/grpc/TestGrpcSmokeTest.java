@@ -14,18 +14,20 @@
 package io.prestosql.plugin.grpc;
 
 import com.google.common.collect.ImmutableMap;
+import io.prestosql.Session;
 import io.prestosql.spi.type.BigintType;
 import io.prestosql.spi.type.RealType;
 import io.prestosql.spi.type.Type;
 import io.prestosql.spi.type.VarcharType;
-import io.prestosql.testing.AbstractTestIntegrationSmokeTest;
-import io.prestosql.testing.MaterializedResult;
-import io.prestosql.testing.QueryRunner;
+import io.prestosql.sql.analyzer.FeaturesConfig;
+import io.prestosql.testing.*;
 import io.prestosql.testing.assertions.Assert;
 import io.prestosql.tpch.TpchTable;
 import org.assertj.core.api.Assertions;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
+
+import static io.prestosql.SystemSessionProperties.JOIN_DISTRIBUTION_TYPE;
 
 public class TestGrpcSmokeTest
         extends AbstractTestIntegrationSmokeTest
@@ -44,6 +46,21 @@ public class TestGrpcSmokeTest
     public void tearDown()
     {
         server.close();
+    }
+
+    @Test
+    public void testDynamicFilter()
+    {
+        Session session = Session.builder(getSession())
+                .setSystemProperty(JOIN_DISTRIBUTION_TYPE, FeaturesConfig.JoinDistributionType.BROADCAST.name())
+                .build();
+
+        DistributedQueryRunner runner = (DistributedQueryRunner) getQueryRunner();
+
+        ResultWithQueryId<MaterializedResult> result = runner.executeWithQueryId(
+                session,
+                "SELECT * FROM lineitem JOIN orders ON lineitem.orderkey = orders.orderkey AND orders.comment = 'nstructions sleep furiously among '");
+
     }
 
     @Test
@@ -121,5 +138,17 @@ public class TestGrpcSmokeTest
                 .row(new Object[]{"comment", "varchar", "", ""}).build();
         MaterializedResult actualColumns = this.computeActual("DESCRIBE orders");
         Assert.assertEquals(actualColumns, expectedColumns);
+    }
+
+    @Test
+    public void testDateTime()
+    {
+        this.assertQuery("SELECT orderdate FROM orders where orderkey = 1");
+    }
+
+    @Test
+    public void testTemp()
+    {
+        assertQuery("SELECT COUNT(*) FROM lineitem JOIN orders ON NOT NOT lineitem.orderkey = orders.orderkey AND NOT NOT lineitem.quantity > 2");
     }
 }

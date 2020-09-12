@@ -252,6 +252,8 @@ namespace Koralium.SqlToExpression.Tests
                 .Select(x =>
                     new { x.Name }
                 ).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
         }
 
         [Test]
@@ -264,6 +266,8 @@ namespace Koralium.SqlToExpression.Tests
                 .Select(x =>
                     new { x.Name }
                 ).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
         }
 
         [Test]
@@ -621,6 +625,43 @@ namespace Koralium.SqlToExpression.Tests
 
             var expected = TpchData.Orders
                 .Where(x => false)
+                .Select(x => new { x.Orderkey })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestPrimitiveNotEqualsNull()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey FROM \"order\" WHERE Orderkey != null");
+
+            var expected = TpchData.Orders
+                .Select(x => new { x.Orderkey })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestPrimitiveIsNull()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey FROM \"order\" WHERE Orderkey is null");
+
+            var expected = TpchData.Orders
+                .Where(x => false)
+                .Select(x => new { x.Orderkey })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestPrimitiveIsNotNullNull()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey FROM \"order\" WHERE Orderkey is not null");
+
+            var expected = TpchData.Orders
                 .Select(x => new { x.Orderkey })
                 .AsQueryable();
 

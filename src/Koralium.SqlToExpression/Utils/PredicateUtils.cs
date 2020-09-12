@@ -118,9 +118,11 @@ namespace Koralium.SqlToExpression.Utils
                     expression = Expression.LessThanOrEqual(leftExpression, rightExpression);
                     break;
                 case Microsoft.SqlServer.TransactSql.ScriptDom.BooleanComparisonType.NotEqualToBrackets:
-                    expression = Expression.NotEqual(leftExpression, rightExpression);
-                    break;
                 case Microsoft.SqlServer.TransactSql.ScriptDom.BooleanComparisonType.NotEqualToExclamation:
+                    if ((IsConstantNull(leftExpression) && rightExpression.Type.IsPrimitive) || (IsConstantNull(rightExpression) && leftExpression.Type.IsPrimitive))
+                    {
+                        return Expression.Constant(true);
+                    }
                     expression = Expression.NotEqual(leftExpression, rightExpression);
                     break;
                 case Microsoft.SqlServer.TransactSql.ScriptDom.BooleanComparisonType.NotGreaterThan:

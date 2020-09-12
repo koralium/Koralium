@@ -46,24 +46,24 @@ public final class FilterExtractor
 
                 checkArgument(!domain.isNone(), "Unexpected NONE domain for %s", column.getColumnName());
                 if (!domain.isAll()) {
-                    String predicate = buildPredicate(session, domain, column);
+                    String predicate = "(" + buildPredicate(session, domain, column) + ")";
                     if (predicate != null) {
                         predicates.add(predicate);
                     }
                 }
             }
         }
-        return Joiner.on(" and ").join(predicates.build());
+        return Joiner.on(" AND ").join(predicates.build());
     }
 
     private static String buildPredicate(ConnectorSession session, Domain domain, GrpcColumnHandle column)
     {
         if (domain.getValues().isNone()) {
-            return column.getColumnName() + " = null";
+            return column.getColumnName() + " IS NULL";
         }
 
         if (domain.getValues().isAll()) {
-            return column.getColumnName() + " = null";
+            return column.getColumnName() + " IS NOT NULL";
         }
 
         return buildRangeQuery(session, domain, column);

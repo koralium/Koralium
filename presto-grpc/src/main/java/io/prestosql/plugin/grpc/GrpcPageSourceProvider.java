@@ -14,13 +14,7 @@
 package io.prestosql.plugin.grpc;
 
 import io.prestosql.plugin.grpc.client.PrestoGrpcClient;
-import io.prestosql.spi.connector.ColumnHandle;
-import io.prestosql.spi.connector.ConnectorPageSource;
-import io.prestosql.spi.connector.ConnectorPageSourceProvider;
-import io.prestosql.spi.connector.ConnectorSession;
-import io.prestosql.spi.connector.ConnectorSplit;
-import io.prestosql.spi.connector.ConnectorTableHandle;
-import io.prestosql.spi.connector.ConnectorTransactionHandle;
+import io.prestosql.spi.connector.*;
 import io.prestosql.spi.predicate.TupleDomain;
 
 import javax.inject.Inject;
@@ -48,15 +42,34 @@ public class GrpcPageSourceProvider
             ConnectorSplit split,
             ConnectorTableHandle table,
             List<ColumnHandle> columns,
-            TupleDomain<ColumnHandle> dynamicFilter)
+            DynamicFilter dynamicFilter)
     {
         List<GrpcColumnHandle> columnHandles = columns.stream()
                 .map(GrpcColumnHandle.class::cast)
                 .collect(toImmutableList());
 
         GrpcTableHandle tableHandle = (GrpcTableHandle) table;
-        TupleDomain<GrpcColumnHandle> constraint = tableHandle.getConstraint().intersect(dynamicFilter).transform(GrpcColumnHandle.class::cast);
+        TupleDomain<GrpcColumnHandle> constraint = tableHandle.getConstraint().transform(GrpcColumnHandle.class::cast);
 
-        return new GrpcPageSource(session, columnHandles, client, tableHandle, (GrpcSplit) split, constraint);
+        return new GrpcPageSource(session, columnHandles, client, tableHandle, (GrpcSplit) split, constraint, dynamicFilter);
     }
+
+    //    @Override
+//    public ConnectorPageSource createPageSource(
+//            ConnectorTransactionHandle transaction,
+//            ConnectorSession session,
+//            ConnectorSplit split,
+//            ConnectorTableHandle table,
+//            List<ColumnHandle> columns,
+//            TupleDomain<ColumnHandle> dynamicFilter)
+//    {
+//        List<GrpcColumnHandle> columnHandles = columns.stream()
+//                .map(GrpcColumnHandle.class::cast)
+//                .collect(toImmutableList());
+//
+//        GrpcTableHandle tableHandle = (GrpcTableHandle) table;
+//        TupleDomain<GrpcColumnHandle> constraint = tableHandle.getConstraint().intersect(dynamicFilter).transform(GrpcColumnHandle.class::cast);
+//
+//        return new GrpcPageSource(session, columnHandles, client, tableHandle, (GrpcSplit) split, constraint);
+//    }
 }

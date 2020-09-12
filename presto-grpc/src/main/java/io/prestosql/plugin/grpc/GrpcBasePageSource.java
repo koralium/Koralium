@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class GrpcBasePageSource
         implements ConnectorPageSource
 {
-    private ConnectorSession session;
+    protected ConnectorSession session;
     private long completedBytes;
     private final AtomicLong readTimeNanos = new AtomicLong(0);
     private final long readStart;
@@ -152,6 +152,9 @@ public class GrpcBasePageSource
         if (error != null) {
             throw new RuntimeException(error);
         }
+        if(!readyForNextPage()) {
+            return null;
+        }
         if (!completedCount.isEmpty()) {
             Presto.Scalar countResponse = completedCount.poll();
             return new Page(countResponse.getInt());
@@ -161,6 +164,10 @@ public class GrpcBasePageSource
             return createPage(page);
         }
         return null;
+    }
+
+    protected boolean readyForNextPage() {
+        return true;
     }
 
     @Override

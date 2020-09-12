@@ -18,19 +18,22 @@ import io.prestosql.plugin.grpc.GrpcExecutionColumn;
 import io.prestosql.plugin.grpc.Presto;
 import io.prestosql.spi.block.BlockBuilder;
 import io.prestosql.spi.connector.ConnectorSession;
+import io.prestosql.spi.type.Timestamps;
+import io.prestosql.spi.type.Type;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 
-import static io.prestosql.spi.type.TimestampType.TIMESTAMP;
+import static io.prestosql.spi.type.TimestampType.*;
 
 public class TimestampDecoder
         implements GrpcDecoder
 {
     private static final ZoneId ZULU = ZoneId.of("Z");
     private final ZoneId zoneId;
+    private final Type type;
 
     private int count;
     private int globalCount;
@@ -39,17 +42,20 @@ public class TimestampDecoder
     public TimestampDecoder()
     {
         zoneId = ZoneId.of("Z");
+        this.type = TIMESTAMP_MILLIS;
     }
 
-    public TimestampDecoder(ConnectorSession session)
+    public TimestampDecoder(ConnectorSession session, Type type)
     {
         this.zoneId = ZoneId.of(session.getTimeZoneKey().getId());
+        this.type = type;
     }
 
     @Override
     public GrpcDecoder create(int columnId, GrpcExecutionColumn column, ConnectorSession session)
     {
-        return new TimestampDecoder(session);
+
+        return new TimestampDecoder(session, column.getPrestoType());
     }
 
     @Override
@@ -79,9 +85,9 @@ public class TimestampDecoder
 
                 long epochMillis = timestamp.atZone(zoneId)
                         .toInstant()
-                        .toEpochMilli();
+                        .toEpochMilli() * Timestamps.MICROSECONDS_PER_MILLISECOND;
 
-                TIMESTAMP.writeLong(builder, epochMillis);
+                type.writeLong(builder, epochMillis);
                 count++;
                 globalCount++;
             }
@@ -112,7 +118,7 @@ public class TimestampDecoder
 
                 Instant instant = Instant.ofEpochSecond(grpcTimestamp.getSeconds(), grpcTimestamp.getNanos());
 
-                TIMESTAMP.writeLong(builder, instant.toEpochMilli());
+                type.writeLong(builder, instant.toEpochMilli() * Timestamps.MICROSECONDS_PER_MILLISECOND);
                 count++;
                 globalCount++;
                 localCount++;

@@ -19,15 +19,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Koralium.WebTests", "tests\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Koralium.Json", "src\Koralium.Json\Koralium.Json.csproj", "{8A79CC47-412A-4E70-AE10-153C399CE263}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data.Koralium", "Data.Koralium\Data.Koralium.csproj", "{CA6099C5-9B2A-4E3E-9C36-EEDD13FC033E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data.Koralium.Tests", "tests\Data.Koralium.Tests\Data.Koralium.Tests.csproj", "{E086F417-ACFA-4B72-9F7A-674838887BE8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Koralium.Shared", "src\Koralium.Shared\Koralium.Shared.csproj", "{6BB0170F-84F8-474C-9AF8-0FFE1214545E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityFrameworkCore.Koralium", "src\EntityFrameworkCore.Koralium\EntityFrameworkCore.Koralium.csproj", "{DE9DDD15-2285-4F66-BC71-F1734BB5544A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.Koralium", "src\EntityFrameworkCore.Koralium\EntityFrameworkCore.Koralium.csproj", "{DE9DDD15-2285-4F66-BC71-F1734BB5544A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.Koralium.Tests", "tests\EntityFrameworkCore.Koralium.Tests\EntityFrameworkCore.Koralium.Tests.csproj", "{0B0BA63A-2713-4AD4-924D-0EDC4D46718D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data.Koralium", "src\Data.Koralium\Data.Koralium.csproj", "{7A9CE18C-F629-4163-91A1-3F9A557276EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,10 +59,6 @@ Global
 		{8A79CC47-412A-4E70-AE10-153C399CE263}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A79CC47-412A-4E70-AE10-153C399CE263}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A79CC47-412A-4E70-AE10-153C399CE263}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CA6099C5-9B2A-4E3E-9C36-EEDD13FC033E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CA6099C5-9B2A-4E3E-9C36-EEDD13FC033E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CA6099C5-9B2A-4E3E-9C36-EEDD13FC033E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CA6099C5-9B2A-4E3E-9C36-EEDD13FC033E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E086F417-ACFA-4B72-9F7A-674838887BE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E086F417-ACFA-4B72-9F7A-674838887BE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E086F417-ACFA-4B72-9F7A-674838887BE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -79,6 +75,10 @@ Global
 		{0B0BA63A-2713-4AD4-924D-0EDC4D46718D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B0BA63A-2713-4AD4-924D-0EDC4D46718D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B0BA63A-2713-4AD4-924D-0EDC4D46718D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A9CE18C-F629-4163-91A1-3F9A557276EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A9CE18C-F629-4163-91A1-3F9A557276EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A9CE18C-F629-4163-91A1-3F9A557276EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A9CE18C-F629-4163-91A1-3F9A557276EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,11 +90,11 @@ Global
 		{3EA1E8FE-06D8-49E8-9DBC-0BAF6A2F06FE} = {F7D6319E-DD32-4366-9FE5-D9FFA602CD72}
 		{C25F7553-8AAD-4559-9790-81ABDE625F5C} = {F7D6319E-DD32-4366-9FE5-D9FFA602CD72}
 		{8A79CC47-412A-4E70-AE10-153C399CE263} = {6612ACD6-8BB1-41DF-8457-066993C5156C}
-		{CA6099C5-9B2A-4E3E-9C36-EEDD13FC033E} = {6612ACD6-8BB1-41DF-8457-066993C5156C}
 		{E086F417-ACFA-4B72-9F7A-674838887BE8} = {F7D6319E-DD32-4366-9FE5-D9FFA602CD72}
 		{6BB0170F-84F8-474C-9AF8-0FFE1214545E} = {6612ACD6-8BB1-41DF-8457-066993C5156C}
 		{DE9DDD15-2285-4F66-BC71-F1734BB5544A} = {6612ACD6-8BB1-41DF-8457-066993C5156C}
 		{0B0BA63A-2713-4AD4-924D-0EDC4D46718D} = {F7D6319E-DD32-4366-9FE5-D9FFA602CD72}
+		{7A9CE18C-F629-4163-91A1-3F9A557276EF} = {6612ACD6-8BB1-41DF-8457-066993C5156C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {370182A4-5D02-471D-9AC0-8A745D2E3299}

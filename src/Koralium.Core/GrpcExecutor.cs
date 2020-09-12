@@ -1,4 +1,5 @@
-﻿using Koralium.Core.Interfaces;
+﻿using Koralium.Core.Decoders;
+using Koralium.Core.Interfaces;
 using Koralium.Core.Metadata;
 using Koralium.Core.Utils;
 using Koralium.Grpc;
@@ -30,7 +31,8 @@ namespace Koralium.Core
 
         public async Task Execute(QueryRequest queryRequest, HttpContext httpContext, ChannelWriter<Page> channelWriter)
         {
-            var result = await _koraliumExecutor.Execute(queryRequest.Query, null, httpContext);
+            var sqlParameters = ParameterDecoder.DecodeParameters(queryRequest.Parameters);
+            var result = await _koraliumExecutor.Execute(queryRequest.Query, sqlParameters, httpContext);
 
             IEncoder[] encoders = new IEncoder[result.Columns.Count];
             Func<object, object>[] propertyGetters = new Func<object, object>[encoders.Length];

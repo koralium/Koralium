@@ -3,6 +3,7 @@ using Koralium.SqlToExpression.Stages.CompileStages;
 using Koralium.SqlToExpression.Utils;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -45,12 +46,12 @@ namespace Koralium.SqlToExpression.Visitors
 
         public override void ExplicitVisit(RealLiteral node)
         {
-            AddExpressionToStack(Expression.Constant(double.Parse(node.Value)));
+            AddExpressionToStack(Expression.Constant(double.Parse(node.Value, CultureInfo.InvariantCulture)));
         }
 
         public override void ExplicitVisit(NumericLiteral node)
         {
-            AddExpressionToStack(Expression.Constant(double.Parse(node.Value)));
+            AddExpressionToStack(Expression.Constant(double.Parse(node.Value, CultureInfo.InvariantCulture)));
         }
 
         public override void ExplicitVisit(NullLiteral node)
@@ -141,11 +142,25 @@ namespace Koralium.SqlToExpression.Visitors
 
             if (booleanIsNullExpression.IsNot)
             {
-                AddExpressionToStack(Expression.NotEqual(expression, Expression.Constant(null)));
+                if (expression.Type.IsPrimitive)
+                {
+                    AddExpressionToStack(Expression.Constant(true));
+                }
+                else
+                {
+                    AddExpressionToStack(Expression.NotEqual(expression, Expression.Constant(null)));
+                }
             }
             else
             {
-                AddExpressionToStack(Expression.Equal(expression, Expression.Constant(null)));
+                if(expression.Type.IsPrimitive)
+                {
+                    AddExpressionToStack(Expression.Constant(false));
+                }
+                else
+                {
+                    AddExpressionToStack(Expression.Equal(expression, Expression.Constant(null)));
+                }
             }
         }
     }

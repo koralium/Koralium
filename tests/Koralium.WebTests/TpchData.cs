@@ -38,7 +38,7 @@ namespace Koralium.WebTests
             Customers = LoadData<Customer>("./Data/customer.csv");
             LineItem = LoadData<LineItem>("./Data/lineitem.csv");
             Nation = LoadData<Nation>("./Data/nation.csv");
-            Orders = LoadData<Order>("./Data/orders.csv");
+            Orders = LoadData<Order>("./Data/orders.csv").OrderBy(x => x.Orderkey).ToList();
             Part = LoadData<Part>("./Data/part.csv");
             Partsupp = LoadData<Partsupp>("./Data/partsupp.csv");
             Region = LoadData<Region>("./Data/region.csv");

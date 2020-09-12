@@ -44,8 +44,6 @@ namespace Koralium.SqlToExpression
             return GetMemberAccess(Expression.Constant(this));
         }
 
-        
-
         private readonly static MemberInfo ValueMemberInfo = typeof(SqlParameter<T>).GetProperty("Value");
         private static Expression GetMemberAccess(Expression parameter) => Expression.MakeMemberAccess(parameter, ValueMemberInfo);
 
