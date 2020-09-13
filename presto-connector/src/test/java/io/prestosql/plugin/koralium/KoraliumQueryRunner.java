@@ -35,11 +35,11 @@ import static io.prestosql.testing.TestingSession.testSessionBuilder;
 import static java.lang.String.format;
 import static java.util.Locale.ENGLISH;
 
-public final class GrpcQueryRunner
+public final class KoraliumQueryRunner
 {
-    private GrpcQueryRunner() {}
+    private KoraliumQueryRunner() {}
 
-    private static final Logger LOG = Logger.get(GrpcQueryRunner.class);
+    private static final Logger LOG = Logger.get(KoraliumQueryRunner.class);
 
     private static final String TPCH_SCHEMA = "tpch";
 
@@ -103,10 +103,10 @@ public final class GrpcQueryRunner
     {
         queryRunner.installPlugin(new KoraliumPlugin(factory));
         Map<String, String> config = ImmutableMap.<String, String>builder()
-                .put("grpc.url", uri)
+                .put("koralium.url", uri)
                 .build();
 
-        queryRunner.createCatalog("grpc", "grpc", config);
+        queryRunner.createCatalog("koralium", "koralium", config);
     }
 
     public static Session createSession(String catalog, String schema, String authToken)
@@ -121,6 +121,6 @@ public final class GrpcQueryRunner
 
     public static Session createSession(String schema)
     {
-        return testSessionBuilder().setCatalog("grpc").setSchema(schema).build();
+        return testSessionBuilder().setCatalog("koralium").setSchema(schema).build();
     }
 }

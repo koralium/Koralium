@@ -20,18 +20,18 @@ import io.prestosql.spi.connector.ConnectorFactory;
 
 import static java.util.Objects.requireNonNull;
 
-public class GrpcPlugin
+public class KoraliumPlugin
         implements Plugin
 {
     private final ConnectorFactory connectorFactory;
 
-    public GrpcPlugin()
+    public KoraliumPlugin()
     {
-        connectorFactory = new GrpcConnectorFactory();
+        connectorFactory = new KoraliumConnectorFactory();
     }
 
     @VisibleForTesting
-    GrpcPlugin(GrpcConnectorFactory factory)
+    KoraliumPlugin(KoraliumConnectorFactory factory)
     {
         connectorFactory = requireNonNull(factory, "factory is null");
     }

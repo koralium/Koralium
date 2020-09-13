@@ -24,7 +24,7 @@ import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
 
-public class GrpcIndexHandle
+public class KoraliumIndexHandle
         implements ConnectorIndexHandle
 {
     private final int tableId;
@@ -33,7 +33,7 @@ public class GrpcIndexHandle
     private final Optional<Set<ColumnHandle>> desiredColumns;
 
     @JsonCreator
-    public GrpcIndexHandle(
+    public KoraliumIndexHandle(
             @JsonProperty("tableId") int tableId,
             @JsonProperty("indexId") int indexId,
             @JsonProperty("tupleDomain") TupleDomain<ColumnHandle> tupleDomain,

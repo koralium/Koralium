@@ -16,7 +16,7 @@ package io.prestosql.plugin.koralium;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import io.prestosql.plugin.koralium.client.PrestoGrpcClient;
+import io.prestosql.plugin.koralium.client.PrestoKoraliumClient;
 import io.prestosql.spi.connector.AggregateFunction;
 import io.prestosql.spi.connector.AggregationApplicationResult;
 import io.prestosql.spi.connector.ColumnHandle;
@@ -51,27 +51,27 @@ import java.util.stream.Collectors;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static java.util.Objects.requireNonNull;
 
-public class GrpcMetadata
+public class KoraliumMetadata
         implements ConnectorMetadata
 {
-    private final PrestoGrpcClient grpcClient;
+    private final PrestoKoraliumClient koraliumClient;
 
     @Inject
-    public GrpcMetadata(PrestoGrpcClient client)
+    public KoraliumMetadata(PrestoKoraliumClient client)
     {
-        this.grpcClient = requireNonNull(client, "client is null");
+        this.koraliumClient = requireNonNull(client, "client is null");
     }
 
     @Override
     public List<String> listSchemaNames(ConnectorSession session)
     {
-        return grpcClient.getSchemaNames();
+        return koraliumClient.getSchemaNames();
     }
 
     @Override
-    public GrpcTableHandle getTableHandle(ConnectorSession session, SchemaTableName tableName)
+    public KoraliumTableHandle getTableHandle(ConnectorSession session, SchemaTableName tableName)
     {
-        return grpcClient.getTableHandle(tableName);
+        return koraliumClient.getTableHandle(tableName);
     }
 
     @Override
@@ -82,7 +82,7 @@ public class GrpcMetadata
 
     private static SchemaTableName getTableName(ConnectorTableHandle tableHandle)
     {
-        return ((GrpcTableHandle) tableHandle).getSchemaTableName();
+        return ((KoraliumTableHandle) tableHandle).getSchemaTableName();
     }
 
     @Override
@@ -94,7 +94,7 @@ public class GrpcMetadata
 
     private ConnectorTableMetadata getTableMetadata(SchemaTableName tableName)
     {
-        return grpcClient.getTableMetadata(tableName);
+        return koraliumClient.getTableMetadata(tableName);
     }
 
     private List<String> listSchemas(ConnectorSession session, Optional<String> schemaName)
@@ -116,7 +116,7 @@ public class GrpcMetadata
         List<String> schemaNames = listSchemas(session, optionalSchemaName);
         for (String schemaName : schemaNames) {
             try {
-                for (SchemaTableName schemaTableName : grpcClient.getSchemaTableNames(schemaName)) {
+                for (SchemaTableName schemaTableName : koraliumClient.getSchemaTableNames(schemaName)) {
                     tableNames.add(schemaTableName);
                 }
             }
@@ -133,7 +133,7 @@ public class GrpcMetadata
         requireNonNull(session, "session is null");
         requireNonNull(tableHandle, "tableHandle is null");
 
-        return grpcClient.getColumnHandles(getTableName(tableHandle));
+        return koraliumClient.getColumnHandles(getTableName(tableHandle));
     }
 
     @Override
@@ -166,7 +166,7 @@ public class GrpcMetadata
     @Override
     public ColumnMetadata getColumnMetadata(ConnectorSession session, ConnectorTableHandle tableHandle, ColumnHandle columnHandle)
     {
-        return ((GrpcColumnHandle) columnHandle).getColumnMetadata();
+        return ((KoraliumColumnHandle) columnHandle).getColumnMetadata();
     }
 
     @Override
@@ -178,13 +178,13 @@ public class GrpcMetadata
     @Override
     public Optional<LimitApplicationResult<ConnectorTableHandle>> applyLimit(ConnectorSession session, ConnectorTableHandle handle, long limit)
     {
-        GrpcTableHandle tableHandle = (GrpcTableHandle) handle;
+        KoraliumTableHandle tableHandle = (KoraliumTableHandle) handle;
 
         if (tableHandle.getLimit().isPresent() && tableHandle.getLimit().getAsLong() <= limit) {
             return Optional.empty();
         }
 
-        tableHandle = new GrpcTableHandle(
+        tableHandle = new KoraliumTableHandle(
                 tableHandle.getSchemaName(),
                 tableHandle.getTableName(),
                 tableHandle.getConstraint(),
@@ -204,29 +204,29 @@ public class GrpcMetadata
             Set<ColumnHandle> outputColumns,
             TupleDomain<ColumnHandle> tupleDomain)
     {
-        GrpcTableHandle handle = (GrpcTableHandle) tableHandle;
+        KoraliumTableHandle handle = (KoraliumTableHandle) tableHandle;
 
         List<Integer> keys = indexableColumns.stream()
-                .map(GrpcColumnHandle.class::cast)
-                .map(GrpcColumnHandle::getCatalogUniqueId)
+                .map(KoraliumColumnHandle.class::cast)
+                .map(KoraliumColumnHandle::getCatalogUniqueId)
                 .sorted()
                 .collect(toImmutableList());
 
         String indexKey = handle.getTableId() + ":" + Joiner.on('_').join(keys);
 
-        GrpcTableIndex index = grpcClient.getTableIndex(indexKey);
+        KoraliumTableIndex index = koraliumClient.getTableIndex(indexKey);
 
         if (index == null) {
             return Optional.empty();
         }
 
-        return Optional.of(new ConnectorResolvedIndex(new GrpcIndexHandle(index.getTableId(), index.getIndexId(), tupleDomain, Optional.empty()), tupleDomain));
+        return Optional.of(new ConnectorResolvedIndex(new KoraliumIndexHandle(index.getTableId(), index.getIndexId(), tupleDomain, Optional.empty()), tupleDomain));
     }
 
     @Override
     public Optional<TopNApplicationResult<ConnectorTableHandle>> applyTopN(ConnectorSession session, ConnectorTableHandle handle, long topNCount, List<SortItem> sortItems, Map<String, ColumnHandle> assignments)
     {
-        GrpcTableHandle tableHandle = (GrpcTableHandle) handle;
+        KoraliumTableHandle tableHandle = (KoraliumTableHandle) handle;
 
         if (tableHandle.getLimit().isPresent() && tableHandle.getSortOrder().isPresent() && tableHandle.getLimit().getAsLong() <= topNCount) {
             return Optional.of(new TopNApplicationResult<>(handle, true));
@@ -237,11 +237,11 @@ public class GrpcMetadata
             return Optional.empty();
         }
 
-        List<GrpcSortItem> sortOrder = sortItems.stream()
-                .map(sortItem -> new GrpcSortItem(((GrpcColumnHandle) assignments.get(sortItem.getName())), sortItem.getSortOrder()))
+        List<KoraliumSortItem> sortOrder = sortItems.stream()
+                .map(sortItem -> new KoraliumSortItem(((KoraliumColumnHandle) assignments.get(sortItem.getName())), sortItem.getSortOrder()))
                 .collect(Collectors.toList());
 
-        tableHandle = new GrpcTableHandle(
+        tableHandle = new KoraliumTableHandle(
                 tableHandle.getSchemaName(),
                 tableHandle.getTableName(),
                 tableHandle.getConstraint(),
@@ -259,7 +259,7 @@ public class GrpcMetadata
             ConnectorTableHandle handle,
             Constraint constraint)
     {
-        GrpcTableHandle tableHandle = (GrpcTableHandle) handle;
+        KoraliumTableHandle tableHandle = (KoraliumTableHandle) handle;
 
         Map<ColumnHandle, Domain> supported = new HashMap<>();
         Map<ColumnHandle, Domain> unsupported = new HashMap<>();
@@ -275,7 +275,7 @@ public class GrpcMetadata
             return Optional.empty();
         }
 
-        tableHandle = new GrpcTableHandle(
+        tableHandle = new KoraliumTableHandle(
                 tableHandle.getSchemaName(),
                 tableHandle.getTableName(),
                 newDomain,

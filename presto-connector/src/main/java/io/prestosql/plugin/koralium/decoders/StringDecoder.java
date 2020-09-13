@@ -11,12 +11,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.grpc.decoders;
+package io.prestosql.plugin.koralium.decoders;
 
 import io.airlift.slice.Slice;
 import io.airlift.slice.Slices;
-import io.prestosql.plugin.grpc.GrpcExecutionColumn;
-import io.prestosql.plugin.grpc.Presto;
+import io.prestosql.plugin.koralium.KoraliumExecutionColumn;
+import io.prestosql.plugin.koralium.Presto;
 import io.prestosql.spi.block.BlockBuilder;
 import io.prestosql.spi.connector.ConnectorSession;
 
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 import static io.prestosql.spi.type.VarcharType.VARCHAR;
 
 public class StringDecoder
-        implements GrpcDecoder
+        implements KoraliumDecoder
 {
     private int columnId;
     private List<Slice> cache;
@@ -50,7 +50,7 @@ public class StringDecoder
     }
 
     @Override
-    public GrpcDecoder create(int columnId, GrpcExecutionColumn column, ConnectorSession session)
+    public KoraliumDecoder create(int columnId, KoraliumExecutionColumn column, ConnectorSession session)
     {
         return new StringDecoder(columnId);
     }

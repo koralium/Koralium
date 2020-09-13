@@ -14,7 +14,7 @@
 package io.prestosql.plugin.koralium;
 
 import com.google.common.collect.ImmutableList;
-import io.prestosql.plugin.koralium.decoders.GrpcDecoder;
+import io.prestosql.plugin.koralium.decoders.KoraliumDecoder;
 import io.prestosql.plugin.koralium.utils.GrpcColumnReverter;
 import io.prestosql.spi.Page;
 import io.prestosql.spi.block.Block;
@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class GrpcBasePageSource
+public class KoraliumBasePageSource
         implements ConnectorPageSource
 {
     protected ConnectorSession session;
@@ -40,12 +40,12 @@ public class GrpcBasePageSource
     private final ConcurrentLinkedQueue<Presto.Scalar> completedCount = new ConcurrentLinkedQueue<>();
     private final ConcurrentLinkedQueue<Presto.Page> completedBatches = new ConcurrentLinkedQueue<>();
     private final BlockBuilder[] columnBuilders;
-    private List<GrpcDecoder> decoders;
+    private List<KoraliumDecoder> decoders;
     private Throwable error;
 
-    public GrpcBasePageSource(
+    public KoraliumBasePageSource(
             ConnectorSession session,
-            List<GrpcColumnHandle> columns)
+            List<KoraliumColumnHandle> columns)
     {
         this.session = session;
         readStart = System.nanoTime();
@@ -53,7 +53,7 @@ public class GrpcBasePageSource
         finished = new AtomicBoolean();
 
         columnBuilders = columns.stream()
-                .map(GrpcColumnHandle::getType)
+                .map(KoraliumColumnHandle::getType)
                 .map(type -> type.createBlockBuilder(null, 1))
                 .toArray(BlockBuilder[]::new);
     }
@@ -112,14 +112,14 @@ public class GrpcBasePageSource
         if (page.getMetadataCount() > 0) {
             List<Presto.ColumnMetadata> columnMetadatas = page.getMetadataList();
 
-            List<GrpcExecutionColumn> executionColumns = GrpcColumnReverter.BuildExecutionColumns(columnMetadatas);
+            List<KoraliumExecutionColumn> executionColumns = GrpcColumnReverter.BuildExecutionColumns(columnMetadatas);
 
-            ImmutableList.Builder<GrpcDecoder> decodersBuilder = new ImmutableList.Builder<>();
+            ImmutableList.Builder<KoraliumDecoder> decodersBuilder = new ImmutableList.Builder<>();
 
             for (int i = 0; i < executionColumns.size(); i++) {
-                GrpcExecutionColumn column = executionColumns.get(i);
+                KoraliumExecutionColumn column = executionColumns.get(i);
 
-                decodersBuilder.add(column.getGrpcType().getDecoder().create(column.getColumnId(), column, session));
+                decodersBuilder.add(column.getKoraliumType().getDecoder().create(column.getColumnId(), column, session));
             }
             decoders = decodersBuilder.build();
         }

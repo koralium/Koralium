@@ -18,12 +18,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.protobuf.Empty;
 import io.grpc.Channel;
-import io.prestosql.plugin.koralium.GrpcColumnHandle;
-import io.prestosql.plugin.koralium.GrpcTable;
-import io.prestosql.plugin.koralium.GrpcTableHandle;
-import io.prestosql.plugin.koralium.GrpcTableIndex;
-import io.prestosql.plugin.koralium.GrpcType;
+import io.prestosql.plugin.koralium.KoraliumColumnHandle;
 import io.prestosql.plugin.koralium.KoraliumServiceGrpc;
+import io.prestosql.plugin.koralium.KoraliumTable;
+import io.prestosql.plugin.koralium.KoraliumTableHandle;
+import io.prestosql.plugin.koralium.KoraliumTableIndex;
+import io.prestosql.plugin.koralium.KoraliumType;
 import io.prestosql.plugin.koralium.Presto;
 import io.prestosql.spi.connector.ColumnHandle;
 import io.prestosql.spi.connector.ConnectorTableMetadata;
@@ -37,18 +37,18 @@ import java.util.Map;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static java.util.Locale.ENGLISH;
 
-public class GrpcMetadataCache
-        implements GrpcMetadataClient
+public class KoraliumMetadataCache
+        implements KoraliumMetadataClient
 {
     private static final String schemaName = "default";
     private final KoraliumServiceGrpc.KoraliumServiceBlockingStub client;
-    private final List<GrpcTable> tables;
+    private final List<KoraliumTable> tables;
     private final List<String> schemaNames;
-    private final Map<SchemaTableName, GrpcTable> schemaTableNameToTable;
+    private final Map<SchemaTableName, KoraliumTable> schemaTableNameToTable;
     private final Map<String, List<SchemaTableName>> schemaNameToSchemaTableNames;
-    private final Map<String, GrpcTableIndex> columnsKeyToIndex;
+    private final Map<String, KoraliumTableIndex> columnsKeyToIndex;
 
-    public GrpcMetadataCache(Channel channel)
+    public KoraliumMetadataCache(Channel channel)
     {
         this.client = KoraliumServiceGrpc.newBlockingStub(channel);
 
@@ -60,17 +60,17 @@ public class GrpcMetadataCache
         this.columnsKeyToIndex = generateIndexLookup(this.tables);
     }
 
-    public GrpcTableIndex getTableIndex(String key)
+    public KoraliumTableIndex getTableIndex(String key)
     {
         return columnsKeyToIndex.get(key);
     }
 
-    private Map<String, GrpcTableIndex> generateIndexLookup(List<GrpcTable> tables)
+    private Map<String, KoraliumTableIndex> generateIndexLookup(List<KoraliumTable> tables)
     {
-        ImmutableMap.Builder<String, GrpcTableIndex> builder = new ImmutableMap.Builder<>();
+        ImmutableMap.Builder<String, KoraliumTableIndex> builder = new ImmutableMap.Builder<>();
 
-        for (GrpcTable table : tables) {
-            for (GrpcTableIndex index : table.getIndices()) {
+        for (KoraliumTable table : tables) {
+            for (KoraliumTableIndex index : table.getIndices()) {
                 builder.put(index.getKey(), index);
             }
         }
@@ -82,39 +82,39 @@ public class GrpcMetadataCache
         return ImmutableList.of(schemaName);
     }
 
-    private List<GrpcTable> generateGrpcTables(Presto.TableMetadataResponse tableMetadataResponse)
+    private List<KoraliumTable> generateGrpcTables(Presto.TableMetadataResponse tableMetadataResponse)
     {
         return tableMetadataResponse.getTablesList().stream()
                 .map(this::generateTable)
                 .collect(toImmutableList());
     }
 
-    private GrpcTable generateTable(Presto.TableMetadata tableMetadata)
+    private KoraliumTable generateTable(Presto.TableMetadata tableMetadata)
     {
         String name = tableMetadata.getName();
         SchemaTableName schemaTableName = new SchemaTableName(schemaName, name);
 
         List<Presto.ColumnMetadata> columnsMetadata = tableMetadata.getColumnsList();
 
-        ImmutableList.Builder<GrpcColumnHandle> builder = new ImmutableList.Builder<>();
+        ImmutableList.Builder<KoraliumColumnHandle> builder = new ImmutableList.Builder<>();
         for (Presto.ColumnMetadata column : columnsMetadata) {
             builder.addAll(generateColumnHandle(column, null));
         }
 
-        List<GrpcColumnHandle> columns = builder.build();
+        List<KoraliumColumnHandle> columns = builder.build();
 
-        ConnectorTableMetadata connectorTableMetadata = new ConnectorTableMetadata(schemaTableName, columns.stream().map(GrpcColumnHandle::getColumnMetadata).collect(toImmutableList()));
+        ConnectorTableMetadata connectorTableMetadata = new ConnectorTableMetadata(schemaTableName, columns.stream().map(KoraliumColumnHandle::getColumnMetadata).collect(toImmutableList()));
 
-        List<GrpcTableIndex> indices = generateTableIndices(tableMetadata);
+        List<KoraliumTableIndex> indices = generateTableIndices(tableMetadata);
 
-        return new GrpcTable(schemaTableName, tableMetadata.getTableId(), connectorTableMetadata, columns, indices);
+        return new KoraliumTable(schemaTableName, tableMetadata.getTableId(), connectorTableMetadata, columns, indices);
     }
 
-    private List<GrpcTableIndex> generateTableIndices(Presto.TableMetadata tableMetadata)
+    private List<KoraliumTableIndex> generateTableIndices(Presto.TableMetadata tableMetadata)
     {
         List<Presto.IndexMetadata> indices = tableMetadata.getIndiciesList();
 
-        ImmutableList.Builder<GrpcTableIndex> builder = new ImmutableList.Builder<>();
+        ImmutableList.Builder<KoraliumTableIndex> builder = new ImmutableList.Builder<>();
         for (Presto.IndexMetadata index : indices) {
             List<Presto.ColumnMetadata> columnsMetadata = index.getColumnsList();
 
@@ -124,12 +124,12 @@ public class GrpcMetadataCache
                     .collect(toImmutableList());
 
             String indexKey = tableMetadata.getTableId() + ":" + Joiner.on('_').join(keys);
-            builder.add(new GrpcTableIndex(tableMetadata.getTableId(), index.getIndexId(), indexKey));
+            builder.add(new KoraliumTableIndex(tableMetadata.getTableId(), index.getIndexId(), indexKey));
         }
         return builder.build();
     }
 
-    private String generateColumnNamePrefix(GrpcColumnHandle parent)
+    private String generateColumnNamePrefix(KoraliumColumnHandle parent)
     {
         if (parent == null) {
             return "";
@@ -137,18 +137,18 @@ public class GrpcMetadataCache
         return generateColumnNamePrefix(parent.getParent()) + parent.getColumnName() + "_";
     }
 
-    private List<GrpcColumnHandle> generateColumnHandle(Presto.ColumnMetadata columnMetadata, GrpcColumnHandle parent)
+    private List<KoraliumColumnHandle> generateColumnHandle(Presto.ColumnMetadata columnMetadata, KoraliumColumnHandle parent)
     {
         Presto.KoraliumType type = columnMetadata.getType();
 
         if (type.equals(Presto.KoraliumType.OBJECT)) {
             ImmutableList.Builder<RowType.Field> builder = ImmutableList.builder();
-            ImmutableList.Builder<GrpcColumnHandle> childrenBuilder = new ImmutableList.Builder<>();
+            ImmutableList.Builder<KoraliumColumnHandle> childrenBuilder = new ImmutableList.Builder<>();
             List<Presto.ColumnMetadata> children = columnMetadata.getSubColumnsList();
             for (Presto.ColumnMetadata child : children) {
-                List<GrpcColumnHandle> childColumnHandles = generateColumnHandle(child, null);
+                List<KoraliumColumnHandle> childColumnHandles = generateColumnHandle(child, null);
 
-                for (GrpcColumnHandle childColumnHandle : childColumnHandles) {
+                for (KoraliumColumnHandle childColumnHandle : childColumnHandles) {
                     builder.add(RowType.field(child.getName(), childColumnHandle.getPrestoType()));
                     childrenBuilder.add(childColumnHandle);
                 }
@@ -156,8 +156,8 @@ public class GrpcMetadataCache
 
             List<RowType.Field> fields = builder.build();
 
-            GrpcColumnHandle handle = new GrpcColumnHandle(columnMetadata.getName(),
-                    GrpcType.valueOf(type.getNumber()),
+            KoraliumColumnHandle handle = new KoraliumColumnHandle(columnMetadata.getName(),
+                    KoraliumType.valueOf(type.getNumber()),
                     columnMetadata.getColumnId(),
                     parent,
                     columnMetadata.getColumnId(),
@@ -169,12 +169,12 @@ public class GrpcMetadataCache
 
         if (type.equals(Presto.KoraliumType.ARRAY)) {
             Presto.ColumnMetadata subColumn = columnMetadata.getSubColumns(0);
-            GrpcColumnHandle childColumnHandle = generateColumnHandle(subColumn, null).get(0);
+            KoraliumColumnHandle childColumnHandle = generateColumnHandle(subColumn, null).get(0);
 
             ArrayType arrayType = new ArrayType(childColumnHandle.getPrestoType());
 
-            GrpcColumnHandle handle = new GrpcColumnHandle(columnMetadata.getName(),
-                    GrpcType.valueOf(type.getNumber()),
+            KoraliumColumnHandle handle = new KoraliumColumnHandle(columnMetadata.getName(),
+                    KoraliumType.valueOf(type.getNumber()),
                     columnMetadata.getColumnId(),
                     parent,
                     columnMetadata.getColumnId(),
@@ -185,27 +185,27 @@ public class GrpcMetadataCache
         }
 
         String columnName = generateColumnNamePrefix(parent) + columnMetadata.getName();
-        return ImmutableList.of(new GrpcColumnHandle(columnName,
-                GrpcType.valueOf(type.getNumber()),
+        return ImmutableList.of(new KoraliumColumnHandle(columnName,
+                KoraliumType.valueOf(type.getNumber()),
                 columnMetadata.getColumnId(),
                 parent,
                 columnMetadata.getColumnId(),
-                GrpcType.valueOf(type.getNumber()).getPrestoType(),
+                KoraliumType.valueOf(type.getNumber()).getPrestoType(),
                 ImmutableList.of()));
     }
 
-    private Map<SchemaTableName, GrpcTable> getSchemaTableNameToTable(List<GrpcTable> tables)
+    private Map<SchemaTableName, KoraliumTable> getSchemaTableNameToTable(List<KoraliumTable> tables)
     {
-        ImmutableMap.Builder<SchemaTableName, GrpcTable> builder = new ImmutableMap.Builder<>();
+        ImmutableMap.Builder<SchemaTableName, KoraliumTable> builder = new ImmutableMap.Builder<>();
 
-        for (GrpcTable table : tables) {
+        for (KoraliumTable table : tables) {
             builder.put(table.getSchemaTableName(), table);
         }
 
         return builder.build();
     }
 
-    private Map<String, List<SchemaTableName>> getSchemaNameToTables(List<GrpcTable> tables)
+    private Map<String, List<SchemaTableName>> getSchemaNameToTables(List<KoraliumTable> tables)
     {
         List<String> schemas = getSchemaNames();
 
@@ -215,7 +215,7 @@ public class GrpcMetadataCache
             List<SchemaTableName> tableNames = tables
                     .stream()
                     .filter(table -> table.getSchemaName().equals(schemaName))
-                    .map(GrpcTable::getSchemaTableName)
+                    .map(KoraliumTable::getSchemaTableName)
                     .collect(toImmutableList());
 
             builder.put(schemaName, tableNames);
@@ -230,7 +230,7 @@ public class GrpcMetadataCache
     }
 
     @Override
-    public GrpcTableHandle getTableHandle(SchemaTableName schemaTableName)
+    public KoraliumTableHandle getTableHandle(SchemaTableName schemaTableName)
     {
         if (schemaTableNameToTable.containsKey(schemaTableName)) {
             return schemaTableNameToTable.get(schemaTableName).getTableHandle();
@@ -241,7 +241,7 @@ public class GrpcMetadataCache
     @Override
     public ConnectorTableMetadata getTableMetadata(SchemaTableName schemaTableName)
     {
-        GrpcTable table = schemaTableNameToTable.get(schemaTableName);
+        KoraliumTable table = schemaTableNameToTable.get(schemaTableName);
         return table.getConnectorTableMetadata();
     }
 
@@ -254,10 +254,10 @@ public class GrpcMetadataCache
     @Override
     public Map<String, ColumnHandle> getColumnHandles(SchemaTableName schemaTableName)
     {
-        GrpcTable table = schemaTableNameToTable.get(schemaTableName);
+        KoraliumTable table = schemaTableNameToTable.get(schemaTableName);
 
         ImmutableMap.Builder<String, ColumnHandle> columnHandles = ImmutableMap.builder();
-        for (GrpcColumnHandle columnHandle : table.getColumnHandles()) {
+        for (KoraliumColumnHandle columnHandle : table.getColumnHandles()) {
             columnHandles.put(columnHandle.getColumnName().toLowerCase(ENGLISH), columnHandle);
         }
 

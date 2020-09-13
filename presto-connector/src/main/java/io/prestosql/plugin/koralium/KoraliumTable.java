@@ -21,15 +21,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalLong;
 
-public class GrpcTable
+public class KoraliumTable
 {
     private final SchemaTableName schemaTableName;
     private final int tableId;
     private final ConnectorTableMetadata connectorTableMetadata;
-    private final List<GrpcColumnHandle> columnHandles;
-    private final List<GrpcTableIndex> indices;
+    private final List<KoraliumColumnHandle> columnHandles;
+    private final List<KoraliumTableIndex> indices;
 
-    public GrpcTable(SchemaTableName schemaTableName, int tableId, ConnectorTableMetadata connectorTableMetadata, List<GrpcColumnHandle> columnHandles, List<GrpcTableIndex> indices)
+    public KoraliumTable(SchemaTableName schemaTableName, int tableId, ConnectorTableMetadata connectorTableMetadata, List<KoraliumColumnHandle> columnHandles, List<KoraliumTableIndex> indices)
     {
         this.schemaTableName = schemaTableName;
         this.tableId = tableId;
@@ -43,9 +43,9 @@ public class GrpcTable
         return schemaTableName;
     }
 
-    public GrpcTableHandle getTableHandle()
+    public KoraliumTableHandle getTableHandle()
     {
-        return new GrpcTableHandle(schemaTableName.getSchemaName(), schemaTableName.getTableName(), TupleDomain.all(), Optional.empty(), tableId, OptionalLong.empty(), Optional.empty());
+        return new KoraliumTableHandle(schemaTableName.getSchemaName(), schemaTableName.getTableName(), TupleDomain.all(), Optional.empty(), tableId, OptionalLong.empty(), Optional.empty());
     }
 
     public ConnectorTableMetadata getConnectorTableMetadata()
@@ -58,12 +58,12 @@ public class GrpcTable
         return schemaTableName.getSchemaName();
     }
 
-    public List<GrpcColumnHandle> getColumnHandles()
+    public List<KoraliumColumnHandle> getColumnHandles()
     {
         return columnHandles;
     }
 
-    public List<GrpcTableIndex> getIndices()
+    public List<KoraliumTableIndex> getIndices()
     {
         return indices;
     }

@@ -11,33 +11,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.grpc.decoders;
+package io.prestosql.plugin.koralium.decoders;
 
-import io.prestosql.plugin.grpc.GrpcExecutionColumn;
-import io.prestosql.plugin.grpc.Presto;
+import io.prestosql.plugin.koralium.KoraliumExecutionColumn;
+import io.prestosql.plugin.koralium.Presto;
 import io.prestosql.spi.block.BlockBuilder;
 import io.prestosql.spi.connector.ConnectorSession;
 
 import java.util.List;
 
 public class ArrayDecoder
-        implements GrpcDecoder
+        implements KoraliumDecoder
 {
-    private GrpcDecoder decoder;
+    private KoraliumDecoder decoder;
     private int count;
     private int globalCount;
     private int nullCounter;
 
     public ArrayDecoder() {}
 
-    public ArrayDecoder(int columnId, GrpcExecutionColumn column, ConnectorSession session)
+    public ArrayDecoder(int columnId, KoraliumExecutionColumn column, ConnectorSession session)
     {
-        GrpcExecutionColumn child = column.getChildren().get(0);
-        decoder = child.getGrpcType().getDecoder().create(child.getColumnId(), child, session);
+        KoraliumExecutionColumn child = column.getChildren().get(0);
+        decoder = child.getKoraliumType().getDecoder().create(child.getColumnId(), child, session);
     }
 
     @Override
-    public GrpcDecoder create(int columnId, GrpcExecutionColumn column, ConnectorSession session)
+    public KoraliumDecoder create(int columnId, KoraliumExecutionColumn column, ConnectorSession session)
     {
         return new ArrayDecoder(columnId, column, session);
     }

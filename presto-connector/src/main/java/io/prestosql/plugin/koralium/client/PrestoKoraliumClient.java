@@ -15,9 +15,9 @@ package io.prestosql.plugin.koralium.client;
 
 import io.grpc.Channel;
 import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
-import io.prestosql.plugin.koralium.GrpcConfig;
-import io.prestosql.plugin.koralium.GrpcTableHandle;
-import io.prestosql.plugin.koralium.GrpcTableIndex;
+import io.prestosql.plugin.koralium.KoraliumConfig;
+import io.prestosql.plugin.koralium.KoraliumTableHandle;
+import io.prestosql.plugin.koralium.KoraliumTableIndex;
 import io.prestosql.spi.connector.ColumnHandle;
 import io.prestosql.spi.connector.ConnectorTableMetadata;
 import io.prestosql.spi.connector.SchemaTableName;
@@ -27,15 +27,15 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 
-public class PrestoGrpcClient
-        implements GrpcMetadataClient
+public class PrestoKoraliumClient
+        implements KoraliumMetadataClient
 {
-    private final GrpcConfig config;
+    private final KoraliumConfig config;
     private final Channel channel;
-    private GrpcMetadataCache cache;
+    private KoraliumMetadataCache cache;
 
     @Inject
-    public PrestoGrpcClient(GrpcConfig config)
+    public PrestoKoraliumClient(KoraliumConfig config)
     {
         this.config = config;
         this.channel = config.getChannel();
@@ -63,7 +63,7 @@ public class PrestoGrpcClient
 
     private void reloadCache()
     {
-        this.cache = new GrpcMetadataCache(channel);
+        this.cache = new KoraliumMetadataCache(channel);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class PrestoGrpcClient
     }
 
     @Override
-    public GrpcTableHandle getTableHandle(SchemaTableName schemaTableName)
+    public KoraliumTableHandle getTableHandle(SchemaTableName schemaTableName)
     {
         loadCache();
         return cache.getTableHandle(schemaTableName);
@@ -102,7 +102,7 @@ public class PrestoGrpcClient
     }
 
     @Override
-    public GrpcTableIndex getTableIndex(String key)
+    public KoraliumTableIndex getTableIndex(String key)
     {
         loadCache();
         return cache.getTableIndex(key);

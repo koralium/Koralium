@@ -4,7 +4,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
 option csharp_namespace = "Koralium.Grpc";
-option java_package = "io.prestosql.plugin.grpc";
+option java_package = "io.prestosql.plugin.koralium";
 
 service KoraliumService {
     rpc Query (QueryRequest) returns (stream Page);

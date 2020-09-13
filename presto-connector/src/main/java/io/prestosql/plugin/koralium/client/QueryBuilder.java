@@ -11,10 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.grpc.client;
+package io.prestosql.plugin.koralium.client;
 
-import io.prestosql.plugin.grpc.GrpcColumnHandle;
-import io.prestosql.plugin.grpc.GrpcSortItem;
+import io.prestosql.plugin.koralium.KoraliumColumnHandle;
+import io.prestosql.plugin.koralium.KoraliumSortItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 
 public class QueryBuilder
 {
-
     public String buildCountQuery(
             String tableName,
             String filter)
@@ -42,10 +41,10 @@ public class QueryBuilder
     }
 
     public String buildQuery(
-            List<GrpcColumnHandle> columns,
+            List<KoraliumColumnHandle> columns,
             String tableName,
             String filter,
-            Optional<List<GrpcSortItem>> sortItems,
+            Optional<List<KoraliumSortItem>> sortItems,
             OptionalLong limit)
     {
         StringBuilder stringBuilder = new StringBuilder();
@@ -66,9 +65,9 @@ public class QueryBuilder
 
         if (sortItems.isPresent()) {
             List<String> orderBys = new ArrayList<>();
-            List<GrpcSortItem> items = sortItems.get();
+            List<KoraliumSortItem> items = sortItems.get();
 
-            for (GrpcSortItem item : items) {
+            for (KoraliumSortItem item : items) {
                 String sortString = item.getColumnHandle().getColumnName();
 
                 if (item.getSortOrder().isAscending()) {

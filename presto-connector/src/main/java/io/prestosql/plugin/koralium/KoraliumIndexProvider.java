@@ -13,7 +13,7 @@
  */
 package io.prestosql.plugin.koralium;
 
-import io.prestosql.plugin.koralium.client.PrestoGrpcClient;
+import io.prestosql.plugin.koralium.client.PrestoKoraliumClient;
 import io.prestosql.spi.connector.ColumnHandle;
 import io.prestosql.spi.connector.ConnectorIndex;
 import io.prestosql.spi.connector.ConnectorIndexHandle;
@@ -27,14 +27,14 @@ import java.util.List;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
-public class GrpcIndexProvider
+public class KoraliumIndexProvider
         implements ConnectorIndexProvider
 {
-    private final PrestoGrpcClient client;
+    private final PrestoKoraliumClient client;
 
     @Inject
-    public GrpcIndexProvider(
-            PrestoGrpcClient client)
+    public KoraliumIndexProvider(
+            PrestoKoraliumClient client)
     {
         this.client = client;
     }
@@ -47,15 +47,15 @@ public class GrpcIndexProvider
             List<ColumnHandle> lookupSchema,
             List<ColumnHandle> outputSchema)
     {
-        GrpcIndexHandle grpcIndexHandle = (GrpcIndexHandle) indexHandle;
-        List<GrpcColumnHandle> lookupColumns = lookupSchema.stream()
-                .map(GrpcColumnHandle.class::cast)
+        KoraliumIndexHandle koraliumIndexHandle = (KoraliumIndexHandle) indexHandle;
+        List<KoraliumColumnHandle> lookupColumns = lookupSchema.stream()
+                .map(KoraliumColumnHandle.class::cast)
                 .collect(toImmutableList());
 
-        List<GrpcColumnHandle> outputColumns = outputSchema.stream()
-                .map(GrpcColumnHandle.class::cast)
+        List<KoraliumColumnHandle> outputColumns = outputSchema.stream()
+                .map(KoraliumColumnHandle.class::cast)
                 .collect(toImmutableList());
 
-        return new GrpcConnectorIndex(session, client, grpcIndexHandle, lookupColumns, outputColumns);
+        return new KoraliumConnectorIndex(session, client, koraliumIndexHandle, lookupColumns, outputColumns);
     }
 }

@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.deser.std.FromStringDeserializer;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
-import io.prestosql.plugin.koralium.client.PrestoGrpcClient;
+import io.prestosql.plugin.koralium.client.PrestoKoraliumClient;
 import io.prestosql.spi.type.Type;
 import io.prestosql.spi.type.TypeId;
 import io.prestosql.spi.type.TypeManager;
@@ -31,12 +31,12 @@ import static io.airlift.json.JsonCodec.listJsonCodec;
 import static io.airlift.json.JsonCodecBinder.jsonCodecBinder;
 import static java.util.Objects.requireNonNull;
 
-public class GrpcConnectorModule
+public class KoraliumConnectorModule
         implements Module
 {
     private final TypeManager typeManager;
 
-    public GrpcConnectorModule(TypeManager typeManager)
+    public KoraliumConnectorModule(TypeManager typeManager)
     {
         this.typeManager = typeManager;
     }
@@ -46,16 +46,16 @@ public class GrpcConnectorModule
     {
         binder.bind(TypeManager.class).toInstance(typeManager);
 
-        binder.bind(GrpcConnector.class).in(Scopes.SINGLETON);
-        binder.bind(GrpcMetadata.class).in(Scopes.SINGLETON);
-        binder.bind(PrestoGrpcClient.class).in(Scopes.SINGLETON);
-        binder.bind(GrpcSplitManager.class).in(Scopes.SINGLETON);
-        binder.bind(GrpcPageSourceProvider.class).in(Scopes.SINGLETON);
-        binder.bind(GrpcIndexProvider.class).in(Scopes.SINGLETON);
-        configBinder(binder).bindConfig(GrpcConfig.class);
+        binder.bind(KoraliumConnector.class).in(Scopes.SINGLETON);
+        binder.bind(KoraliumMetadata.class).in(Scopes.SINGLETON);
+        binder.bind(PrestoKoraliumClient.class).in(Scopes.SINGLETON);
+        binder.bind(KoraliumSplitManager.class).in(Scopes.SINGLETON);
+        binder.bind(KoraliumPageSourceProvider.class).in(Scopes.SINGLETON);
+        binder.bind(KoraliumIndexProvider.class).in(Scopes.SINGLETON);
+        configBinder(binder).bindConfig(KoraliumConfig.class);
 
         jsonBinder(binder).addDeserializerBinding(Type.class).to(TypeDeserializer.class);
-        jsonCodecBinder(binder).bindMapJsonCodec(String.class, listJsonCodec(GrpcTable.class));
+        jsonCodecBinder(binder).bindMapJsonCodec(String.class, listJsonCodec(KoraliumTable.class));
     }
 
     private static final class TypeDeserializer

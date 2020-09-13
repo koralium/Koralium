@@ -13,7 +13,7 @@
  */
 package io.prestosql.plugin.koralium;
 
-import io.prestosql.plugin.koralium.client.PrestoGrpcClient;
+import io.prestosql.plugin.koralium.client.PrestoKoraliumClient;
 import io.prestosql.spi.connector.ColumnHandle;
 import io.prestosql.spi.connector.ConnectorPageSource;
 import io.prestosql.spi.connector.ConnectorPageSourceProvider;
@@ -30,14 +30,14 @@ import java.util.List;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
-public class GrpcPageSourceProvider
+public class KoraliumPageSourceProvider
         implements ConnectorPageSourceProvider
 {
-    private final PrestoGrpcClient client;
+    private final PrestoKoraliumClient client;
 
     @Inject
-    public GrpcPageSourceProvider(
-            PrestoGrpcClient client)
+    public KoraliumPageSourceProvider(
+            PrestoKoraliumClient client)
     {
         this.client = client;
     }
@@ -51,14 +51,14 @@ public class GrpcPageSourceProvider
             List<ColumnHandle> columns,
             DynamicFilter dynamicFilter)
     {
-        List<GrpcColumnHandle> columnHandles = columns.stream()
-                .map(GrpcColumnHandle.class::cast)
+        List<KoraliumColumnHandle> columnHandles = columns.stream()
+                .map(KoraliumColumnHandle.class::cast)
                 .collect(toImmutableList());
 
-        GrpcTableHandle tableHandle = (GrpcTableHandle) table;
-        TupleDomain<GrpcColumnHandle> constraint = tableHandle.getConstraint().transform(GrpcColumnHandle.class::cast);
+        KoraliumTableHandle tableHandle = (KoraliumTableHandle) table;
+        TupleDomain<KoraliumColumnHandle> constraint = tableHandle.getConstraint().transform(KoraliumColumnHandle.class::cast);
 
-        return new GrpcPageSource(session, columnHandles, client, tableHandle, (GrpcSplit) split, constraint, dynamicFilter);
+        return new KoraliumPageSource(session, columnHandles, client, tableHandle, (KoraliumSplit) split, constraint, dynamicFilter);
     }
 
     //    @Override

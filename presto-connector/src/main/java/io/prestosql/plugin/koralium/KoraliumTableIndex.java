@@ -13,13 +13,13 @@
  */
 package io.prestosql.plugin.koralium;
 
-public class GrpcTableIndex
+public class KoraliumTableIndex
 {
     private final int tableId;
     private final int indexId;
     private final String key;
 
-    public GrpcTableIndex(int tableId, int indexId, String key)
+    public KoraliumTableIndex(int tableId, int indexId, String key)
     {
         this.tableId = tableId;
         this.indexId = indexId;

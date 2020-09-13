@@ -11,10 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.grpc.encoders;
+package io.prestosql.plugin.koralium.encoders;
 
 import com.google.protobuf.Timestamp;
-import io.prestosql.plugin.grpc.Presto;
+import io.prestosql.plugin.koralium.Presto;
 import io.prestosql.spi.connector.RecordCursor;
 
 import java.time.Instant;

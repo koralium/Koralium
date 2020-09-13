@@ -11,11 +11,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.grpc.decoders;
+package io.prestosql.plugin.koralium.decoders;
 
 import com.google.protobuf.Timestamp;
-import io.prestosql.plugin.grpc.GrpcExecutionColumn;
-import io.prestosql.plugin.grpc.Presto;
+import io.prestosql.plugin.koralium.KoraliumExecutionColumn;
+import io.prestosql.plugin.koralium.Presto;
 import io.prestosql.spi.block.BlockBuilder;
 import io.prestosql.spi.connector.ConnectorSession;
 import io.prestosql.spi.type.Timestamps;
@@ -26,10 +26,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 
-import static io.prestosql.spi.type.TimestampType.*;
+import static io.prestosql.spi.type.TimestampType.TIMESTAMP_MILLIS;
 
 public class TimestampDecoder
-        implements GrpcDecoder
+        implements KoraliumDecoder
 {
     private static final ZoneId ZULU = ZoneId.of("Z");
     private final ZoneId zoneId;
@@ -52,9 +52,8 @@ public class TimestampDecoder
     }
 
     @Override
-    public GrpcDecoder create(int columnId, GrpcExecutionColumn column, ConnectorSession session)
+    public KoraliumDecoder create(int columnId, KoraliumExecutionColumn column, ConnectorSession session)
     {
-
         return new TimestampDecoder(session, column.getPrestoType());
     }
 

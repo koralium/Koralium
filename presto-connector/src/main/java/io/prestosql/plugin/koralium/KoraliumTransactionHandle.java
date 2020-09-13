@@ -15,7 +15,7 @@ package io.prestosql.plugin.koralium;
 
 import io.prestosql.spi.connector.ConnectorTransactionHandle;
 
-public enum GrpcTransactionHandle
+public enum KoraliumTransactionHandle
         implements ConnectorTransactionHandle
 {
     INSTANCE

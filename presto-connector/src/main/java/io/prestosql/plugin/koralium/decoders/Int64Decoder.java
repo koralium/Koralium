@@ -11,10 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.grpc.decoders;
+package io.prestosql.plugin.koralium.decoders;
 
-import io.prestosql.plugin.grpc.GrpcExecutionColumn;
-import io.prestosql.plugin.grpc.Presto;
+import io.prestosql.plugin.koralium.KoraliumExecutionColumn;
+import io.prestosql.plugin.koralium.Presto;
 import io.prestosql.spi.block.BlockBuilder;
 import io.prestosql.spi.connector.ConnectorSession;
 
@@ -23,14 +23,14 @@ import java.util.List;
 import static io.prestosql.spi.type.BigintType.BIGINT;
 
 public class Int64Decoder
-        implements GrpcDecoder
+        implements KoraliumDecoder
 {
     private int count;
     private int globalCount;
     private int nullCounter;
 
     @Override
-    public GrpcDecoder create(int columnId, GrpcExecutionColumn column, ConnectorSession session)
+    public KoraliumDecoder create(int columnId, KoraliumExecutionColumn column, ConnectorSession session)
     {
         return new Int64Decoder();
     }
