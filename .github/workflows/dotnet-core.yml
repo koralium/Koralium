@@ -23,6 +23,7 @@ jobs:
       run: dotnet tool install --tool-path . dotnet-sonarscanner --version 4.10.0
     - name: Install dependencies
       run: dotnet restore
+      working-directory: netcore
     - name: Build
       run: dotnet build --configuration Release --no-restore
       working-directory: netcore
