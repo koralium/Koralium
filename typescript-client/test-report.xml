@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+  <file path="C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\tests\client.test.ts">
+    <testCase name="Get orders" duration="547"/>
+    <testCase name="Get secure data" duration="560"/>
+    <testCase name="Test limit" duration="38"/>
+    <testCase name="Test limit with parameter" duration="9"/>
+    <testCase name="filter on date in parameter" duration="356"/>
+    <testCase name="select single field" duration="99"/>
+  </file>
+</testExecutions>
