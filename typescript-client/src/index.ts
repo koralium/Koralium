@@ -15,7 +15,7 @@ var recursiveAsyncReadLine = function () {
     if (answer == 'exit') //we need some base case, for recursion
       return rl.close(); //closing RL and returning from function.
 
-      var results = await client.query(answer, { '@name': 'alex', '@id': 1 });
+      var results = await client.query(answer, { name: 'alex', id: 1 });
       log(results);
     
     recursiveAsyncReadLine(); //Calling this function again to ask new question

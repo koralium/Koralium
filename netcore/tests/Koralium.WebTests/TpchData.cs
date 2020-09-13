@@ -1,4 +1,17 @@
-﻿using CsvHelper;
+﻿/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+using CsvHelper;
 using Koralium.WebTests.Entities.tpch;
 using System;
 using System.Collections.Generic;
@@ -21,9 +34,9 @@ namespace Koralium.WebTests
 
         public Dictionary<long, Customer> CustomerKeyIndex { get; set; }
 
-        public TpchData()
+        public TpchData(string testDataLocation)
         {
-            LoadTables();
+            LoadTables(testDataLocation);
             FixDates();
             BuildIndices();
         }
@@ -33,18 +46,17 @@ namespace Koralium.WebTests
             CustomerKeyIndex = Customers.ToDictionary(x => x.Custkey);
         }
 
-        private void LoadTables()
+        private void LoadTables(string testDataLocation)
         {
-            Customers = LoadData<Customer>("./Data/customer.csv");
-            LineItem = LoadData<LineItem>("./Data/lineitem.csv");
-            Nation = LoadData<Nation>("./Data/nation.csv");
-            Orders = LoadData<Order>("./Data/orders.csv").OrderBy(x => x.Orderkey).ToList();
-            Part = LoadData<Part>("./Data/part.csv");
-            Partsupp = LoadData<Partsupp>("./Data/partsupp.csv");
-            Region = LoadData<Region>("./Data/region.csv");
-            Supplier = LoadData<Supplier>("./Data/supplier.csv");
+            Customers = LoadData<Customer>(Path.Join(testDataLocation, "./tpch/customer.csv"));
+            LineItem = LoadData<LineItem>(Path.Join(testDataLocation, "./tpch/lineitem.csv"));
+            Nation = LoadData<Nation>(Path.Join(testDataLocation, "./tpch/nation.csv"));
+            Orders = LoadData<Order>(Path.Join(testDataLocation, "./tpch/orders.csv"));
+            Part = LoadData<Part>(Path.Join(testDataLocation, "./tpch/part.csv"));
+            Partsupp = LoadData<Partsupp>(Path.Join(testDataLocation, "./tpch/partsupp.csv"));
+            Region = LoadData<Region>(Path.Join(testDataLocation, "./tpch/region.csv"));
+            Supplier = LoadData<Supplier>(Path.Join(testDataLocation, "./tpch/supplier.csv"));
         }
-
 
         private List<T> LoadData<T>(string path)
         {

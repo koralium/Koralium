@@ -1,0 +1,1 @@
+docker build -f netcore/tests/Koralium.WebTests/Dockerfile -t koraliumwebtest ./netcore

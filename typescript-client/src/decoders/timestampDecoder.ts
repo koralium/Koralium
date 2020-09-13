@@ -19,6 +19,6 @@ export default class TimestampDecoder extends BaseDecoder {
   }
 
   getValue(values: any[], index: number) {
-    return values[index].toDate().toISOString();
+    return values[index].toDate();
   }
 }
