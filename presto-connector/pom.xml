@@ -7,12 +7,12 @@
         <version>341</version>
     </parent>
 
-    <artifactId>presto-grpc</artifactId>
-    <description>Presto - GRPC Connector</description>
+    <artifactId>presto-koralium</artifactId>
+    <description>Presto - Koralium Connector</description>
     <packaging>presto-plugin</packaging>
 
     <properties>
-        <sonar.projectKey>queryprotocolgrpc-presto</sonar.projectKey>
+        <sonar.projectKey>koralium-presto</sonar.projectKey>
         <sonar.organization>koralium</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.login>19595c7e5d292ce2806d4fd7a6678ad7a70e8616</sonar.login>

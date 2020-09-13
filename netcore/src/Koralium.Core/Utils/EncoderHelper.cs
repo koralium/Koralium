@@ -122,6 +122,7 @@ namespace Koralium.Core.Utils
             if (!enumerator.MoveNext())
             {
                 channelWriter.Complete();
+                return;
             }
             stopwatch.Stop();
             logger.LogTrace($"Getting first entry took {stopwatch.ElapsedMilliseconds} ms");
