@@ -15,8 +15,6 @@ using Koralium.SqlToExpression.Executors;
 using Koralium.SqlToExpression.Executors.Offset;
 using Koralium.SqlToExpression.Metadata;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Koralium.SqlToExpression.Extensions

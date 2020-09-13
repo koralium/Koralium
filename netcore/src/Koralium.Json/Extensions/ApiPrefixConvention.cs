@@ -14,9 +14,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Koralium.Json.Extensions
 {
