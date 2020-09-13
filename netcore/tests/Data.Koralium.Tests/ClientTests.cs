@@ -20,10 +20,16 @@ namespace Data.Koralium.Tests
     public class ClientTests
     {
         private TestWebFactory webFactory;
-        [SetUp]
+        [OneTimeSetUp]
         public void Setup()
         {
             webFactory = new TestWebFactory();
+        }
+
+        [OneTimeTearDown]
+        public void TearDown()
+        {
+            webFactory.Stop();
         }
 
         [Test]
