@@ -11,13 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Grpc.Core;
-using Koralium.Core.Resolvers;
+using Koralium;
 using Koralium.WebTests;
 using Koralium.WebTests.Entities;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 

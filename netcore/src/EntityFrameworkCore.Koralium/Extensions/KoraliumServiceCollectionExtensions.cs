@@ -21,8 +21,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Update;
-using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Microsoft.Extensions.DependencyInjection

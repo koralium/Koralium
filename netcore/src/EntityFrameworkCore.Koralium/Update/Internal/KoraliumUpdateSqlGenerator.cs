@@ -13,7 +13,6 @@
  */
 using Microsoft.EntityFrameworkCore.Update;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace EntityFrameworkCore.Koralium.Update.Internal

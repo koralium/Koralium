@@ -14,10 +14,8 @@
 using Data.Koralium.Client;
 using Data.Koralium.Client.Decoders;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Text;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
