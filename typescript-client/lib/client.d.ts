@@ -1,5 +1,5 @@
 import { KoraliumServiceClient } from "./generated/koralium_grpc_pb";
-export default class KoraliumClient {
+export declare class KoraliumClient {
     client: KoraliumServiceClient;
     constructor(url: string);
     private createDecoders;

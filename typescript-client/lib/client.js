@@ -31,6 +31,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.KoraliumClient = void 0;
 const koralium_grpc_pb_1 = require("./generated/koralium_grpc_pb");
 const grpc = __importStar(require("grpc"));
 const koralium_pb_1 = require("./generated/koralium_pb");
@@ -120,5 +121,5 @@ class KoraliumClient {
         });
     }
 }
-exports.default = KoraliumClient;
+exports.KoraliumClient = KoraliumClient;
 //# sourceMappingURL=client.js.map
