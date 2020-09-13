@@ -11,7 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Koralium.SqlToExpression.Models;
 using System.Linq.Expressions;
 
 namespace Koralium.SqlToExpression.Utils
