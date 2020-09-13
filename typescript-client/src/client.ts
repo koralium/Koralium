@@ -7,7 +7,7 @@ import { getDecoder } from "./decoders/decoders";
 import decodeScalar from "./decoders/ScalarDecoder";
 import encodeParameters from "./encoders/parameterEncoder";
 
-export default class KoraliumClient {
+export class KoraliumClient {
   client: KoraliumServiceClient;
 
   constructor(url: string) {
