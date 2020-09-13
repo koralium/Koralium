@@ -17,7 +17,14 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.200
-
-      # Publish
-    - name: Echo
-      run: echo ${{ steps.tag.outputs.VERSION }}
+    
+    # Publish SqlToExpression nuget
+    - name: publish on version change
+      id: publish_nuget
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: netcore/src/Koralium.SqlToExpression/Koralium.SqlToExpression.csproj
+        PACKAGE_NAME: Koralium.SqlToExpression
+        NUGET_KEY: ${{ secrets.NUGET_KEY }}
+        TAG_COMMIT: false
+        VERSION_STATIC: ${{ steps.tag.outputs.VERSION }}
