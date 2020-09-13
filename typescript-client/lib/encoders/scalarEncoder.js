@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const koralium_pb_1 = require("../../generated/koralium_pb");
+const koralium_pb_1 = require("../generated/koralium_pb");
 const timestamp_pb_1 = require("google-protobuf/google/protobuf/timestamp_pb");
 function encodeScalar(value) {
     const scalar = new koralium_pb_1.Scalar();

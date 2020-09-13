@@ -1,4 +1,4 @@
-import { ColumnMetadata, Page, Block } from "../../generated/koralium_pb";
+import { ColumnMetadata, Page, Block } from "../generated/koralium_pb";
 import { IDecoder } from "./decoder";
 import ObjectDecoder from "./objectDecoder";
 import ArrayDecoder from "./arrayDecoder";

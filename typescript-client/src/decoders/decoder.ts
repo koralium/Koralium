@@ -1,4 +1,4 @@
-import { Page, Block } from "../../generated/koralium_pb";
+import { Page, Block } from "../generated/koralium_pb";
 
 export interface IDecoder {
 

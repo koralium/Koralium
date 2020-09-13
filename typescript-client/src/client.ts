@@ -1,7 +1,7 @@
-import { KoraliumServiceClient } from "../generated/koralium_grpc_pb"
+import { KoraliumServiceClient } from "./generated/koralium_grpc_pb"
 import * as grpc from 'grpc';
 import * as grpcEmpty from "google-protobuf/google/protobuf/empty_pb";
-import { QueryRequest, Page, ColumnMetadata } from "../generated/koralium_pb";
+import { QueryRequest, Page, ColumnMetadata } from "./generated/koralium_pb";
 import { IDecoder } from "./decoders/decoder";
 import { getDecoder } from "./decoders/decoders";
 import decodeScalar from "./decoders/ScalarDecoder";

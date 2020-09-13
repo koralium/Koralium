@@ -1,4 +1,4 @@
-import { Parameter } from "../../generated/koralium_pb";
+import { Parameter } from "../generated/koralium_pb";
 import encodeScalar from "./scalarEncoder";
 
 export default function encodeParameters(parameters: {}) {

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const koralium_pb_1 = require("../../generated/koralium_pb");
+const koralium_pb_1 = require("../generated/koralium_pb");
 function decodeScalar(scalar) {
     switch (scalar.getValueCase()) {
         case koralium_pb_1.Scalar.ValueCase.BOOL:

@@ -1,10 +1,9 @@
 {
-  "name": "koralium",
+  "name": "@koralium/koraliumclient",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "./lib/index.js",
   "license": "MIT",
   "scripts": {
-    "start": "tsc --build && node lib/index.js",
     "build": "tsc --build",
     "clean": "tsc --build --clean",
     "test": "jest",

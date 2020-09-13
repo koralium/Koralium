@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const koralium_pb_1 = require("../../generated/koralium_pb");
+const koralium_pb_1 = require("../generated/koralium_pb");
 const scalarEncoder_1 = __importDefault(require("./scalarEncoder"));
 function encodeParameters(parameters) {
     const output = [];

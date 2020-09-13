@@ -1,4 +1,4 @@
-import { Scalar } from "../../generated/koralium_pb";
+import { Scalar } from "../generated/koralium_pb";
 import { Timestamp } from "google-protobuf/google/protobuf/timestamp_pb";
 
 export default function encodeScalar(value: any) {

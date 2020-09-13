@@ -1,5 +1,5 @@
 import { IDecoder } from "./decoder";
-import { Page, Block } from "../../generated/koralium_pb";
+import { Page, Block } from "../generated/koralium_pb";
 
 export default abstract class BaseDecoder implements IDecoder {
   arrayCount: number = 0;

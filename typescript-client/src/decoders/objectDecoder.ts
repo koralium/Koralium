@@ -1,6 +1,6 @@
 import BaseDecoder from "./baseDecoder";
 import { IDecoder } from "./decoder";
-import { ColumnMetadata, Page, Block } from "../../generated/koralium_pb";
+import { ColumnMetadata, Page, Block } from "../generated/koralium_pb";
 import { getDecoder } from "./decoders";
 
 export default class ObjectDecoder extends BaseDecoder {

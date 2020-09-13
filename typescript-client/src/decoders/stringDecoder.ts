@@ -1,5 +1,5 @@
 import BaseDecoder from "./baseDecoder";
-import { Page, Block, ColumnMetadata } from "../../generated/koralium_pb";
+import { Page, Block, ColumnMetadata } from "../generated/koralium_pb";
 
 export default class StringDecoder extends BaseDecoder {
 

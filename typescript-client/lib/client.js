@@ -31,9 +31,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const koralium_grpc_pb_1 = require("../generated/koralium_grpc_pb");
+const koralium_grpc_pb_1 = require("./generated/koralium_grpc_pb");
 const grpc = __importStar(require("grpc"));
-const koralium_pb_1 = require("../generated/koralium_pb");
+const koralium_pb_1 = require("./generated/koralium_pb");
 const decoders_1 = require("./decoders/decoders");
 const ScalarDecoder_1 = __importDefault(require("./decoders/ScalarDecoder"));
 const parameterEncoder_1 = __importDefault(require("./encoders/parameterEncoder"));
