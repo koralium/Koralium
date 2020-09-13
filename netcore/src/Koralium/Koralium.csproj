@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/koralium/Koralium</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/koralium/Koralium</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +17,13 @@
   <ItemGroup>
     <ProjectReference Include="..\Koralium.Shared\Koralium.Shared.csproj" />
     <ProjectReference Include="..\Koralium.SqlToExpression\Koralium.SqlToExpression.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
