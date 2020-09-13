@@ -1,4 +1,4 @@
-name: .NET Core
+name: Release
 
 on:
   push:
@@ -16,7 +16,9 @@ jobs:
         node-version: '12.x'
         registry-url: 'https://registry.npmjs.org'
     - run: npm install
+      working-directory: typescript-client
     - run: npm publish
+      working-directory: typescript-client
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_KEY }}
   
