@@ -21,6 +21,7 @@ jobs:
         dotnet-version: 3.1.101
     - name: Install sonarscanner
       run: dotnet tool install --tool-path . dotnet-sonarscanner --version 4.10.0
+      working-directory: netcore
     - name: Start sonarscanner
       working-directory: netcore
       run: ./dotnet-sonarscanner begin /k:"koralium_netcore" /d:sonar.branch.name="${GITHUB_REF#refs/heads/}" /o:"koralium" /d:sonar.login="$SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
