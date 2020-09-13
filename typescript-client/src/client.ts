@@ -28,12 +28,22 @@ export default class KoraliumClient {
     return baseObject;
   }
 
-   queryScalar(sql: string) {
+   queryScalar(sql: string, parameters?: {}, headers: {} = {}) {
     const queryRequest = new QueryRequest();
     queryRequest.setQuery(sql);
 
+    if (parameters) {
+      queryRequest.setParametersList(encodeParameters(parameters));
+    }
+
+    const metadata = new grpc.Metadata();
+
+    for (let [key, value] of Object.entries(headers)) {
+        metadata.add(key, value as any);
+    }
+
     return new Promise <any>((resolve: any, reject: any) => {
-      this.client.queryScalar(queryRequest, (error, data) => {
+      this.client.queryScalar(queryRequest, metadata, (error, data) => {
 
         if(error) {
           reject(error.message);
@@ -44,7 +54,7 @@ export default class KoraliumClient {
     });
   }
 
-  async query(sql: string, parameters?: {}) {
+  async query(sql: string, parameters?: {}, headers: {} = {}) {
     const queryRequest = new QueryRequest();
     queryRequest.setQuery(sql);
     queryRequest.setMaxbatchsize(1000000);
@@ -53,7 +63,13 @@ export default class KoraliumClient {
       queryRequest.setParametersList(encodeParameters(parameters));
     }
 
-    let stream = this.client.query(queryRequest);
+    const metadata = new grpc.Metadata();
+
+    for (let [key, value] of Object.entries(headers)) {
+        metadata.add(key, value as any);
+    }
+
+    let stream = this.client.query(queryRequest, metadata);
 
     const objects: {}[] = [];
 
