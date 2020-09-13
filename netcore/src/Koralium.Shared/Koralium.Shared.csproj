@@ -2,10 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Authors>Koralium</Authors>
+    <RepositoryUrl>https://github.com/koralium/Koralium</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/koralium/Koralium</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Protos\koralium.proto" />
+    <None Include="..\..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
