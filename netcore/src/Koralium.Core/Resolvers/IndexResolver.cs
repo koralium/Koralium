@@ -1,8 +1,22 @@
-﻿using Grpc.Core;
+﻿/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+using Grpc.Core;
 using Koralium.Core.Interfaces;
 using Koralium.Core.Metadata;
 using Koralium.Core.Utils;
 using Koralium.Grpc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +29,7 @@ namespace Koralium.Core.Resolvers
 {
     public abstract class IndexResolver<Entity> : IIndexResolver
     {
-        public async Task GetData(IndexRequest dataRequest, KoraliumTable table, TableIndex index, ServerCallContext context, ChannelWriter<Page> channelWriter)
+        public async Task GetData(ILogger logger, IndexRequest dataRequest, KoraliumTable table, TableIndex index, ServerCallContext context, ChannelWriter<Page> channelWriter)
         {
             var selectExpression = SelectExpressionHelper.CreateSelectExpression<Entity>(table, dataRequest.Fields.ToList(), true);
             var query = await GetData(dataRequest.Records, dataRequest, table, index, selectExpression);
@@ -43,7 +57,7 @@ namespace Koralium.Core.Resolvers
                 page.Metadata.Add(columnMetadata);
             }
 
-            await EncoderHelper.ReadData(page, encoders, propertyGetters, query.GetEnumerator(), dataRequest.MaxBatchSize, channelWriter);
+            await EncoderHelper.ReadData(logger, page, encoders, propertyGetters, query.GetEnumerator(), dataRequest.MaxBatchSize, channelWriter);
         }
 
         protected abstract Task<IEnumerable<Entity>> GetData(
