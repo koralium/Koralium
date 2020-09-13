@@ -28,7 +28,7 @@ namespace EntityFrameworkCore.Koralium.Tests
         private TestWebFactory webFactory;
         private IServiceProvider serviceProvider;
         
-        [SetUp]
+        [OneTimeSetUp]
         public void Setup()
         {
             webFactory = new TestWebFactory();
@@ -38,6 +38,12 @@ namespace EntityFrameworkCore.Koralium.Tests
                 opt.UseKoralium($"DataSource={webFactory.GetUrl()}");
             });
             serviceProvider = services.BuildServiceProvider();
+        }
+
+        [OneTimeTearDown]
+        public void TearDown()
+        {
+            webFactory.Stop();
         }
 
         [Test]
@@ -78,23 +84,6 @@ namespace EntityFrameworkCore.Koralium.Tests
             var projects = db.Projects.Where(x => x.Name == "alex").ToList();
 
             Assert.Pass();
-        }
-
-        [Test]
-        public void TestInsert()
-        {
-            var db = serviceProvider.GetService<TestDbContext>();
-
-            db.Projects.Add(new Project()
-            {
-                Name = "alex",
-                Company = new Company()
-                {
-                    Name = "alex"
-                }
-            });
-
-            db.SaveChanges();
         }
     }
 }
