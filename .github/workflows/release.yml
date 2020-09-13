@@ -38,7 +38,17 @@ jobs:
       uses: rohith/publish-nuget@v2
       with:
         PROJECT_FILE_PATH: netcore/src/Koralium.Shared/Koralium.Shared.csproj
-        PACKAGE_NAME: Koralium.SqlToExpression
+        PACKAGE_NAME: Koralium.Shared
         NUGET_KEY: ${{ secrets.NUGET_KEY }}
         TAG_COMMIT: false
         VERSION_STATIC: ${{ steps.tag.outputs.VERSION }}
+    - name: publish on version change
+      id: publish_nuget_koralium
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: netcore/src/Koralium/Koralium.csproj
+        PACKAGE_NAME: Koralium
+        NUGET_KEY: ${{ secrets.NUGET_KEY }}
+        TAG_COMMIT: false
+        VERSION_STATIC: ${{ steps.tag.outputs.VERSION }}
+
