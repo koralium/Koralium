@@ -17,7 +17,7 @@ jobs:
         registry-url: 'https://registry.npmjs.org'
     - run: npm install
       working-directory: typescript-client
-    - run: npm publish
+    - run: npm publish --access public
       working-directory: typescript-client
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_KEY }}
