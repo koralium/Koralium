@@ -25,5 +25,7 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration Release --no-restore
+      working-directory: netcore
     - name: Test
       run: dotnet test --no-restore --collect:"XPlat Code Coverage" --settings coverlet.runsettings
+      working-directory: netcore
