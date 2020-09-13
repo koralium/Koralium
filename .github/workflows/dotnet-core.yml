@@ -23,7 +23,7 @@ jobs:
       run: dotnet tool install --tool-path . dotnet-sonarscanner --version 4.10.0
     - name: Start sonarscanner
       run: ./dotnet-sonarscanner begin /k:"koralium_queryprotocolgrpc" /d:sonar.branch.name="${GITHUB_REF#refs/heads/}" /o:"koralium" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
-      env: # Or as an environment variable
+      env:
         SONAR_TOKEN: ${{ secrets.NETCORE_SONARCLOUD }}
     - name: Install dependencies
       run: dotnet restore
@@ -34,3 +34,7 @@ jobs:
     - name: Test
       run: dotnet test --no-restore --collect:"XPlat Code Coverage" --settings coverlet.runsettings
       working-directory: netcore
+    - name: End sonarscanner
+      run: ./dotnet-sonarscanner end"
+      env:
+        SONAR_TOKEN: ${{ secrets.NETCORE_SONARCLOUD }}
