@@ -22,29 +22,29 @@ import io.prestosql.spi.type.Type;
 import java.util.List;
 import java.util.Objects;
 
-public class GrpcColumnHandle
+public class KoraliumColumnHandle
         implements ColumnHandle
 {
     private final String columnName;
-    private final GrpcType grpcType;
+    private final KoraliumType koraliumType;
     private final int columnId;
-    private GrpcColumnHandle parent;
+    private KoraliumColumnHandle parent;
     private final int catalogUniqueId;
     private final Type prestoType;
-    private final List<GrpcColumnHandle> children;
+    private final List<KoraliumColumnHandle> children;
 
     @JsonCreator
-    public GrpcColumnHandle(
+    public KoraliumColumnHandle(
             @JsonProperty("columnName") String columnName,
-            @JsonProperty("grpcType") GrpcType grpcType,
+            @JsonProperty("koraliumType") KoraliumType koraliumType,
             @JsonProperty("columnId") int columnId,
-            @JsonProperty("parent") GrpcColumnHandle parent,
+            @JsonProperty("parent") KoraliumColumnHandle parent,
             @JsonProperty("catalogUniqueId") int catalogUniqueId,
             @JsonProperty("prestoType") Type prestoType,
-            @JsonProperty("children") List<GrpcColumnHandle> children)
+            @JsonProperty("children") List<KoraliumColumnHandle> children)
     {
         this.columnName = columnName;
-        this.grpcType = grpcType;
+        this.koraliumType = koraliumType;
         this.columnId = columnId;
         this.parent = parent;
         this.catalogUniqueId = catalogUniqueId;
@@ -59,9 +59,9 @@ public class GrpcColumnHandle
     }
 
     @JsonProperty
-    public GrpcType getGrpcType()
+    public KoraliumType getKoraliumType()
     {
-        return grpcType;
+        return koraliumType;
     }
 
     @JsonProperty
@@ -71,7 +71,7 @@ public class GrpcColumnHandle
     }
 
     @JsonProperty
-    public GrpcColumnHandle getParent()
+    public KoraliumColumnHandle getParent()
     {
         return parent;
     }
@@ -89,7 +89,7 @@ public class GrpcColumnHandle
     }
 
     @JsonProperty
-    public List<GrpcColumnHandle> getChildren()
+    public List<KoraliumColumnHandle> getChildren()
     {
         return children;
     }
@@ -112,7 +112,7 @@ public class GrpcColumnHandle
     {
         return Objects.hash(
                 columnName,
-                grpcType,
+                koraliumType,
                 columnId,
                 parent);
     }
@@ -126,9 +126,9 @@ public class GrpcColumnHandle
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        GrpcColumnHandle other = (GrpcColumnHandle) obj;
+        KoraliumColumnHandle other = (KoraliumColumnHandle) obj;
         return Objects.equals(this.columnName, other.columnName) &&
-                Objects.equals(this.grpcType, other.grpcType) &&
+                Objects.equals(this.koraliumType, other.koraliumType) &&
                 Objects.equals(this.columnId, other.columnId) &&
                 Objects.equals(this.parent, other.parent);
     }

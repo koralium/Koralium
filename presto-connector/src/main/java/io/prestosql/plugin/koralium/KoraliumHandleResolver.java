@@ -20,36 +20,36 @@ import io.prestosql.spi.connector.ConnectorSplit;
 import io.prestosql.spi.connector.ConnectorTableHandle;
 import io.prestosql.spi.connector.ConnectorTransactionHandle;
 
-public class GrpcHandleResolver
+public class KoraliumHandleResolver
         implements ConnectorHandleResolver
 {
     @Override
     public Class<? extends ConnectorTableHandle> getTableHandleClass()
     {
-        return GrpcTableHandle.class;
+        return KoraliumTableHandle.class;
     }
 
     @Override
     public Class<? extends ColumnHandle> getColumnHandleClass()
     {
-        return GrpcColumnHandle.class;
+        return KoraliumColumnHandle.class;
     }
 
     @Override
     public Class<? extends ConnectorTransactionHandle> getTransactionHandleClass()
     {
-        return GrpcTransactionHandle.class;
+        return KoraliumTransactionHandle.class;
     }
 
     @Override
     public Class<? extends ConnectorSplit> getSplitClass()
     {
-        return GrpcSplit.class;
+        return KoraliumSplit.class;
     }
 
     @Override
     public Class<? extends ConnectorIndexHandle> getIndexHandleClass()
     {
-        return GrpcIndexHandle.class;
+        return KoraliumIndexHandle.class;
     }
 }

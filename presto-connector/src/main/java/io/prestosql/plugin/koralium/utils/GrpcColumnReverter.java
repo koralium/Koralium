@@ -11,11 +11,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.grpc.utils;
+package io.prestosql.plugin.koralium.utils;
 
-import io.prestosql.plugin.grpc.GrpcExecutionColumn;
-import io.prestosql.plugin.grpc.GrpcType;
-import io.prestosql.plugin.grpc.Presto;
+import io.prestosql.plugin.koralium.KoraliumExecutionColumn;
+import io.prestosql.plugin.koralium.KoraliumType;
+import io.prestosql.plugin.koralium.Presto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,18 +27,18 @@ public final class GrpcColumnReverter
         //NOOP
     }
 
-    public static List<GrpcExecutionColumn> BuildExecutionColumns(List<Presto.ColumnMetadata> columns)
+    public static List<KoraliumExecutionColumn> BuildExecutionColumns(List<Presto.ColumnMetadata> columns)
     {
-        List<GrpcExecutionColumn> output = new ArrayList<>();
+        List<KoraliumExecutionColumn> output = new ArrayList<>();
         for (int i = 0; i < columns.size(); i++) {
             Presto.ColumnMetadata column = columns.get(i);
 
-            GrpcType type = GrpcType.valueOf(column.getType().getNumber());
-            GrpcExecutionColumn executionColumn = new GrpcExecutionColumn(type, column.getColumnId(), i, GrpcType.CreatePrestoType(column));
+            KoraliumType type = KoraliumType.valueOf(column.getType().getNumber());
+            KoraliumExecutionColumn executionColumn = new KoraliumExecutionColumn(type, column.getColumnId(), i, KoraliumType.CreatePrestoType(column));
 
-            List<GrpcExecutionColumn> children = BuildExecutionColumns(column.getSubColumnsList());
+            List<KoraliumExecutionColumn> children = BuildExecutionColumns(column.getSubColumnsList());
 
-            for (GrpcExecutionColumn child : children) {
+            for (KoraliumExecutionColumn child : children) {
                 executionColumn.addChild(child);
             }
             output.add(executionColumn);

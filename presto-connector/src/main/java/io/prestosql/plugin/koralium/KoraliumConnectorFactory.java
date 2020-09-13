@@ -25,19 +25,19 @@ import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
 
-public class GrpcConnectorFactory
+public class KoraliumConnectorFactory
         implements ConnectorFactory
 {
     @Override
     public String getName()
     {
-        return "grpc";
+        return "koralium";
     }
 
     @Override
     public ConnectorHandleResolver getHandleResolver()
     {
-        return new GrpcHandleResolver();
+        return new KoraliumHandleResolver();
     }
 
     @Override
@@ -48,13 +48,13 @@ public class GrpcConnectorFactory
 
         Bootstrap app = new Bootstrap(
                 new JsonModule(),
-                new GrpcConnectorModule(context.getTypeManager()));
+                new KoraliumConnectorModule(context.getTypeManager()));
 
         Injector injector = app.strictConfig()
                 .doNotInitializeLogging()
                 .setRequiredConfigurationProperties(config)
                 .initialize();
 
-        return injector.getInstance(GrpcConnector.class);
+        return injector.getInstance(KoraliumConnector.class);
     }
 }

@@ -13,7 +13,7 @@
  */
 package io.prestosql.plugin.koralium;
 
-import io.prestosql.plugin.koralium.client.PrestoGrpcClient;
+import io.prestosql.plugin.koralium.client.PrestoKoraliumClient;
 import io.prestosql.spi.connector.ConnectorSession;
 import io.prestosql.spi.connector.ConnectorSplit;
 import io.prestosql.spi.connector.ConnectorSplitManager;
@@ -30,13 +30,13 @@ import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
-public class GrpcSplitManager
+public class KoraliumSplitManager
         implements ConnectorSplitManager
 {
-    private final PrestoGrpcClient client;
+    private final PrestoKoraliumClient client;
 
     @Inject
-    public GrpcSplitManager(PrestoGrpcClient client)
+    public KoraliumSplitManager(PrestoKoraliumClient client)
     {
         this.client = requireNonNull(client, "client is null");
     }
@@ -50,7 +50,7 @@ public class GrpcSplitManager
     {
         List<ConnectorSplit> splits = new ArrayList<>();
 
-        splits.add(new GrpcSplit(client.getUrl()));
+        splits.add(new KoraliumSplit(client.getUrl()));
 
         Collections.shuffle(splits);
         return new FixedSplitSource(splits);

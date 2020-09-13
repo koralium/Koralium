@@ -21,7 +21,7 @@ import io.prestosql.spi.connector.ConnectorSplit;
 
 import java.util.List;
 
-public class GrpcSplit
+public class KoraliumSplit
         implements ConnectorSplit
 {
     private String uri;
@@ -29,7 +29,7 @@ public class GrpcSplit
     private final List<HostAddress> addresses;
 
     @JsonCreator
-    public GrpcSplit(
+    public KoraliumSplit(
             @JsonProperty("uri") String uri)
     {
         this.uri = uri;

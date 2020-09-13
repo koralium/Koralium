@@ -33,7 +33,7 @@ import org.testng.annotations.Test;
 
 import static io.prestosql.SystemSessionProperties.JOIN_DISTRIBUTION_TYPE;
 
-public class TestGrpcSmokeTest
+public class TestKoraliumSmokeTest
         extends AbstractTestIntegrationSmokeTest
 {
     private QueryServer server;
@@ -43,7 +43,7 @@ public class TestGrpcSmokeTest
     {
         server = new QueryServer();
         String accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlRlc3QgdGVzdCIsInVuaXF1ZV9uYW1lIjoidGVzdCIsImlhdCI6MTUxNjIzOTAyMn0.aF80OiteMckPhSQcAL549V4AcyKHJA8LUs4mhzBnf2w";
-        return GrpcQueryRunner.createGrpcQueryRunner("127.0.0.1:5016", ImmutableMap.of(), "grpc", "default", TpchTable.getTables(), null, accessToken);
+        return KoraliumQueryRunner.createGrpcQueryRunner("127.0.0.1:5016", ImmutableMap.of(), "koralium", "default", TpchTable.getTables(), server, accessToken);
     }
 
     @AfterClass(alwaysRun = true)
@@ -69,15 +69,7 @@ public class TestGrpcSmokeTest
     @Test
     public void testGetSecureData()
     {
-        MaterializedResult expectedResult = MaterializedResult.resultBuilder(this.getQueryRunner().getDefaultSession(),
-                VarcharType.VARCHAR)
-                .row("test1")
-                .row("test2")
-                .build();
-
-        MaterializedResult result = this.computeActual("select * from grpc.default.secure");
-
-        Assert.assertEquals(result, expectedResult);
+        assertQuery("select orderkey from secure", "select orderkey from orders");
     }
 
     @Override
@@ -94,7 +86,7 @@ public class TestGrpcSmokeTest
                 .row("test employee", "1", "1", "test company")
                 .build();
 
-        MaterializedResult result = computeActual("select e.*, c.*  from grpc.default.employee e inner join grpc.default.company c on e.companyid = c.companyid");
+        MaterializedResult result = computeActual("select e.*, c.*  from employee e inner join company c on e.companyid = c.companyid");
 
         Assert.assertEquals(result, expectedResult);
     }
@@ -107,7 +99,7 @@ public class TestGrpcSmokeTest
                 .row(3.0f)
                 .row(7.0f)
                 .build();
-        MaterializedResult result = computeActual("select FloatValue  from grpc.default.test");
+        MaterializedResult result = computeActual("select FloatValue  from test");
 
         Assert.assertEquals(result, expectedResult);
     }

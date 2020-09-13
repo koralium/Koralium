@@ -21,14 +21,14 @@ import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
 
-public class GrpcSortItem
+public class KoraliumSortItem
 {
-    private final GrpcColumnHandle columnHandle;
+    private final KoraliumColumnHandle columnHandle;
     private final SortOrder sortOrder;
 
     @JsonCreator
-    public GrpcSortItem(
-            @JsonProperty("columnHandle") GrpcColumnHandle columnHandle,
+    public KoraliumSortItem(
+            @JsonProperty("columnHandle") KoraliumColumnHandle columnHandle,
             @JsonProperty("SortOrder") SortOrder sortOrder)
     {
         this.columnHandle = requireNonNull(columnHandle, "columnHandle is null");
@@ -36,7 +36,7 @@ public class GrpcSortItem
     }
 
     @JsonProperty
-    public GrpcColumnHandle getColumnHandle()
+    public KoraliumColumnHandle getColumnHandle()
     {
         return columnHandle;
     }
@@ -57,7 +57,7 @@ public class GrpcSortItem
             return false;
         }
 
-        GrpcSortItem other = (GrpcSortItem) obj;
+        KoraliumSortItem other = (KoraliumSortItem) obj;
         return Objects.equals(this.columnHandle, other.columnHandle) &&
                 Objects.equals(this.sortOrder, other.sortOrder);
     }

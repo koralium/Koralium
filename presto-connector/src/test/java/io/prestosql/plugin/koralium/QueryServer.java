@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.grpc;
+package io.prestosql.plugin.koralium;
 
 import org.testcontainers.containers.GenericContainer;
 
@@ -31,16 +31,16 @@ public class QueryServer
     public void start()
     {
         if (this.dockerContainer == null) {
-            this.dockerContainer = new GenericContainer<>("queryprotocolgrpcweb")
+            this.dockerContainer = new GenericContainer<>("koraliumwebtest")
                     .withExposedPorts(PORT)
-                    .withCopyFileToContainer(forHostPath("./tmpData/customer.csv"), "/app/Data/customer.csv")
-                    .withCopyFileToContainer(forHostPath("./tmpData/lineitem.csv"), "/app/Data/lineitem.csv")
-                    .withCopyFileToContainer(forHostPath("./tmpData/nation.csv"), "/app/Data/nation.csv")
-                    .withCopyFileToContainer(forHostPath("./tmpData/orders.csv"), "/app/Data/orders.csv")
-                    .withCopyFileToContainer(forHostPath("./tmpData/part.csv"), "/app/Data/part.csv")
-                    .withCopyFileToContainer(forHostPath("./tmpData/partsupp.csv"), "/app/Data/partsupp.csv")
-                    .withCopyFileToContainer(forHostPath("./tmpData/region.csv"), "/app/Data/region.csv")
-                    .withCopyFileToContainer(forHostPath("./tmpData/supplier.csv"), "/app/Data/supplier.csv");
+                    .withCopyFileToContainer(forHostPath("./tmpData/customer.csv"), "/app/Data/tpch/customer.csv")
+                    .withCopyFileToContainer(forHostPath("./tmpData/lineitem.csv"), "/app/Data/tpch/lineitem.csv")
+                    .withCopyFileToContainer(forHostPath("./tmpData/nation.csv"), "/app/Data/tpch/nation.csv")
+                    .withCopyFileToContainer(forHostPath("./tmpData/orders.csv"), "/app/Data/tpch/orders.csv")
+                    .withCopyFileToContainer(forHostPath("./tmpData/part.csv"), "/app/Data/tpch/part.csv")
+                    .withCopyFileToContainer(forHostPath("./tmpData/partsupp.csv"), "/app/Data/tpch/partsupp.csv")
+                    .withCopyFileToContainer(forHostPath("./tmpData/region.csv"), "/app/Data/tpch/region.csv")
+                    .withCopyFileToContainer(forHostPath("./tmpData/supplier.csv"), "/app/Data/tpch/supplier.csv");
 
             dockerContainer.start();
         }

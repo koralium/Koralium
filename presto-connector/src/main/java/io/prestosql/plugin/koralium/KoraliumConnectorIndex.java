@@ -13,7 +13,7 @@
  */
 package io.prestosql.plugin.koralium;
 
-import io.prestosql.plugin.koralium.client.PrestoGrpcClient;
+import io.prestosql.plugin.koralium.client.PrestoKoraliumClient;
 import io.prestosql.spi.connector.ConnectorIndex;
 import io.prestosql.spi.connector.ConnectorPageSource;
 import io.prestosql.spi.connector.ConnectorSession;
@@ -21,21 +21,21 @@ import io.prestosql.spi.connector.RecordSet;
 
 import java.util.List;
 
-public class GrpcConnectorIndex
+public class KoraliumConnectorIndex
         implements ConnectorIndex
 {
     private final ConnectorSession session;
-    private final PrestoGrpcClient client;
-    private final GrpcIndexHandle indexHandle;
-    private final List<GrpcColumnHandle> lookupSchema;
-    private final List<GrpcColumnHandle> outputSchema;
+    private final PrestoKoraliumClient client;
+    private final KoraliumIndexHandle indexHandle;
+    private final List<KoraliumColumnHandle> lookupSchema;
+    private final List<KoraliumColumnHandle> outputSchema;
 
-    public GrpcConnectorIndex(
+    public KoraliumConnectorIndex(
             ConnectorSession session,
-            PrestoGrpcClient client,
-            GrpcIndexHandle indexHandle,
-            List<GrpcColumnHandle> lookupSchema,
-            List<GrpcColumnHandle> outputSchema)
+            PrestoKoraliumClient client,
+            KoraliumIndexHandle indexHandle,
+            List<KoraliumColumnHandle> lookupSchema,
+            List<KoraliumColumnHandle> outputSchema)
     {
         this.session = session;
         this.client = client;
@@ -47,6 +47,6 @@ public class GrpcConnectorIndex
     @Override
     public ConnectorPageSource lookup(RecordSet recordSet)
     {
-        return new GrpcIndexPageSource(session, lookupSchema, outputSchema, client, indexHandle, recordSet);
+        return new KoraliumIndexPageSource(session, lookupSchema, outputSchema, client, indexHandle, recordSet);
     }
 }

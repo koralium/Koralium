@@ -11,11 +11,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.grpc.decoders;
+package io.prestosql.plugin.koralium.decoders;
 
 import com.google.common.collect.ImmutableList;
-import io.prestosql.plugin.grpc.GrpcExecutionColumn;
-import io.prestosql.plugin.grpc.Presto;
+import io.prestosql.plugin.koralium.KoraliumExecutionColumn;
+import io.prestosql.plugin.koralium.Presto;
 import io.prestosql.spi.block.BlockBuilder;
 import io.prestosql.spi.connector.ConnectorSession;
 
@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class ObjectTypeDecoder
-        implements GrpcDecoder
+        implements KoraliumDecoder
 {
-    private final List<GrpcDecoder> decoders;
+    private final List<KoraliumDecoder> decoders;
     private BlockBuilder blockBuilder;
     private int columnId;
 
@@ -38,27 +38,27 @@ public class ObjectTypeDecoder
         decoders = null;
     }
 
-    public ObjectTypeDecoder(int columnId, GrpcExecutionColumn column, ConnectorSession session)
+    public ObjectTypeDecoder(int columnId, KoraliumExecutionColumn column, ConnectorSession session)
     {
         this.columnId = columnId;
 
-        List<GrpcExecutionColumn> children = column.getChildren();
+        List<KoraliumExecutionColumn> children = column.getChildren();
 
         ImmutableList.Builder<Integer> decoderToColumnIdBuilder = new ImmutableList.Builder<>();
-        ImmutableList.Builder<GrpcDecoder> decodersBuilder = new ImmutableList.Builder<>();
+        ImmutableList.Builder<KoraliumDecoder> decodersBuilder = new ImmutableList.Builder<>();
 
         for (int i = 0; i < children.size(); i++) {
-            GrpcExecutionColumn child = children.get(i);
+            KoraliumExecutionColumn child = children.get(i);
 
             decoderToColumnIdBuilder.add(child.getReturnId());
-            decodersBuilder.add(child.getGrpcType().getDecoder().create(child.getColumnId(), child, session));
+            decodersBuilder.add(child.getKoraliumType().getDecoder().create(child.getColumnId(), child, session));
         }
         decoders = decodersBuilder.build();
         blockBuilder = column.getPrestoType().createBlockBuilder(null, 1);
     }
 
     @Override
-    public GrpcDecoder create(int columnId, GrpcExecutionColumn column, ConnectorSession session)
+    public KoraliumDecoder create(int columnId, KoraliumExecutionColumn column, ConnectorSession session)
     {
         return new ObjectTypeDecoder(columnId, column, session);
     }

@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableList;
 import io.grpc.Metadata;
 import io.grpc.stub.MetadataUtils;
 import io.grpc.stub.StreamObserver;
-import io.prestosql.plugin.koralium.client.PrestoGrpcClient;
+import io.prestosql.plugin.koralium.client.PrestoKoraliumClient;
 import io.prestosql.plugin.koralium.encoders.IEncoder;
 import io.prestosql.spi.block.PageBuilderStatus;
 import io.prestosql.spi.connector.ConnectorSession;
@@ -27,19 +27,19 @@ import io.prestosql.spi.connector.RecordSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GrpcIndexPageSource
-        extends GrpcBasePageSource
+public class KoraliumIndexPageSource
+        extends KoraliumBasePageSource
 {
     private final ConnectorSession session;
 
     private final KoraliumServiceGrpc.KoraliumServiceStub client;
 
-    public GrpcIndexPageSource(
+    public KoraliumIndexPageSource(
             ConnectorSession session,
-            List<GrpcColumnHandle> lookupColumns,
-            List<GrpcColumnHandle> outputColumns,
-            PrestoGrpcClient prestoGrpcClient,
-            GrpcIndexHandle indexHandle,
+            List<KoraliumColumnHandle> lookupColumns,
+            List<KoraliumColumnHandle> outputColumns,
+            PrestoKoraliumClient prestoKoraliumClient,
+            KoraliumIndexHandle indexHandle,
             RecordSet recordSet)
     {
         super(session, outputColumns);
@@ -52,15 +52,15 @@ public class GrpcIndexPageSource
             metadata.put(Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER), "Bearer " + authToken);
         }
 
-        this.client = MetadataUtils.attachHeaders(KoraliumServiceGrpc.newStub(prestoGrpcClient.getChannel()), metadata);
+        this.client = MetadataUtils.attachHeaders(KoraliumServiceGrpc.newStub(prestoKoraliumClient.getChannel()), metadata);
 
         List<String> fields = outputColumns.stream().map(x -> x.getColumnName()).collect(Collectors.toList());
 
         ImmutableList.Builder<IEncoder> encodersBuilder = new ImmutableList.Builder<>();
 
         for (int i = 0; i < lookupColumns.size(); i++) {
-            GrpcColumnHandle column = lookupColumns.get(i);
-            encodersBuilder.add(column.getGrpcType().getEncoder().create(column.getColumnId()));
+            KoraliumColumnHandle column = lookupColumns.get(i);
+            encodersBuilder.add(column.getKoraliumType().getEncoder().create(column.getColumnId()));
         }
 
         ImmutableList<IEncoder> encoders = encodersBuilder.build();
@@ -89,7 +89,7 @@ public class GrpcIndexPageSource
     }
 
     private void executeQuery(
-            GrpcIndexHandle indexHandle,
+            KoraliumIndexHandle indexHandle,
             List<String> fields,
             Presto.Page recordsPage)
     {

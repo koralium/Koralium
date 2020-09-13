@@ -17,7 +17,7 @@ import io.grpc.Metadata;
 import io.grpc.stub.MetadataUtils;
 import io.grpc.stub.StreamObserver;
 import io.prestosql.plugin.koralium.client.FilterExtractor;
-import io.prestosql.plugin.koralium.client.PrestoGrpcClient;
+import io.prestosql.plugin.koralium.client.PrestoKoraliumClient;
 import io.prestosql.plugin.koralium.client.QueryBuilder;
 import io.prestosql.spi.block.PageBuilderStatus;
 import io.prestosql.spi.connector.ConnectorSession;
@@ -27,23 +27,23 @@ import io.prestosql.spi.predicate.TupleDomain;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class GrpcPageSource
-        extends GrpcBasePageSource
+public class KoraliumPageSource
+        extends KoraliumBasePageSource
 {
     private final KoraliumServiceGrpc.KoraliumServiceStub client;
     private final DynamicFilter dynamicFilter;
-    private final List<GrpcColumnHandle> columns;
-    private final TupleDomain<GrpcColumnHandle> constraint;
-    private final GrpcTableHandle tableHandle;
+    private final List<KoraliumColumnHandle> columns;
+    private final TupleDomain<KoraliumColumnHandle> constraint;
+    private final KoraliumTableHandle tableHandle;
     private boolean querySent;
 
-    public GrpcPageSource(ConnectorSession session,
-                          List<GrpcColumnHandle> columns,
-                          PrestoGrpcClient prestoGrpcClient,
-                          GrpcTableHandle tableHandle,
-                          GrpcSplit split,
-                          TupleDomain<GrpcColumnHandle> constraint,
-                          DynamicFilter dynamicFilter)
+    public KoraliumPageSource(ConnectorSession session,
+                              List<KoraliumColumnHandle> columns,
+                              PrestoKoraliumClient prestoKoraliumClient,
+                              KoraliumTableHandle tableHandle,
+                              KoraliumSplit split,
+                              TupleDomain<KoraliumColumnHandle> constraint,
+                              DynamicFilter dynamicFilter)
     {
         super(session, columns);
 
@@ -60,7 +60,7 @@ public class GrpcPageSource
             metadata.put(Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER), "Bearer " + authToken);
         }
 
-        this.client = MetadataUtils.attachHeaders(KoraliumServiceGrpc.newStub(prestoGrpcClient.getChannel()), metadata);
+        this.client = MetadataUtils.attachHeaders(KoraliumServiceGrpc.newStub(prestoKoraliumClient.getChannel()), metadata);
     }
 
     private void executeCount(String query)
@@ -144,7 +144,7 @@ public class GrpcPageSource
         }
 
         if (!querySent) {
-            TupleDomain<GrpcColumnHandle> dynamicConstraint = dynamicFilter.getCurrentPredicate().transform(GrpcColumnHandle.class::cast);
+            TupleDomain<KoraliumColumnHandle> dynamicConstraint = dynamicFilter.getCurrentPredicate().transform(KoraliumColumnHandle.class::cast);
             String filter = FilterExtractor.getFilter(session, constraint.intersect(dynamicConstraint));
             if (columns.size() == 0) {
                 String query = new QueryBuilder().buildCountQuery(tableHandle.getTableName(), filter);

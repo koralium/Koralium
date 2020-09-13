@@ -28,7 +28,7 @@ import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
 
-public class GrpcTableHandle
+public class KoraliumTableHandle
         implements ConnectorTableHandle
 {
     private final String schemaName;
@@ -37,17 +37,17 @@ public class GrpcTableHandle
     private final Optional<Set<ColumnHandle>> desiredColumns;
     private final OptionalLong limit;
     private final int tableId;
-    private final Optional<List<GrpcSortItem>> sortOrder;
+    private final Optional<List<KoraliumSortItem>> sortOrder;
 
     @JsonCreator
-    public GrpcTableHandle(
+    public KoraliumTableHandle(
             @JsonProperty("schemaName") String schemaName,
             @JsonProperty("tableName") String tableName,
             @JsonProperty("constraint") TupleDomain<ColumnHandle> constraint,
             @JsonProperty("desiredColumns") Optional<Set<ColumnHandle>> desiredColumns,
             @JsonProperty("tableId") int tableId,
             @JsonProperty("limit") OptionalLong limit,
-            @JsonProperty("sortOrder") Optional<List<GrpcSortItem>> sortOrder)
+            @JsonProperty("sortOrder") Optional<List<KoraliumSortItem>> sortOrder)
     {
         this.schemaName = requireNonNull(schemaName, "schemaName is null");
         this.tableName = requireNonNull(tableName, "tableName is null");
@@ -95,7 +95,7 @@ public class GrpcTableHandle
     }
 
     @JsonProperty
-    public Optional<List<GrpcSortItem>> getSortOrder()
+    public Optional<List<KoraliumSortItem>> getSortOrder()
     {
         return sortOrder;
     }
@@ -115,7 +115,7 @@ public class GrpcTableHandle
             return false;
         }
 
-        GrpcTableHandle other = (GrpcTableHandle) obj;
+        KoraliumTableHandle other = (KoraliumTableHandle) obj;
         return Objects.equals(this.schemaName, other.schemaName) &&
                 Objects.equals(this.tableName, other.tableName) &&
                 Objects.equals(this.constraint, other.constraint) &&

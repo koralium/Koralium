@@ -26,34 +26,34 @@ import javax.inject.Inject;
 
 import static java.util.Objects.requireNonNull;
 
-public class GrpcConnector
+public class KoraliumConnector
         implements Connector
 {
     private final LifeCycleManager lifeCycleManager;
-    private final GrpcMetadata metadata;
-    private final GrpcSplitManager splitManager;
-    private final GrpcPageSourceProvider pageSourceProvider;
-    private final GrpcIndexProvider grpcIndexProvider;
+    private final KoraliumMetadata metadata;
+    private final KoraliumSplitManager splitManager;
+    private final KoraliumPageSourceProvider pageSourceProvider;
+    private final KoraliumIndexProvider koraliumIndexProvider;
 
     @Inject
-    public GrpcConnector(
+    public KoraliumConnector(
             LifeCycleManager lifeCycleManager,
-            GrpcMetadata metadata,
-            GrpcSplitManager splitManager,
-            GrpcPageSourceProvider pageSourceProvider,
-            GrpcIndexProvider grpcIndexProvider)
+            KoraliumMetadata metadata,
+            KoraliumSplitManager splitManager,
+            KoraliumPageSourceProvider pageSourceProvider,
+            KoraliumIndexProvider koraliumIndexProvider)
     {
         this.lifeCycleManager = requireNonNull(lifeCycleManager, "lifeCycleManager is null");
         this.metadata = requireNonNull(metadata, "metadata is null");
         this.splitManager = requireNonNull(splitManager, "splitManager is null");
         this.pageSourceProvider = requireNonNull(pageSourceProvider, "pageSourceProvider is null");
-        this.grpcIndexProvider = requireNonNull(grpcIndexProvider, "grpcIndexProvider is null");
+        this.koraliumIndexProvider = requireNonNull(koraliumIndexProvider, "grpcIndexProvider is null");
     }
 
     @Override
     public ConnectorTransactionHandle beginTransaction(IsolationLevel isolationLevel, boolean readOnly)
     {
-        return GrpcTransactionHandle.INSTANCE;
+        return KoraliumTransactionHandle.INSTANCE;
     }
 
     @Override
@@ -77,7 +77,7 @@ public class GrpcConnector
     @Override
     public ConnectorIndexProvider getIndexProvider()
     {
-        return grpcIndexProvider;
+        return koraliumIndexProvider;
     }
 
     @Override

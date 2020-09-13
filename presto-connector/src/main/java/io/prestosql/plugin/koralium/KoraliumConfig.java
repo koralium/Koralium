@@ -19,7 +19,7 @@ import io.grpc.ManagedChannelBuilder;
 
 import javax.validation.constraints.NotNull;
 
-public class GrpcConfig
+public class KoraliumConfig
 {
     private String url;
 
@@ -37,8 +37,8 @@ public class GrpcConfig
                 .build();
     }
 
-    @Config("grpc.url")
-    public GrpcConfig setUrl(String url)
+    @Config("koralium.url")
+    public KoraliumConfig setUrl(String url)
     {
         this.url = url;
         return this;

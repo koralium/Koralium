@@ -19,7 +19,7 @@ import io.prestosql.testing.QueryRunner;
 import io.prestosql.tpch.TpchTable;
 import org.testng.annotations.AfterClass;
 
-public class TestGrpcAggregations
+public class TestKoraliumAggregations
         extends AbstractTestAggregations
 {
     private QueryServer server;
@@ -28,7 +28,7 @@ public class TestGrpcAggregations
     protected QueryRunner createQueryRunner() throws Exception
     {
         server = new QueryServer();
-        return GrpcQueryRunner.createGrpcQueryRunner("127.0.0.1:5016", ImmutableMap.of(), "grpc", "default", TpchTable.getTables(), null, null);
+        return KoraliumQueryRunner.createGrpcQueryRunner("127.0.0.1:5016", ImmutableMap.of(), "koralium", "default", TpchTable.getTables(), server, null);
     }
 
     @AfterClass(alwaysRun = true)

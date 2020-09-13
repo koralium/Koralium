@@ -18,9 +18,9 @@ import io.prestosql.plugin.koralium.Presto;
 import io.prestosql.spi.block.BlockBuilder;
 import io.prestosql.spi.connector.ConnectorSession;
 
-public interface GrpcDecoder
+public interface KoraliumDecoder
 {
-    GrpcDecoder create(int columnId, KoraliumExecutionColumn column, ConnectorSession session);
+    KoraliumDecoder create(int columnId, KoraliumExecutionColumn column, ConnectorSession session);
 
     int decode(Presto.Block block, BlockBuilder builder, Presto.Page page);
 

@@ -13,7 +13,7 @@
  */
 package io.prestosql.plugin.koralium;
 
-public class TestingGrpcConnectorFactory
-        extends GrpcConnectorFactory
+public class TestingKoraliumConnectorFactory
+        extends KoraliumConnectorFactory
 {
 }

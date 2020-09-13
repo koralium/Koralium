@@ -13,8 +13,8 @@
  */
 package io.prestosql.plugin.koralium.client;
 
-import io.prestosql.plugin.koralium.GrpcTableHandle;
-import io.prestosql.plugin.koralium.GrpcTableIndex;
+import io.prestosql.plugin.koralium.KoraliumTableHandle;
+import io.prestosql.plugin.koralium.KoraliumTableIndex;
 import io.prestosql.spi.connector.ColumnHandle;
 import io.prestosql.spi.connector.ConnectorTableMetadata;
 import io.prestosql.spi.connector.SchemaTableName;
@@ -22,11 +22,11 @@ import io.prestosql.spi.connector.SchemaTableName;
 import java.util.List;
 import java.util.Map;
 
-public interface GrpcMetadataClient
+public interface KoraliumMetadataClient
 {
     List<String> getSchemaNames();
 
-    GrpcTableHandle getTableHandle(SchemaTableName schemaTableName);
+    KoraliumTableHandle getTableHandle(SchemaTableName schemaTableName);
 
     ConnectorTableMetadata getTableMetadata(SchemaTableName schemaTableName);
 
@@ -34,5 +34,5 @@ public interface GrpcMetadataClient
 
     Map<String, ColumnHandle> getColumnHandles(SchemaTableName schemaTableName);
 
-    GrpcTableIndex getTableIndex(String key);
+    KoraliumTableIndex getTableIndex(String key);
 }

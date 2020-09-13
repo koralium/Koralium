@@ -22,25 +22,25 @@ import java.util.List;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
 //This class is only used during query execution
-public class GrpcExecutionColumn
+public class KoraliumExecutionColumn
 {
-    private final GrpcType grpcType;
+    private final KoraliumType koraliumType;
     private final int columnId;
-    private List<GrpcExecutionColumn> children;
+    private List<KoraliumExecutionColumn> children;
     private final Type prestoType;
     //Id that is used to locate the correct block builder
     private final int returnId;
 
-    public GrpcExecutionColumn(GrpcType grpcType, int columnId, int returnId, Type prestoType)
+    public KoraliumExecutionColumn(KoraliumType koraliumType, int columnId, int returnId, Type prestoType)
     {
-        this.grpcType = grpcType;
+        this.koraliumType = koraliumType;
         this.columnId = columnId;
         this.children = new ArrayList<>();
         this.returnId = returnId;
         this.prestoType = prestoType;
     }
 
-    public void addChild(GrpcExecutionColumn child)
+    public void addChild(KoraliumExecutionColumn child)
     {
         children.add(child);
     }
@@ -52,22 +52,22 @@ public class GrpcExecutionColumn
 
     public boolean isObject()
     {
-        return grpcType.equals(GrpcType.OBJECT);
+        return koraliumType.equals(KoraliumType.OBJECT);
     }
 
     public boolean isArray()
     {
-        return grpcType.equals(GrpcType.ARRAY);
+        return koraliumType.equals(KoraliumType.ARRAY);
     }
 
-    public List<GrpcExecutionColumn> getChildren()
+    public List<KoraliumExecutionColumn> getChildren()
     {
         return children;
     }
 
-    public GrpcType getGrpcType()
+    public KoraliumType getKoraliumType()
     {
-        return grpcType;
+        return koraliumType;
     }
 
     public int getReturnId()
@@ -82,11 +82,11 @@ public class GrpcExecutionColumn
 
     public void finish()
     {
-        children.forEach(GrpcExecutionColumn::finish);
+        children.forEach(KoraliumExecutionColumn::finish);
 
         //Sort all the children
         children = children.stream()
-                .sorted(Comparator.comparing(GrpcExecutionColumn::getReturnId, Integer::compareTo))
+                .sorted(Comparator.comparing(KoraliumExecutionColumn::getReturnId, Integer::compareTo))
                 .collect(toImmutableList());
     }
 }

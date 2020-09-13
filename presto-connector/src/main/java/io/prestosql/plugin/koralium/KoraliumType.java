@@ -19,9 +19,9 @@ import io.prestosql.plugin.koralium.decoders.ArrayDecoder;
 import io.prestosql.plugin.koralium.decoders.BoolDecoder;
 import io.prestosql.plugin.koralium.decoders.DoubleDecoder;
 import io.prestosql.plugin.koralium.decoders.FloatDecoder;
-import io.prestosql.plugin.koralium.decoders.GrpcDecoder;
 import io.prestosql.plugin.koralium.decoders.Int64Decoder;
 import io.prestosql.plugin.koralium.decoders.IntDecoder;
+import io.prestosql.plugin.koralium.decoders.KoraliumDecoder;
 import io.prestosql.plugin.koralium.decoders.ObjectTypeDecoder;
 import io.prestosql.plugin.koralium.decoders.StringDecoder;
 import io.prestosql.plugin.koralium.decoders.TimestampDecoder;
@@ -49,7 +49,7 @@ import java.util.Map;
 
 import static io.prestosql.spi.type.VarcharType.createUnboundedVarcharType;
 
-public enum GrpcType
+public enum KoraliumType
 {
     @JsonProperty("DOUBLE")
     DOUBLE(DoubleType.DOUBLE, 0, new DoubleDecoder(), new DoubleEncoder()),
@@ -73,10 +73,10 @@ public enum GrpcType
     private static Map map = new HashMap<>();
     private final Type prestoType;
     private final int id;
-    private final GrpcDecoder decoder;
+    private final KoraliumDecoder decoder;
     private final IEncoder encoder;
 
-    GrpcType(Type prestoType, int id, GrpcDecoder decoder, IEncoder encoder)
+    KoraliumType(Type prestoType, int id, KoraliumDecoder decoder, IEncoder encoder)
     {
         this.prestoType = prestoType;
         this.id = id;
@@ -90,14 +90,14 @@ public enum GrpcType
     }
 
     static {
-        for (GrpcType pageType : GrpcType.values()) {
+        for (KoraliumType pageType : KoraliumType.values()) {
             map.put(pageType.id, pageType);
         }
     }
 
-    public static GrpcType valueOf(int pageType)
+    public static KoraliumType valueOf(int pageType)
     {
-        return (GrpcType) map.get(pageType);
+        return (KoraliumType) map.get(pageType);
     }
 
     //Creates presto types from column metadata
@@ -126,7 +126,7 @@ public enum GrpcType
             return arrayType;
         }
 
-        return GrpcType.valueOf(type.getNumber()).getPrestoType();
+        return KoraliumType.valueOf(type.getNumber()).getPrestoType();
     }
 
     public int getId()
@@ -134,7 +134,7 @@ public enum GrpcType
         return id;
     }
 
-    public GrpcDecoder getDecoder()
+    public KoraliumDecoder getDecoder()
     {
         return decoder;
     }

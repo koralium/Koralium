@@ -11,13 +11,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.grpc.client;
+package io.prestosql.plugin.koralium.client;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.VerifyException;
 import com.google.common.collect.ImmutableList;
-import io.prestosql.plugin.grpc.GrpcColumnHandle;
-import io.prestosql.plugin.grpc.encoders.IEncoder;
+import io.prestosql.plugin.koralium.KoraliumColumnHandle;
+import io.prestosql.plugin.koralium.encoders.IEncoder;
 import io.prestosql.spi.connector.ConnectorSession;
 import io.prestosql.spi.predicate.Domain;
 import io.prestosql.spi.predicate.Range;
@@ -35,13 +35,13 @@ public final class FilterExtractor
 {
     private FilterExtractor() {}
 
-    public static String getFilter(ConnectorSession session, TupleDomain<GrpcColumnHandle> constraint)
+    public static String getFilter(ConnectorSession session, TupleDomain<KoraliumColumnHandle> constraint)
     {
         ImmutableList.Builder<String> predicates = ImmutableList.builder();
 
         if (constraint.getDomains().isPresent()) {
-            for (Map.Entry<GrpcColumnHandle, Domain> entry : constraint.getDomains().get().entrySet()) {
-                GrpcColumnHandle column = entry.getKey();
+            for (Map.Entry<KoraliumColumnHandle, Domain> entry : constraint.getDomains().get().entrySet()) {
+                KoraliumColumnHandle column = entry.getKey();
                 Domain domain = entry.getValue();
 
                 checkArgument(!domain.isNone(), "Unexpected NONE domain for %s", column.getColumnName());
@@ -56,7 +56,7 @@ public final class FilterExtractor
         return Joiner.on(" AND ").join(predicates.build());
     }
 
-    private static String buildPredicate(ConnectorSession session, Domain domain, GrpcColumnHandle column)
+    private static String buildPredicate(ConnectorSession session, Domain domain, KoraliumColumnHandle column)
     {
         if (domain.getValues().isNone()) {
             return column.getColumnName() + " IS NULL";
@@ -69,9 +69,9 @@ public final class FilterExtractor
         return buildRangeQuery(session, domain, column);
     }
 
-    private static String buildRangeQuery(ConnectorSession session, Domain domain, GrpcColumnHandle column)
+    private static String buildRangeQuery(ConnectorSession session, Domain domain, KoraliumColumnHandle column)
     {
-        IEncoder typeConverter = column.getGrpcType().getEncoder();
+        IEncoder typeConverter = column.getKoraliumType().getEncoder();
         String columnName = column.getColumnName();
         String predicateString = domain.getValues().getValuesProcessor().transform(
                 ranges -> {
