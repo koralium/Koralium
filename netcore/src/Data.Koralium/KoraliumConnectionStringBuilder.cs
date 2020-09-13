@@ -18,7 +18,6 @@ using System.Collections.ObjectModel;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Globalization;
-using System.Text;
 
 namespace Data.Koralium
 {

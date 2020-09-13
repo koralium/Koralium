@@ -12,10 +12,7 @@
  * limitations under the License.
  */
 using Koralium.SqlToExpression.Metadata;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
 namespace Koralium.SqlToExpression.Visitors
 {

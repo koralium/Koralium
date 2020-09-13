@@ -15,11 +15,8 @@ using Data.Koralium.Client.Utils;
 using Koralium.Grpc;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace Data.Koralium.Client.Decoders

@@ -8,7 +8,7 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["tests/Koralium.WebTests/Koralium.WebTests.csproj", "tests/Koralium.WebTests/"]
 COPY ["src/Koralium.Json/Koralium.Json.csproj", "src/Koralium.Json/"]
-COPY ["src/Koralium.Core/Koralium.Core.csproj", "src/Koralium.Core/"]
+COPY ["src/Koralium/Koralium.csproj", "src/Koralium/"]
 COPY ["src/Koralium.SqlToExpression/Koralium.SqlToExpression.csproj", "src/Koralium.SqlToExpression/"]
 COPY ["src/Koralium.Shared/Koralium.Shared.csproj", "src/Koralium.Shared/"]
 RUN dotnet restore "tests/Koralium.WebTests/Koralium.WebTests.csproj"

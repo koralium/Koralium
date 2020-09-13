@@ -12,10 +12,8 @@
  * limitations under the License.
  */
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Koralium.Json.Extensions;
 using Koralium.WebTests.Entities;
@@ -25,11 +23,9 @@ using Koralium.WebTests.Resolvers.tpch;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using QueryProtocolGrpc.TestWeb.Resolvers;
 

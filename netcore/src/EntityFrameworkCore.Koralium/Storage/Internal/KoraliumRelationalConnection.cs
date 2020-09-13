@@ -13,10 +13,7 @@
  */
 using Data.Koralium;
 using Microsoft.EntityFrameworkCore.Storage;
-using System;
-using System.Collections.Generic;
 using System.Data.Common;
-using System.Text;
 
 namespace EntityFrameworkCore.Koralium.Storage.Internal
 {

@@ -11,13 +11,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Data.Koralium.Client;
-using Data.Koralium.Client.Decoders;
-using Koralium.WebTests;
 using Koralium.WebTests.Entities;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace Data.Koralium.Tests
