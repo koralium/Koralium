@@ -17,7 +17,7 @@ class TimestampDecoder extends baseDecoder_1.default {
     onNewPage(page) {
     }
     getValue(values, index) {
-        return values[index].toDate();
+        return values[index].toDate().toISOString();
     }
 }
 exports.default = TimestampDecoder;
