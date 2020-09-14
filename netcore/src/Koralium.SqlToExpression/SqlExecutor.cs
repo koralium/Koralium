@@ -57,7 +57,16 @@ namespace Koralium.SqlToExpression
             try
             {
                 var result = await _queryExecutor.Execute(executeStages, data);
-                return result.Result.Cast<AnonType>()?.FirstOrDefault()?.P0;
+                var enumerator = result.Result.GetEnumerator();
+                if(!enumerator.MoveNext())
+                {
+                    return null;
+                }
+                else
+                {
+                    var obj = (AnonType)enumerator.Current;
+                    return obj.P0;
+                }
             }
             catch (Exception e)
             {
