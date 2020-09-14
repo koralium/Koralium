@@ -1,4 +1,4 @@
-import KoraliumClient from "../src/client"
+import { KoraliumClient } from "../src/client"
 import { QueryServer } from "./queryserver"
 import TpchData from "./tpchdata";
 //import jest from "jest"
@@ -58,7 +58,7 @@ test("Test limit with parameter", async () => {
 });
 
 test("filter on date in parameter", async () => {
-  const expected = tpchData.getOrders().filter(x => x.orderdate >= new Date("1993-01-01"));
+  const expected = tpchData.getOrders().filter(x => new Date(x.orderdate) >= new Date("1993-01-01"));
   const results = await client.query(
     "select orderkey, custkey, orderstatus, totalprice, orderdate, orderpriority, clerk, shippriority, comment from orders where Orderdate >= @date",
     {

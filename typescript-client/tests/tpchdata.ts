@@ -21,7 +21,7 @@ export class Order {
   custkey: number;
   orderstatus: string;
   totalprice: number;
-  orderdate: Date;
+  orderdate: string;
   orderpriority: string;
   clerk: string;
   shippriority: number;
@@ -32,7 +32,7 @@ export class Order {
     custkey: number,
     orderstatus: string,
     totalprice: number,
-    orderdate: Date,
+    orderdate: string,
     orderpriority: string,
     clerk: string,
     shippriority: number,
@@ -84,6 +84,6 @@ const getOrders = async () => {
     }
   );
 
-  const mapped = expected.map(x => new Order(<number><unknown>x["orderkey"], <number><unknown>x["custkey"], x["orderstatus"], <number><unknown>x["totalprice"], new Date(x["orderdate"]), x["orderpriority"], x["clerk"], <number><unknown>x["shippriority"], x["comment"]));
+  const mapped = expected.map(x => new Order(<number><unknown>x["orderkey"], <number><unknown>x["custkey"], x["orderstatus"], <number><unknown>x["totalprice"], x["orderdate"], x["orderpriority"], x["clerk"], <number><unknown>x["shippriority"], x["comment"]));
   return mapped;
 };
