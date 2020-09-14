@@ -43,14 +43,19 @@ export class KoraliumClient {
     }
 
     return new Promise <any>((resolve: any, reject: any) => {
-      this.client.queryScalar(queryRequest, metadata, (error, data) => {
+      try {
+        this.client.queryScalar(queryRequest, metadata, (error, data) => {
 
-        if(error) {
-          reject(error.message);
-        }
+          if(error) {
+            reject(error.message);
+          }
 
-        resolve(decodeScalar(data));
-      });
+          resolve(decodeScalar(data));
+        });
+      }
+      catch(error) {
+        reject(error);
+      }
     });
   }
 
@@ -107,6 +112,10 @@ export class KoraliumClient {
             decoders[i].decode(blockList[i], objects, startLength);
           }
       });
+
+      stream.on("error", (error) => {
+        reject(error);
+      })
 
       stream.on("end", () => {
           resolve(objects);

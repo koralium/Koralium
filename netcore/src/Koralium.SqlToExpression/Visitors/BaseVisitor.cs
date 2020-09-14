@@ -70,6 +70,7 @@ namespace Koralium.SqlToExpression.Visitors
         public override void ExplicitVisit(NullLiteral node)
         {
             AddExpressionToStack(Expression.Constant(null));
+            AddNameToStack("null");
         }
 
         public override void ExplicitVisit(ColumnReferenceExpression columnReferenceExpression)

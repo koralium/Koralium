@@ -44,19 +44,23 @@ namespace Koralium.SqlToExpression.Visitors.OrderBy
         {
             expressionWithSortOrder.Expression.Accept(this);
 
-            Debug.Assert(expressionStack.Count == 1);
-
-            bool descending = false;
-
-            if (expressionWithSortOrder.SortOrder == SortOrder.Descending)
+            //Ignore empty stacks, since you can sort by SELECT NULL
+            if(expressionStack.Count > 0)
             {
-                descending = true;
-            }
-            var expression = expressionStack.Pop();
-            if (!expression.IsNull())
-            {
-                var orderByExpression = Expression.Convert(expression, typeof(object));
-                sortItems.Add(new SortItem(orderByExpression, descending));
+                Debug.Assert(expressionStack.Count == 1);
+
+                bool descending = false;
+
+                if (expressionWithSortOrder.SortOrder == SortOrder.Descending)
+                {
+                    descending = true;
+                }
+                var expression = expressionStack.Pop();
+                if (!expression.IsNull())
+                {
+                    var orderByExpression = Expression.Convert(expression, typeof(object));
+                    sortItems.Add(new SortItem(orderByExpression, descending));
+                }
             }
         }
     }
