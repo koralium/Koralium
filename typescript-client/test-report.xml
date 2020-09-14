@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testExecutions version="1">
-  <file path="C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\tests\client.test.ts">
-    <testCase name="Get orders" duration="547"/>
-    <testCase name="Get secure data" duration="560"/>
-    <testCase name="Test limit" duration="38"/>
-    <testCase name="Test limit with parameter" duration="9"/>
-    <testCase name="filter on date in parameter" duration="356"/>
-    <testCase name="select single field" duration="99"/>
+  <file path="C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\tests\queryBuilder.test.ts">
+    <testCase name="count with filter" duration="2"/>
+    <testCase name="Select same column" duration="1"/>
+    <testCase name="Select with limit and offset" duration="0"/>
+    <testCase name="Select multiple columns, filter, limit, offset" duration="0"/>
+    <testCase name="Object mapper" duration="0"/>
+    <testCase name="Object mapper, missing mapping" duration="1"/>
   </file>
 </testExecutions>
