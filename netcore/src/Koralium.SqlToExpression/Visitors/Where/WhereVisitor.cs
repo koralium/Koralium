@@ -11,7 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.SqlToExpression.Exceptions;
 using Koralium.SqlToExpression.Stages.CompileStages;
+using Koralium.SqlToExpression.Utils;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -43,6 +45,59 @@ namespace Koralium.SqlToExpression.Visitors.Where
         public override void ExplicitVisit(WhereClause whereClause)
         {
             whereClause.SearchCondition.Accept(this);
+        }
+
+        public override void ExplicitVisit(LikePredicate likePredicate)
+        {
+            likePredicate.FirstExpression.Accept(this);
+
+            var leftExpression = PopStack();
+
+            if(likePredicate.SecondExpression is StringLiteral stringLiteral)
+            {
+                var value = stringLiteral.Value;
+                bool startsWith = false;
+                bool endsWith = false;
+                if (value.StartsWith("%"))
+                {
+                    endsWith = true;
+                    value = value.Substring(1);
+                }
+                if (value.EndsWith("%") && (value.Length - 1 == 0 || value[value.Length - 1] != '\\'))
+                {
+                    startsWith = true;
+                    value = value.Substring(0, value.Length - 1);
+                }
+
+                // Contains
+                if(startsWith && endsWith)
+                {
+                    var containsExpression = PredicateUtils.CallContains(leftExpression, value);
+                    AddExpressionToStack(containsExpression);
+                }
+                //Starts with
+                else if (startsWith)
+                {
+                    var startsWithExpression = PredicateUtils.CallStartsWith(leftExpression, value);
+                    AddExpressionToStack(startsWithExpression);
+                }
+                //Ends with
+                else if (endsWith)
+                {
+                    var endsWithExpression = PredicateUtils.CallEndsWith(leftExpression, value);
+                    AddExpressionToStack(endsWithExpression);
+                }
+                //Equals
+                else
+                {
+                    var equalsExpression = PredicateUtils.CreateComparisonExpression(leftExpression, Expression.Constant(value), BooleanComparisonType.Equals);
+                    AddExpressionToStack(equalsExpression);
+                }
+            }
+            else
+            {
+                throw new SqlErrorException("Like can only be used with strings");
+            }
         }
 
         public override void AddExpressionToStack(Expression expression)

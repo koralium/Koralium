@@ -20,6 +20,9 @@ namespace Koralium.SqlToExpression.Utils
     public static class PredicateUtils
     {
         private static readonly MethodInfo StringCompareTo = typeof(string).GetMethod("CompareTo", new Type[] { typeof(string) });
+        private static readonly MethodInfo StringStartsWith = typeof(string).GetMethod("StartsWith", new Type[] { typeof(string) });
+        private static readonly MethodInfo StringContains = typeof(string).GetMethod("Contains", new Type[] { typeof(string) });
+        private static readonly MethodInfo StringEndsWith = typeof(string).GetMethod("EndsWith", new Type[] { typeof(string) });
 
         internal static void ConvertExpressionTypes(ref Expression leftExpression, ref Expression rightExpression)
         {
@@ -83,6 +86,21 @@ namespace Koralium.SqlToExpression.Utils
                 arguments: new[] { right });
 
             right = Expression.Constant(0);
+        }
+
+        public static Expression CallContains(Expression left, string value)
+        {
+            return Expression.Call(instance: left, method: StringContains, arguments: new[] { Expression.Constant(value) });
+        }
+
+        public static Expression CallStartsWith(Expression left, string value)
+        {
+            return Expression.Call(instance: left, method: StringStartsWith, arguments: new[] { Expression.Constant(value) });
+        }
+        
+        public static Expression CallEndsWith(Expression left, string value)
+        {
+            return Expression.Call(instance: left, method: StringEndsWith, arguments: new[] { Expression.Constant(value) });
         }
 
         public static Expression CreateComparisonExpression(Expression leftExpression, Expression rightExpression, Microsoft.SqlServer.TransactSql.ScriptDom.BooleanComparisonType comparisonType)

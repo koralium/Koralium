@@ -694,6 +694,59 @@ namespace Koralium.SqlToExpression.Tests
             AssertAreEqual(expected, result.Result);
         }
 
+        [Test]
+        public async Task TestStringStartsWith()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like '5-L%'");
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderpriority.StartsWith("5-L"))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestStringContainsWith()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like '%5-L%'");
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderpriority.Contains("5-L"))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestStringEndsWith()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like '%5-L'");
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderpriority.EndsWith("5-L"))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestStringLikeEquals()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like '5-L'");
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderpriority.Equals("5-L"))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+
         //select name from customer where name > 'customer#000001500'
         //Gives the wrong results
     }
