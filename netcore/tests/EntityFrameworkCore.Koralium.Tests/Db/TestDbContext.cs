@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.WebTests;
+using Koralium.WebTests.Entities.specific;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 
@@ -25,6 +26,8 @@ namespace EntityFrameworkCore.Koralium.Tests.Db
 
         public DbSet<Project> Projects { get; set; }
 
+        public DbSet<AutoMapperCustomer> AutoMapperCustomers { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Project>(opt =>
@@ -34,6 +37,15 @@ namespace EntityFrameworkCore.Koralium.Tests.Db
 
                 opt.Property(x => x.Company).IsObjectType();
             });
+
+            modelBuilder.Entity<AutoMapperCustomer>(opt =>
+            {
+                opt.ToTable("automappercustomer")
+                    .HasKey(x => x.Custkey);
+
+                opt.Property(x => x.OrderKeys).IsArrayType();
+            });
+
             base.OnModelCreating(modelBuilder);
         }
     }

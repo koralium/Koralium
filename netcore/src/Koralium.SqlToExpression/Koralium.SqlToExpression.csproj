@@ -25,4 +25,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Koralium.Shared\Koralium.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

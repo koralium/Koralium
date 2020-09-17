@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.Interfaces;
+using Koralium.SqlToExpression;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,11 +21,12 @@ namespace Koralium
 {
     public abstract class TableResolver<T> : ITableResolver
     {
-        public async Task<IQueryable> GetQueryable(HttpContext httpContext)
+        public async Task<IQueryable> GetQueryable(HttpContext httpContext, IQueryOptions queryOptions)
         {
-            return await GetQueryableData(httpContext);
+            var genericQueryOptions = queryOptions.CreateGeneric<T>();
+            return await GetQueryableData(httpContext, genericQueryOptions);
         }
 
-        public abstract Task<IQueryable<T>> GetQueryableData(HttpContext context);
+        public abstract Task<IQueryable<T>> GetQueryableData(HttpContext context, IQueryOptions<T> queryOptions);
     }
 }

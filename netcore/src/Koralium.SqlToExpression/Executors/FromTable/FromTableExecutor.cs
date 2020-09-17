@@ -12,18 +12,31 @@
  * limitations under the License.
  */
 using Koralium.SqlToExpression.Stages.ExecuteStages;
+using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Koralium.SqlToExpression.Executors
 {
     public abstract class FromTableExecutor<Entity> : IFromTableExecutor
     {
-        public async ValueTask<IQueryable> Execute(ITableResolver tableResolver, ExecuteFromTableStage executeFromTableStage, object additionalData)
+        public async ValueTask<IQueryable> Execute(ISqlTableResolver tableResolver, ExecuteFromTableStage executeFromTableStage, object additionalData)
         {
             return await GetTable(tableResolver, executeFromTableStage, additionalData);
         }
 
-        public abstract ValueTask<IQueryable<Entity>> GetTable(ITableResolver tableResolver, ExecuteFromTableStage executeFromTableStage, object additionalData);
+        public abstract ValueTask<IQueryable<Entity>> GetTable(ISqlTableResolver tableResolver, ExecuteFromTableStage executeFromTableStage, object additionalData);
+
+        protected Expression<Func<Entity, Entity>> GetSelectLambda(ExecuteFromTableStage stage)
+        {
+            var lambda = Expression.Lambda<Func<Entity, Entity>>(stage.SelectExpression, stage.ParameterExpression);
+            return lambda;
+        }
+
+        protected Expression<Func<Entity, bool>> GetWhereLambda(ExecuteFromTableStage stage)
+        {
+            return Expression.Lambda<Func<Entity, bool>>(stage.WhereExpression, stage.ParameterExpression);
+        }
     }
 }

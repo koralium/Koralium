@@ -37,7 +37,12 @@ namespace Koralium.SqlToExpression.Stages
         {
             builder.Add(new ExecuteFromTableStage(
                 fromTableStage.TableName, 
-                fromTableStage.CurrentType));
+                fromTableStage.CurrentType,
+                fromTableStage.SelectExpression,
+                fromTableStage.ParameterExpression,
+                fromTableStage.WhereExpression,
+                fromTableStage.Limit,
+                fromTableStage.Offset));
         }
 
         public void Visit(GroupByStage groupByStage)

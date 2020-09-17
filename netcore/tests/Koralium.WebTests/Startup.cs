@@ -14,15 +14,21 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Koralium.Json.Extensions;
+using Koralium.WebTests.Database;
 using Koralium.WebTests.Entities;
+using Koralium.WebTests.Entities.specific;
 using Koralium.WebTests.Entities.tpch;
 using Koralium.WebTests.Resolvers;
+using Koralium.WebTests.Resolvers.specific;
 using Koralium.WebTests.Resolvers.tpch;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -48,6 +54,14 @@ namespace Koralium.WebTests
                 .AddKoraliumJson();
 
             services.AddGrpc();
+
+            var connection = new SqliteConnection("Data Source=Sharable;Mode=Memory;Cache=Shared");
+            connection.Open();
+            services.AddDbContext<TestContext>(opt =>
+            {
+                opt.UseSqlite(connection);
+            });
+            services.AddSingleton(connection);
 
             services.AddKoralium(opt =>
             {
@@ -83,6 +97,15 @@ namespace Koralium.WebTests
                 opt.AddTableResolver<PartsuppResolver, Partsupp>();
                 opt.AddTableResolver<RegionResolver, Region>();
                 opt.AddTableResolver<SupplierResolver, Supplier>();
+
+                //Entity framework
+                opt.AddTableResolver<EfCustomerResolver, Customer>(t =>
+                {
+                    t.TableName = "efcustomer";
+                });
+
+                //Specific
+                opt.AddTableResolver<AutoMapperCustomerResolver, AutoMapperCustomer>();
             });
             
             var tpchDataPath = Path.Join(Configuration.GetValue<string>(WebHostDefaults.ContentRootKey), Configuration.GetValue<string>("TestDataLocation"));
@@ -117,9 +140,23 @@ namespace Koralium.WebTests
             });
         }
 
+        private void AddSqliteData(IServiceProvider provider)
+        {
+            using var initScope = provider.CreateScope();
+            var context = initScope.ServiceProvider.GetService<TestContext>();
+            var tpchData = initScope.ServiceProvider.GetService<TpchData>();
+
+            var b = tpchData.Customers.GroupBy(x => x.Custkey).Where(x => x.Count() > 1).ToList();
+            context.Customers.AddRange(tpchData.Customers);
+            context.SaveChanges();
+            context.Orders.AddRange(tpchData.Orders.ToList());
+            context.SaveChanges();
+        }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            AddSqliteData(app.ApplicationServices);
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

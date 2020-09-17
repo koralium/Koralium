@@ -22,6 +22,6 @@ namespace Koralium.SqlToExpression.Executors
     /// </summary>
     public interface IFromTableExecutor
     {
-        ValueTask<IQueryable> Execute(ITableResolver tableResolver, ExecuteFromTableStage executeFromTableStage, object additionalData);
+        ValueTask<IQueryable> Execute(ISqlTableResolver tableResolver, ExecuteFromTableStage executeFromTableStage, object additionalData);
     }
 }

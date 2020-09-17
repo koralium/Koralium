@@ -23,7 +23,7 @@ namespace Koralium.SqlToExpression.Visitors.From
 {
     internal static class FromHelper
     {
-        public static IEnumerable<IQueryStage> GetFromTableStage(FromClause fromClause, VisitorMetadata visitorMetadata)
+        public static IReadOnlyList<IQueryStage> GetFromTableStage(FromClause fromClause, VisitorMetadata visitorMetadata)
         {
             FromVisitor fromVisitor = new FromVisitor(visitorMetadata);
             fromClause.Accept(fromVisitor);

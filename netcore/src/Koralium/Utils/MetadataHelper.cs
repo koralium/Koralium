@@ -184,6 +184,10 @@ namespace Koralium.Utils
 
         private static IEnumerable<TableColumn> CollectColumnMetadata(Type objectType, PropertyInfo propertyInfo, ref int globalIndex, Dictionary<Type, IReadOnlyList<TableColumn>> typeLookup)
         {
+            if(propertyInfo.GetCustomAttribute<KoraliumIgnoreAttribute>() != null)
+            {
+                return Enumerable.Empty<TableColumn>();
+            }
             return CollectColumnMetadata(propertyInfo.Name, propertyInfo.PropertyType, CreateGetDelegate(objectType, propertyInfo.GetGetMethod()), ref globalIndex, typeLookup, propertyInfo);
         }
 

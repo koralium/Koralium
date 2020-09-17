@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.SqlToExpression.Exceptions;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Koralium.SqlToExpression.Utils;
 using Koralium.SqlToExpression.Visitors.Analyzers;
@@ -25,6 +26,7 @@ using Koralium.SqlToExpression.Visitors.Where;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Koralium.SqlToExpression.Visitors
 {
@@ -32,7 +34,7 @@ namespace Koralium.SqlToExpression.Visitors
     {
         private readonly List<IQueryStage> _stages = new List<IQueryStage>();
         private readonly VisitorMetadata _visitorMetadata;
-
+        private HashSet<PropertyInfo> _usedProperties = new HashSet<PropertyInfo>();
         public IReadOnlyList<IQueryStage> Stages => _stages;
 
         private IQueryStage LastStage => _stages.Last();
@@ -44,22 +46,46 @@ namespace Koralium.SqlToExpression.Visitors
 
         public override void ExplicitVisit(QuerySpecification query)
         {
+            FromTableStage fromTable = null;
             //FROM
             if(query.FromClause != null)
             {
-                _stages.AddRange(FromHelper.GetFromTableStage(query.FromClause, _visitorMetadata));
+                var fromStages = FromHelper.GetFromTableStage(query.FromClause, _visitorMetadata);
+
+                //Check if it is only a from table stage, this is used to add used properties into
+                if(fromStages.Count == 1 && fromStages[0] is FromTableStage fromTableStage)
+                {
+                    fromTable = fromTableStage;
+                }
+
+                _stages.AddRange(fromStages);
+            }
+            else
+            {
+                throw new SqlErrorException("Selects must always have FROM");
             }
 
             //WHERE
             if(query.WhereClause != null)
             {
-                _stages.Add(WhereHelper.GetWhereStage(LastStage, query.WhereClause, _visitorMetadata));
+                var whereStage = WhereHelper.GetWhereStage(LastStage, query.WhereClause, _visitorMetadata, _usedProperties);
+
+                if(LastStage is FromTableStage fromTableStage)
+                {
+                    //Push the where condition into the table resolvers
+                    fromTableStage.WhereExpression = whereStage.WhereExpression;
+                }
+                else
+                {
+                    //If its not possible to push up, add it as a normal stage
+                    _stages.Add(whereStage);
+                }
             }
 
             //GROUP BY
             if(query.GroupByClause != null)
             {
-                _stages.Add(GroupByHelper.GetGroupByStage(LastStage, query.GroupByClause));
+                _stages.Add(GroupByHelper.GetGroupByStage(LastStage, query.GroupByClause, _usedProperties));
             }
             else if (ContainsAggregateHelper.ContainsAggregate(query.SelectElements))
             {
@@ -69,17 +95,17 @@ namespace Koralium.SqlToExpression.Visitors
             //HAVING
             if(query.HavingClause != null)
             {
-                _stages.Add(HavingHelper.GetHavingStage(LastStage, query.HavingClause, _visitorMetadata));
+                _stages.Add(HavingHelper.GetHavingStage(LastStage, query.HavingClause, _visitorMetadata, _usedProperties));
             }
             
             //ORDER BY
             if(query.OrderByClause != null)
             {
-                _stages.Add(OrderByHelper.GetOrderByStage(LastStage, query.OrderByClause, _visitorMetadata));
+                _stages.Add(OrderByHelper.GetOrderByStage(LastStage, query.OrderByClause, _visitorMetadata, _usedProperties));
             }
 
             //SELECT
-            _stages.Add(SelectHelper.GetSelectStage(LastStage, query.SelectElements, _visitorMetadata));
+            _stages.Add(SelectHelper.GetSelectStage(LastStage, query.SelectElements, _visitorMetadata, _usedProperties));
 
             //DISTINCT
             if(query.UniqueRowFilter == UniqueRowFilter.Distinct)
@@ -90,12 +116,42 @@ namespace Koralium.SqlToExpression.Visitors
             //OFSET
             if(query.OffsetClause != null)
             {
-                _stages.Add(OffsetHelper.GetOffsetStage(LastStage, query.OffsetClause, _visitorMetadata));
+                var offsetStage = OffsetHelper.GetOffsetStage(LastStage, query.OffsetClause, _visitorMetadata);
+
+                //Check if we can push the values into the table scan
+                if(LastStage is FromTableStage fromTableStage)
+                {
+                    fromTableStage.Limit = offsetStage.Take;
+                    fromTableStage.Offset = offsetStage.Skip;
+                }
+                else
+                {
+                    _stages.Add(OffsetHelper.GetOffsetStage(LastStage, query.OffsetClause, _visitorMetadata));
+                }
             }
 
             //TOP
             if(query.TopRowFilter != null){
-                _stages.Add(OffsetHelper.GetOffsetStage(LastStage, query.TopRowFilter, _visitorMetadata));
+                var offsetStage = OffsetHelper.GetOffsetStage(LastStage, query.TopRowFilter, _visitorMetadata);
+
+                if(LastStage is FromTableStage fromTableStage)
+                {
+                    fromTableStage.Limit = offsetStage.Take;
+                    fromTableStage.Offset = offsetStage.Skip;
+                }
+                else
+                {
+                    _stages.Add(OffsetHelper.GetOffsetStage(LastStage, query.TopRowFilter, _visitorMetadata));
+                }
+            }
+
+            //Add a select stage that selects all the properties required
+            //This should be added to be done directly after the 'from table' stage
+            //This helps solve some issues with automapper related issues where extra complicated queries in
+            //entity framework are created
+            if (fromTable != null)
+            {
+                fromTable.SelectExpression = SelectExpressionUtils.CreateSelectExpression(fromTable, _usedProperties);
             }
         }
     }

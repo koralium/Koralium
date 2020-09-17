@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using CsvHelper.Configuration.Attributes;
 using Newtonsoft.Json;
 using System;
 
@@ -35,6 +36,10 @@ namespace Koralium.WebTests.Entities.tpch
         public int Shippriority { get; set; }
 
         public string Comment { get; set; }
+
+        [KoraliumIgnore]
+        [Ignore]
+        public Customer Customer { get; set; }
 
         public override bool Equals(object obj)
         {

@@ -27,7 +27,11 @@ namespace Koralium.SqlToExpression.Visitors.Select
     {
         private static Func<object, object>[] getDelegates = BuildGetDeletages();
 
-        public static SelectStage GetSelectStage(IQueryStage previousStage, IList<SelectElement> selectElements, VisitorMetadata visitorMetadata)
+        public static SelectStage GetSelectStage(
+            IQueryStage previousStage, 
+            IList<SelectElement> selectElements,
+            VisitorMetadata visitorMetadata,
+            HashSet<PropertyInfo> usedProperties)
         {
             ISelectVisitor selectVisitor;
             if (previousStage is GroupedStage groupedStage)
@@ -42,6 +46,11 @@ namespace Koralium.SqlToExpression.Visitors.Select
             foreach(var selectElement in selectElements)
             {
                 selectVisitor.VisitSelect(selectElement);
+            }
+
+            foreach (var property in selectVisitor.UsedProperties)
+            {
+                usedProperties.Add(property);
             }
 
             var selects = selectVisitor.SelectExpressions;

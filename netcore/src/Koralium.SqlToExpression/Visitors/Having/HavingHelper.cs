@@ -14,17 +14,28 @@
 using Koralium.SqlToExpression.Exceptions;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace Koralium.SqlToExpression.Visitors.Having
 {
     internal static class HavingHelper
     {
-        public static HavingStage GetHavingStage(IQueryStage queryStage, HavingClause havingClause, VisitorMetadata visitorMetadata)
+        public static HavingStage GetHavingStage(
+            IQueryStage queryStage,
+            HavingClause havingClause, 
+            VisitorMetadata visitorMetadata,
+            HashSet<PropertyInfo> usedProperties)
         {
             if(queryStage is GroupedStage groupedStage)
             {
                 HavingVisitor havingVisitor = new HavingVisitor(groupedStage, visitorMetadata);
                 havingClause.Accept(havingVisitor);
+
+                foreach(var property in havingVisitor.UsedProperties)
+                {
+                    usedProperties.Add(property);
+                }
 
                 return new HavingStage(
                         groupedStage.CurrentType,

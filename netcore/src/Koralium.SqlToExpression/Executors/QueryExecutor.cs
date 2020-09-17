@@ -22,7 +22,7 @@ namespace Koralium.SqlToExpression.Executors
 {
     public class QueryExecutor : IQueryExecutor
     {
-        private readonly ITableResolver _tableResolver;
+        private readonly ISqlTableResolver _tableResolver;
         private readonly IFromTableExecutorFactory _fromTableExecutorFactory;
         private readonly IWhereExecutorFactory _whereExecutorFactory;
         private readonly IGroupByExecutorFactory _groupByExecutorFactory;
@@ -36,7 +36,7 @@ namespace Koralium.SqlToExpression.Executors
         object data = null;
 
         public QueryExecutor(
-            ITableResolver tableResolver,
+            ISqlTableResolver tableResolver,
             IFromTableExecutorFactory fromTableExecutorFactory,
             IWhereExecutorFactory whereExecutorFactory,
             IGroupByExecutorFactory groupByExecutorFactory,

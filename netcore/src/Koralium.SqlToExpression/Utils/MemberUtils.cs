@@ -24,31 +24,31 @@ namespace Koralium.SqlToExpression.Utils
 {
     internal static class MemberUtils
     {
-        public static Expression GetMember(IQueryStage previousStage, List<string> identifiers)
+        public static Expression GetMember(IQueryStage previousStage, List<string> identifiers, out PropertyInfo firstProperty)
         {
             Debug.Assert(previousStage != null, $"{nameof(previousStage)} was null");
             Debug.Assert(identifiers != null, $"{nameof(identifiers)} was null");
             Debug.Assert(identifiers.Count > 0, $"{nameof(identifiers)} was empty");
 
-            return GetMember_Internal(identifiers, previousStage.FromAliases, previousStage.TypeInfo, previousStage.ParameterExpression);
+            return GetMember_Internal(identifiers, previousStage.FromAliases, previousStage.TypeInfo, previousStage.ParameterExpression, out firstProperty);
         }
 
-        public static Expression GetMemberGroupByInValue(GroupedStage previousStage, List<string> identifiers)
+        public static Expression GetMemberGroupByInValue(GroupedStage previousStage, List<string> identifiers, out PropertyInfo firstProperty)
         {
             Debug.Assert(previousStage != null, $"{nameof(previousStage)} was null");
             Debug.Assert(identifiers != null, $"{nameof(identifiers)} was null");
             Debug.Assert(identifiers.Count > 0, $"{nameof(identifiers)} was empty");
 
-            return GetMember_Internal(identifiers, previousStage.FromAliases, previousStage.TypeInfo, previousStage.ValueParameterExpression);
+            return GetMember_Internal(identifiers, previousStage.FromAliases, previousStage.TypeInfo, previousStage.ValueParameterExpression, out firstProperty);
         }
 
-        public static Expression GetMemberGroupByInKey(GroupedStage previousStage, List<string> identifiers)
+        public static Expression GetMemberGroupByInKey(GroupedStage previousStage, List<string> identifiers, out PropertyInfo firstProperty)
         {
             Debug.Assert(previousStage != null, $"{nameof(previousStage)} was null");
             Debug.Assert(identifiers != null, $"{nameof(identifiers)} was null");
             Debug.Assert(identifiers.Count > 0, $"{nameof(identifiers)} was empty");
 
-            return GetMember_Internal(identifiers, previousStage.FromAliases, previousStage.KeyTypeInfo, previousStage.KeyParameterExpression);
+            return GetMember_Internal(identifiers, previousStage.FromAliases, previousStage.KeyTypeInfo, previousStage.KeyParameterExpression, out firstProperty);
         }
 
         public static List<string> RemoveAlias(IQueryStage previousStage, List<string> identifiers)
@@ -68,21 +68,19 @@ namespace Koralium.SqlToExpression.Utils
             List<string> identifiers,
             in FromAliases fromAliases,
             in SqlTypeInfo typeInfo,
-            in Expression parameterExpression)
+            in Expression parameterExpression,
+            out PropertyInfo firstProperty)
         {
-            //if (fromAliases.AliasExists(identifiers[0]))
-            //{
-            //    if (identifiers.Count < 2)
-            //    {
-            //        throw new SqlErrorException("Only got an alias as a order by column");
-            //    }
-            //    identifiers = identifiers.GetRange(1, identifiers.Count - 1);
-            //}
-
             if (!typeInfo.TryGetProperty(identifiers[0], out var property))
             {
                 throw new SqlErrorException($"Column {identifiers[0]} was not found, maybe it is not in the group by?");
             }
+            if (property.GetCustomAttribute<KoraliumIgnoreAttribute>() != null)
+            {
+                throw new SqlErrorException($"Column {identifiers[0]} does not exist");
+            }
+            //Set the original property, used to create a list of all used columns
+            typeInfo.TryGetOriginalProperty(identifiers[0], out firstProperty);
 
             var memberAccess = Expression.MakeMemberAccess(parameterExpression, property);
 

@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Koralium.SqlToExpression.Tests
 {
-    public class TableResolver : ITableResolver
+    public class TableResolver : ISqlTableResolver
     {
         private readonly TpchData _tpchData;
         public TableResolver(TpchData tpchData)
@@ -47,7 +47,7 @@ namespace Koralium.SqlToExpression.Tests
             throw new NotImplementedException();
         }
 
-        public ValueTask<IQueryable> ResolveTableName(string name, object additionalData)
+        public ValueTask<IQueryable> ResolveTableName(string name, object additionalData, IQueryOptions queryOptions)
         {
             return new ValueTask<IQueryable>(GetQueryable(name));
         }

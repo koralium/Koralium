@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Koralium.SqlToExpression.Visitors.Select
 {
@@ -50,6 +51,14 @@ namespace Koralium.SqlToExpression.Visitors.Select
             {
                 foreach (var property in _previousStage.TypeInfo.GetProperties().OrderBy(x => x.Key))
                 {
+                    if(property.Value.GetCustomAttribute<KoraliumIgnoreAttribute>() != null)
+                    {
+                        continue;
+                    }
+
+                    //Set property as used
+                    AddUsedProperty(property.Value);
+
                     var memberExpression = Expression.MakeMemberAccess(_previousStage.ParameterExpression, property.Value);
                     selectExpressions.Add(new SelectExpression(memberExpression, property.Key));
                 }

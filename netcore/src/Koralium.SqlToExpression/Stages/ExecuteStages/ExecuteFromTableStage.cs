@@ -14,6 +14,7 @@
 using Koralium.SqlToExpression.Executors;
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Koralium.SqlToExpression.Stages.ExecuteStages
@@ -24,10 +25,32 @@ namespace Koralium.SqlToExpression.Stages.ExecuteStages
 
         public Type EntityType { get; }
 
-        public ExecuteFromTableStage(string tableName, Type entityType)
+        public MemberInitExpression SelectExpression { get; }
+
+        public ParameterExpression ParameterExpression { get; }
+
+        public Expression WhereExpression { get; }
+
+        public int? Limit { get; }
+
+        public int? Offset { get; }
+
+        public ExecuteFromTableStage(
+            string tableName,
+            Type entityType,
+            MemberInitExpression selectExpression,
+            ParameterExpression parameterExpression,
+            Expression whereExpression,
+            int? limit,
+            int? offset)
         {
             TableName = tableName;
             EntityType = entityType;
+            SelectExpression = selectExpression;
+            ParameterExpression = parameterExpression;
+            WhereExpression = whereExpression;
+            Limit = limit;
+            Offset = offset;
         }
 
         public ValueTask<IQueryable> Accept(IQueryExecutor queryExecutor)
