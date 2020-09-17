@@ -42,7 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSqlToExpression(tablesMetadata);
             services.AddScoped<KoraliumExecutor>();
             services.AddScoped<GrpcExecutor>();
-            services.AddScoped<Koralium.SqlToExpression.ITableResolver, SqlTableResolver>();
+            services.AddScoped<Koralium.SqlToExpression.ISqlTableResolver, SqlTableResolver>();
 
             return services;
         }

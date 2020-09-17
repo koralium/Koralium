@@ -30,6 +30,29 @@ namespace Koralium.SqlToExpression.Stages.CompileStages
 
         public FromAliases FromAliases { get; }
 
+        /// <summary>
+        /// Optional select stage that should be run directly after getting the table data
+        /// </summary>
+        public MemberInitExpression SelectExpression { get; set; }
+
+        /// <summary>
+        /// Where expression that is pushed into the table stage.
+        /// 
+        /// This allows table resolvers to use the where expression if it is not possible
+        /// to provide a queryable directly against the source. This can be useful with some databases.
+        /// </summary>
+        public Expression WhereExpression { get; set; }
+
+        /// <summary>
+        /// If possible, offset will be pushed into the table stage
+        /// </summary>
+        public int? Offset { get; set; }
+
+        /// <summary>
+        /// If possible, limit will be pushed into the table stage
+        /// </summary>
+        public int? Limit { get; set; }
+
         public FromTableStage(
             string tableName, 
             SqlTypeInfo sqlTypeInfo, 

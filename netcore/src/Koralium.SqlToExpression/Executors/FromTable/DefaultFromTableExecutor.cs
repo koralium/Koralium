@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.SqlToExpression.Stages.ExecuteStages;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,9 +20,40 @@ namespace Koralium.SqlToExpression.Executors
 {
     public class DefaultFromTableExecutor<Entity> : FromTableExecutor<Entity>
     {
-        public override async ValueTask<IQueryable<Entity>> GetTable(ITableResolver tableResolver, ExecuteFromTableStage executeFromTableStage, object additionalData)
+        public override async ValueTask<IQueryable<Entity>> GetTable(ISqlTableResolver tableResolver, ExecuteFromTableStage executeFromTableStage, object additionalData)
         {
-            return (IQueryable<Entity>)await tableResolver.ResolveTableName(executeFromTableStage.TableName, additionalData);
+            QueryOptions queryOptions = new QueryOptions(
+                executeFromTableStage.ParameterExpression,
+                executeFromTableStage.SelectExpression,
+                executeFromTableStage.WhereExpression,
+                executeFromTableStage.Limit,
+                executeFromTableStage.Offset);
+
+            var queryable = (IQueryable<Entity>)await tableResolver.ResolveTableName(executeFromTableStage.TableName, additionalData, queryOptions);
+
+            //Check that we are not using any in memory queryable, since this select will only cost extra operations
+            //without any gain
+            if(!((queryable is EnumerableQuery) || (queryable is Array)) && queryOptions.TryGetSelectExpression<Entity>(out var select))
+            {
+                queryable = queryable.Select(select);
+            }
+            
+            if(queryOptions.TryGetWhereExpression<Entity>(out var where))
+            {
+                queryable = queryable.Where(where);
+            }
+
+            if(queryOptions.TryGetOffset(out var offset))
+            {
+                queryable = queryable.Skip(offset);
+            }
+
+            if(queryOptions.TryGetLimit(out var limit))
+            {
+                queryable = queryable.Take(limit);
+            }
+            
+            return queryable;
         }
     }
 }

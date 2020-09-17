@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.SqlToExpression;
 using Koralium.WebTests.Entities.tpch;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -27,7 +28,7 @@ namespace Koralium.WebTests.Resolvers
         {
             _tpchData = tpchData;
         }
-        public override Task<IQueryable<Order>> GetQueryableData(HttpContext context)
+        public override Task<IQueryable<Order>> GetQueryableData(HttpContext context, IQueryOptions<Order> queryOptions)
         {
             return Task.FromResult(_tpchData.Orders.AsQueryable());
         }

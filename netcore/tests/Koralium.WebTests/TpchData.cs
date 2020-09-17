@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using CsvHelper;
+using CsvHelper.Configuration;
 using Koralium.WebTests.Entities.tpch;
 using System;
 using System.Collections.Generic;
@@ -48,10 +49,10 @@ namespace Koralium.WebTests
 
         private void LoadTables(string testDataLocation)
         {
+            Orders = LoadData<Order>(Path.Join(testDataLocation, "./tpch/orders.csv"));
             Customers = LoadData<Customer>(Path.Join(testDataLocation, "./tpch/customer.csv"));
             LineItem = LoadData<LineItem>(Path.Join(testDataLocation, "./tpch/lineitem.csv"));
             Nation = LoadData<Nation>(Path.Join(testDataLocation, "./tpch/nation.csv"));
-            Orders = LoadData<Order>(Path.Join(testDataLocation, "./tpch/orders.csv"));
             Part = LoadData<Part>(Path.Join(testDataLocation, "./tpch/part.csv"));
             Partsupp = LoadData<Partsupp>(Path.Join(testDataLocation, "./tpch/partsupp.csv"));
             Region = LoadData<Region>(Path.Join(testDataLocation, "./tpch/region.csv"));
@@ -62,9 +63,19 @@ namespace Koralium.WebTests
         {
             using var reader = new StreamReader(path);
             using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+            csv.Configuration.RegisterClassMap<OrderMap>();
             csv.Configuration.PrepareHeaderForMatch = (string header, int index) => header.ToLower();
 
             return csv.GetRecords<T>().ToList();
+        }
+
+        public sealed class OrderMap: ClassMap<Order>
+        {
+            public OrderMap()
+            {
+                AutoMap(CultureInfo.InvariantCulture);
+                Map(f => f.Customer).Ignore(true);
+            }
         }
 
         private void FixDates()
@@ -72,6 +83,7 @@ namespace Koralium.WebTests
             Orders.ForEach(x =>
             {
                 x.Orderdate = FixDate(x.Orderdate);
+                x.Customer = null;
             });
 
             LineItem.ForEach(x =>

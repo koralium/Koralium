@@ -16,9 +16,11 @@ using Koralium.SqlToExpression.Stages.CompileStages;
 using Koralium.SqlToExpression.Utils;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Koralium.SqlToExpression.Visitors
 {
@@ -26,6 +28,7 @@ namespace Koralium.SqlToExpression.Visitors
     {
         private IQueryStage _previousStage;
         private readonly VisitorMetadata _visitorMetadata;
+        private readonly List<PropertyInfo> _usedProperties = new List<PropertyInfo>();
 
         public BaseVisitor(IQueryStage previousStage, VisitorMetadata visitorMetadata)
         {
@@ -33,6 +36,12 @@ namespace Koralium.SqlToExpression.Visitors
             _visitorMetadata = visitorMetadata;
         }
 
+        public IEnumerable<PropertyInfo> UsedProperties => _usedProperties;
+
+        protected void AddUsedProperty(PropertyInfo propertyInfo)
+        {
+            _usedProperties.Add(propertyInfo);
+        }
 
         public abstract void AddExpressionToStack(Expression expression);
 
@@ -78,8 +87,8 @@ namespace Koralium.SqlToExpression.Visitors
             var identifiers = columnReferenceExpression.MultiPartIdentifier.Identifiers.Select(x => x.Value).ToList();
 
             identifiers = MemberUtils.RemoveAlias(_previousStage, identifiers);
-            var memberAccess = MemberUtils.GetMember(_previousStage, identifiers);
-
+            var memberAccess = MemberUtils.GetMember(_previousStage, identifiers, out var property);
+            AddUsedProperty(property);
             AddExpressionToStack(memberAccess);
             AddNameToStack(string.Join(".", identifiers));
         }

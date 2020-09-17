@@ -45,6 +45,10 @@ namespace EntityFrameworkCore.Koralium.Storage.Internal
                 {
                     return new ObjectTypeMapping("object", clrType);
                 }
+                if(mappingInfo.StoreTypeName == "array")
+                {
+                    return new ListTypeMapping("array", clrType);
+                }
             }
 
             if (clrType != null

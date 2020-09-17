@@ -97,11 +97,13 @@ namespace Koralium.SqlToExpression.Visitors
             Expression expression;
             if (_inAggregateFunction)
             {
-                expression = MemberUtils.GetMemberGroupByInValue(_previousStage, identifiers);
+                expression = MemberUtils.GetMemberGroupByInValue(_previousStage, identifiers, out var property);
+                AddUsedProperty(property);
             }
             else
             {
-                expression = MemberUtils.GetMemberGroupByInKey(_previousStage, identifiers);
+                expression = MemberUtils.GetMemberGroupByInKey(_previousStage, identifiers, out var property);
+                AddUsedProperty(property);
             }
 
             AddExpressionToStack(expression);

@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.SqlToExpression;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,6 +20,6 @@ namespace Koralium.Interfaces
 {
     public interface ITableResolver
     {
-        Task<IQueryable> GetQueryable(HttpContext httpContext);
+        Task<IQueryable> GetQueryable(HttpContext httpContext, IQueryOptions queryOptions);
     }
 }

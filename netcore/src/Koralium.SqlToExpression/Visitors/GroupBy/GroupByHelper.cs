@@ -15,17 +15,27 @@ using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Koralium.SqlToExpression.Visitors.GroupBy
 {
     internal static class GroupByHelper
     {
-        public static GroupByStage GetGroupByStage(IQueryStage previousStage, GroupByClause groupByClause)
+        public static GroupByStage GetGroupByStage(
+            IQueryStage previousStage, 
+            GroupByClause groupByClause,
+            HashSet<PropertyInfo> usedProperties)
         {
             GroupByVisitor groupByVisitor = new GroupByVisitor(previousStage);
             groupByClause.Accept(groupByVisitor);
+
+            foreach(var property in groupByVisitor.UsedProperties)
+            {
+                usedProperties.Add(property);
+            }
 
             var expressions = groupByVisitor.GroupByExpressions;
 
@@ -36,7 +46,7 @@ namespace Koralium.SqlToExpression.Visitors.GroupBy
 
             for (int i = 0; i < expressions.Count; i++)
             {
-                builder.AddProperty(expressions[i].Name, tupleProperties[i]);
+                builder.AddProperty(expressions[i].Name, tupleProperties[i], expressions[i].OriginalProperty);
             }
 
             var groupingType = GetGroupingType(tupleType, previousStage.CurrentType);

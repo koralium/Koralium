@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium;
+using Koralium.SqlToExpression;
 using Koralium.WebTests;
 using Koralium.WebTests.Entities;
 using Microsoft.AspNetCore.Http;
@@ -22,7 +23,7 @@ namespace QueryProtocolGrpc.TestWeb.Resolvers
 {
     public class EmployeeResolver : TableResolver<Employee>
     {
-        public override Task<IQueryable<Employee>> GetQueryableData(HttpContext context)
+        public override Task<IQueryable<Employee>> GetQueryableData(HttpContext context, IQueryOptions<Employee> queryOptions)
         {
             return Task.FromResult(TestData.GetEmployees());
         }

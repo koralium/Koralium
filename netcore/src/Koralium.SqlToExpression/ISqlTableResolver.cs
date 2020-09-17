@@ -16,8 +16,8 @@ using System.Threading.Tasks;
 
 namespace Koralium.SqlToExpression
 {
-    public interface ITableResolver
+    public interface ISqlTableResolver
     {
-        ValueTask<IQueryable> ResolveTableName(string name, object additionalData);
+        ValueTask<IQueryable> ResolveTableName(string name, object additionalData, IQueryOptions queryOptions);
     }
 }

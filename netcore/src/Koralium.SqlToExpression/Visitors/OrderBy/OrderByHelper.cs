@@ -13,18 +13,29 @@
  */
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Reflection;
 
 namespace Koralium.SqlToExpression.Visitors.OrderBy
 {
     internal static class OrderByHelper
     {
-        public static IQueryStage GetOrderByStage(IQueryStage previousStage, OrderByClause orderByClause, VisitorMetadata visitorMetadata)
+        public static IQueryStage GetOrderByStage(
+            IQueryStage previousStage, 
+            OrderByClause orderByClause, 
+            VisitorMetadata visitorMetadata,
+            HashSet<PropertyInfo> usedProperties)
         {
             if(previousStage is GroupedStage groupedStage)
             {
                 OrderByAggregationsVisitor orderByAggregationsVisitor = new OrderByAggregationsVisitor(groupedStage, visitorMetadata);
                 orderByClause.Accept(orderByAggregationsVisitor);
+
+                foreach(var property in orderByAggregationsVisitor.UsedProperties)
+                {
+                    usedProperties.Add(property);
+                }
 
                 return new GroupedOrderByStage(
                     groupedStage.CurrentType,
@@ -42,6 +53,11 @@ namespace Koralium.SqlToExpression.Visitors.OrderBy
             {
                 OrderByPlainVisitor visitor = new OrderByPlainVisitor(previousStage, visitorMetadata);
                 orderByClause.Accept(visitor);
+
+                foreach (var property in visitor.UsedProperties)
+                {
+                    usedProperties.Add(property);
+                }
 
                 return new OrderByStage(
                     previousStage.CurrentType,

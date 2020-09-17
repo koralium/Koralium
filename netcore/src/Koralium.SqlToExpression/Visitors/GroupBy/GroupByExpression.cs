@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Koralium.SqlToExpression.Visitors.GroupBy
 {
@@ -21,10 +22,13 @@ namespace Koralium.SqlToExpression.Visitors.GroupBy
 
         public string Name { get; }
 
-        public GroupByExpression(Expression expression, string name)
+        public PropertyInfo OriginalProperty { get; }
+
+        public GroupByExpression(Expression expression, string name, PropertyInfo originalProperty)
         {
             Expression = expression;
             Name = name;
+            OriginalProperty = originalProperty;
         }
     }
 }

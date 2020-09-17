@@ -11,7 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using CsvHelper.Configuration.Attributes;
 using System;
+using System.Collections.Generic;
 
 namespace Koralium.WebTests.Entities.tpch
 {
@@ -32,6 +34,10 @@ namespace Koralium.WebTests.Entities.tpch
         public string Mktsegment { get; set; }
 
         public string Comment { get; set; }
+
+        [KoraliumIgnore]
+        [Ignore]
+        public List<Order> Orders { get; set; }
 
         public override bool Equals(object obj)
         {

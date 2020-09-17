@@ -25,15 +25,30 @@ namespace Koralium.SqlToExpression.Models
     public class SqlTypeInfo
     {
         private readonly Dictionary<string, PropertyInfo> _properties;
+        private readonly Dictionary<string, PropertyInfo> _originalProperties;
 
-        internal SqlTypeInfo(Dictionary<string, PropertyInfo> properties)
+        internal SqlTypeInfo(Dictionary<string, PropertyInfo> properties, Dictionary<string, PropertyInfo> originalProperties)
         {
             _properties = properties;
+            _originalProperties = originalProperties;
         }
 
         public bool TryGetProperty(string name, out PropertyInfo propertyInfo)
         {
             return _properties.TryGetValue(name.ToLower(), out propertyInfo);
+        }
+
+        public bool TryGetOriginalProperty(string name, out PropertyInfo propertyInfo)
+        {
+            if(_originalProperties != null && _originalProperties.TryGetValue(name.ToLower(), out propertyInfo))
+            {
+                return true;
+            }
+            if(_properties.TryGetValue(name.ToLower(), out propertyInfo))
+            {
+                return true;
+            }
+            return false;
         }
 
         public IEnumerable<KeyValuePair<string, PropertyInfo>> GetProperties()
@@ -49,8 +64,9 @@ namespace Koralium.SqlToExpression.Models
         public class Builder
         {
             private readonly Dictionary<string, PropertyInfo> _properties = new Dictionary<string, PropertyInfo>();
+            private Dictionary<string, PropertyInfo> _originalProperties;
 
-            public Builder AddProperty(string name, PropertyInfo propertyInfo)
+            public Builder AddProperty(string name, PropertyInfo propertyInfo, PropertyInfo originalProperty = null)
             {
                 if (string.IsNullOrEmpty(name))
                 {
@@ -63,12 +79,22 @@ namespace Koralium.SqlToExpression.Models
                 }
 
                 _properties.Add(name.ToLower(), propertyInfo);
+
+                if(originalProperty != null)
+                {
+                    if(_originalProperties == null)
+                    {
+                        _originalProperties = new Dictionary<string, PropertyInfo>();
+                    }
+                    _originalProperties.Add(name.ToLower(), originalProperty);
+                }
+
                 return this;
             }
 
             public SqlTypeInfo Build()
             {
-                return new SqlTypeInfo(_properties);
+                return new SqlTypeInfo(_properties, _originalProperties);
             }
         }
     }

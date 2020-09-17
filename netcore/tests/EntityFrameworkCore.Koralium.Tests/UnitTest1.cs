@@ -85,5 +85,15 @@ namespace EntityFrameworkCore.Koralium.Tests
 
             Assert.Pass();
         }
+
+        [Test]
+        public void TestCountCustomersWithAutomapper()
+        {
+            var db = serviceProvider.GetService<TestDbContext>();
+
+            var count = db.AutoMapperCustomers.Count();
+
+            Assert.That(count, Is.EqualTo(1500));
+        }
     }
 }

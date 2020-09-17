@@ -16,6 +16,7 @@ using Koralium.SqlToExpression.Utils;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Koralium.SqlToExpression.Visitors.GroupBy
 {
@@ -23,6 +24,9 @@ namespace Koralium.SqlToExpression.Visitors.GroupBy
     {
         private readonly IQueryStage _previousStage;
         private readonly List<GroupByExpression> _groupByExpressions = new List<GroupByExpression>();
+        private readonly List<PropertyInfo> _usedProperties = new List<PropertyInfo>();
+
+        public IEnumerable<PropertyInfo> UsedProperties => _usedProperties;
 
         public IReadOnlyList<GroupByExpression> GroupByExpressions => _groupByExpressions;
 
@@ -36,9 +40,10 @@ namespace Koralium.SqlToExpression.Visitors.GroupBy
             var identifiers = columnReferenceExpression.MultiPartIdentifier.Identifiers.Select(x => x.Value).ToList();
 
             identifiers = MemberUtils.RemoveAlias(_previousStage, identifiers);
-            var memberAccess = MemberUtils.GetMember(_previousStage, identifiers);
+            var memberAccess = MemberUtils.GetMember(_previousStage, identifiers, out var property);
+            _usedProperties.Add(property);
 
-            _groupByExpressions.Add(new GroupByExpression(memberAccess, string.Join(".", identifiers)));
+            _groupByExpressions.Add(new GroupByExpression(memberAccess, string.Join(".", identifiers), property));
         }
     }
 }

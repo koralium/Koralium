@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 
 namespace Koralium.Resolvers
 {
-    internal class SqlTableResolver : SqlToExpression.ITableResolver
+    internal class SqlTableResolver : SqlToExpression.ISqlTableResolver
     {
         private readonly MetadataStore _metadataStore;
         public SqlTableResolver(MetadataStore metadataStore)
@@ -33,7 +33,7 @@ namespace Koralium.Resolvers
             _metadataStore = metadataStore;
         }
 
-        public async ValueTask<IQueryable> ResolveTableName(string name, object additionalData)
+        public async ValueTask<IQueryable> ResolveTableName(string name, object additionalData, SqlToExpression.IQueryOptions queryOptions)
         {
             if(!(additionalData is TableResolverData tableResolverData))
             {
@@ -46,7 +46,7 @@ namespace Koralium.Resolvers
 
                 var resolver = (ITableResolver)tableResolverData.ServiceProvider.GetRequiredService(table.Resolver);
 
-                return await resolver.GetQueryable(tableResolverData.HttpContext);
+                return await resolver.GetQueryable(tableResolverData.HttpContext, queryOptions);
             }
             else
             {
