@@ -1,64 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testExecutions version="1">
   <file path="C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\tests\queryBuilder.test.ts">
-    <testCase name="count with filter" duration="2"/>
-    <testCase name="Select same column" duration="1"/>
+    <testCase name="count with filter" duration="3"/>
+    <testCase name="Select same column" duration="0"/>
     <testCase name="Select with limit and offset" duration="0"/>
-    <testCase name="Select multiple columns, filter, limit, offset" duration="1"/>
-    <testCase name="Object mapper" duration="0"/>
+    <testCase name="Select multiple columns, filter, limit, offset" duration="0"/>
+    <testCase name="Object mapper" duration="1"/>
     <testCase name="Object mapper, missing mapping" duration="0"/>
+    <testCase name="Filter builder equals" duration="8"/>
   </file>
   <file path="C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\tests\client.test.ts">
-    <testCase name="Get orders" duration="9057">
-      <failure message="Error: 14 UNAVAILABLE: failed to connect to all addresses"><![CDATA[Error: 14 UNAVAILABLE: failed to connect to all addresses
-    at Object.exports.createStatusError (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\common.js:91:15)
-    at ClientReadableStream._emitStatusIfDone (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client.js:233:26)
-    at ClientReadableStream._receiveStatus (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client.js:211:8)
-    at Object.onReceiveStatus (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client_interceptors.js:1277:15)
-    at InterceptingListener._callNext (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client_interceptors.js:568:42)
-    at InterceptingListener.onReceiveStatus (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client_interceptors.js:618:8)
-    at C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client_interceptors.js:1033:24]]></failure>
-    </testCase>
-    <testCase name="Get secure data" duration="1680">
-      <failure message="Error: 14 UNAVAILABLE: failed to connect to all addresses"><![CDATA[Error: 14 UNAVAILABLE: failed to connect to all addresses
-    at Object.exports.createStatusError (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\common.js:91:15)
-    at ClientReadableStream._emitStatusIfDone (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client.js:233:26)
-    at ClientReadableStream._receiveStatus (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client.js:211:8)
-    at Object.onReceiveStatus (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client_interceptors.js:1277:15)
-    at InterceptingListener._callNext (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client_interceptors.js:568:42)
-    at InterceptingListener.onReceiveStatus (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client_interceptors.js:618:8)
-    at C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client_interceptors.js:1033:24]]></failure>
-    </testCase>
-    <testCase name="Test limit" duration="1364">
-      <failure message="Error: 14 UNAVAILABLE: failed to connect to all addresses"><![CDATA[Error: 14 UNAVAILABLE: failed to connect to all addresses
-    at Object.exports.createStatusError (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\common.js:91:15)
-    at ClientReadableStream._emitStatusIfDone (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client.js:233:26)
-    at ClientReadableStream._receiveStatus (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client.js:211:8)
-    at Object.onReceiveStatus (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client_interceptors.js:1277:15)
-    at InterceptingListener._callNext (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client_interceptors.js:568:42)
-    at InterceptingListener.onReceiveStatus (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client_interceptors.js:618:8)
-    at C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client_interceptors.js:1033:24]]></failure>
-    </testCase>
-    <testCase name="Test limit with parameter" duration="1290">
-      <failure message="Error: 14 UNAVAILABLE: failed to connect to all addresses"><![CDATA[Error: 14 UNAVAILABLE: failed to connect to all addresses
-    at Object.exports.createStatusError (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\common.js:91:15)
-    at ClientReadableStream._emitStatusIfDone (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client.js:233:26)
-    at ClientReadableStream._readsDone (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client.js:199:8)
-    at C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client_interceptors.js:683:15]]></failure>
-    </testCase>
-    <testCase name="filter on date in parameter" duration="1281">
-      <failure message="Error: 14 UNAVAILABLE: failed to connect to all addresses"><![CDATA[Error: 14 UNAVAILABLE: failed to connect to all addresses
-    at Object.exports.createStatusError (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\common.js:91:15)
-    at ClientReadableStream._emitStatusIfDone (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client.js:233:26)
-    at ClientReadableStream._readsDone (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client.js:199:8)
-    at C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client_interceptors.js:683:15]]></failure>
-    </testCase>
-    <testCase name="select single field" duration="1244">
-      <failure message="Error: 14 UNAVAILABLE: failed to connect to all addresses"><![CDATA[Error: 14 UNAVAILABLE: failed to connect to all addresses
-    at Object.exports.createStatusError (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\common.js:91:15)
-    at ClientReadableStream._emitStatusIfDone (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client.js:233:26)
-    at ClientReadableStream._readsDone (C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client.js:199:8)
-    at C:\Users\seosal\source\repos\Koralium\Koralium\typescript-client\node_modules\grpc\src\client_interceptors.js:683:15]]></failure>
-    </testCase>
+    <testCase name="Get orders" duration="905"/>
+    <testCase name="Get secure data" duration="556"/>
+    <testCase name="Test limit" duration="45"/>
+    <testCase name="Test limit with parameter" duration="15"/>
+    <testCase name="filter on date in parameter" duration="408"/>
+    <testCase name="select single field" duration="126"/>
   </file>
 </testExecutions>

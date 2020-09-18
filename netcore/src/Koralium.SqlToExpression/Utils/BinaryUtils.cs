@@ -12,11 +12,14 @@
  * limitations under the License.
  */
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Koralium.SqlToExpression.Utils
 {
     public static class BinaryUtils
     {
+        private static readonly MethodInfo stringConcat = typeof(string).GetMethod("Concat", new []{typeof(string), typeof(string)});
+
         public static Expression CreateBinaryExpression(Expression leftExpression, Expression rightExpression, Microsoft.SqlServer.TransactSql.ScriptDom.BinaryExpressionType binaryExpressionType)
         {
             PredicateUtils.ConvertExpressionTypes(ref leftExpression, ref rightExpression);
@@ -25,7 +28,14 @@ namespace Koralium.SqlToExpression.Utils
             switch (binaryExpressionType)
             {
                 case Microsoft.SqlServer.TransactSql.ScriptDom.BinaryExpressionType.Add:
-                    expression = Expression.Add(leftExpression, rightExpression);
+                    if (leftExpression.Type.Equals(typeof(string)))
+                    {
+                        expression = Expression.Add(leftExpression, rightExpression, stringConcat);
+                    }
+                    else
+                    {
+                        expression = Expression.Add(leftExpression, rightExpression);
+                    }
                     break;
                 case Microsoft.SqlServer.TransactSql.ScriptDom.BinaryExpressionType.BitwiseAnd:
                     expression = Expression.And(leftExpression, rightExpression);

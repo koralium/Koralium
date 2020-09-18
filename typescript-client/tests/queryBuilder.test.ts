@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import { QueryBuilder } from "../src/queryBuilder"
 import { ObjectToSelectMapper } from "../src/objectToSelectMapper" 
 
@@ -5,8 +18,8 @@ test("count with filter", () => {
   const expected = "SELECT count(*) FROM testtable WHERE name = 'test'"
   const result = new QueryBuilder("testtable")
     .addSelectElement("count(*)")
-    .setFilter("name = 'test'")
-    .build();
+    .addFilter("name = 'test'")
+    .buildQuery();
 
     expect(result).toEqual(expected);
 });
@@ -16,7 +29,7 @@ test("Select same column", () => {
   const result = new QueryBuilder("testtable")
     .addSelectElement("column")
     .addSelectElement("column")
-    .build();
+    .buildQuery();
 
     expect(result).toEqual(expected);
 });
@@ -27,7 +40,7 @@ test("Select with limit and offset", () => {
     .addSelectElement("*")
     .setLimit(100)
     .setOffset(200)
-    .build();
+    .buildQuery();
 
     expect(result).toEqual(expected);
 });
@@ -35,12 +48,12 @@ test("Select with limit and offset", () => {
 test("Select multiple columns, filter, limit, offset", () => {
   const expected = "SELECT column1, column2 FROM testtable WHERE name = 'test' LIMIT 100 OFFSET 200";
   const result = new QueryBuilder("testtable")
-    .setFilter("name = 'test'")
+    .addFilter("name = 'test'")
     .addSelectElement("column1")
     .addSelectElement("column2")
     .setLimit(100)
     .setOffset(200)
-    .build();
+    .buildQuery();
 
     expect(result).toEqual(expected);
 });
@@ -55,7 +68,7 @@ test("Object mapper", () => {
     c1: {},
     c2: {}
   });
-  const result = queryBuilder.build();
+  const result = queryBuilder.buildQuery();
   const expected = "SELECT c1, c2, c3 FROM testtable";
 
   expect(result).toEqual(expected);
@@ -74,8 +87,39 @@ test("Object mapper, missing mapping", () => {
     c4: {}
   });
   
-  const result = queryBuilder.build();
+  const result = queryBuilder.buildQuery();
   const expected = "SELECT c1, c2, c3 FROM testtable";
 
   expect(result).toEqual(expected);
+});
+
+test("Filter builder equals", () => {
+  const mapper = new ObjectToSelectMapper()
+    .addMapping("c1", "c1")
+    .addMapping("c2", ["c2", "c3"]);
+
+  const queryBuilder = new QueryBuilder("testtable", mapper)
+    .addSelectsWithMapper({
+      c1: {},
+      c2: {}
+    })
+    .addFilter({
+      c1: {
+        eq: 1
+      },
+      c2: {
+        startsWith: "hello"
+      }
+    });
+    
+  const queryResult = queryBuilder.buildQuery();
+  const expectedQuery = "SELECT c1, c2, c3 FROM testtable WHERE (c1 = 1 AND c2 LIKE @P0 + '%')"
+
+  const parametersResult = queryBuilder.getParameters();
+  const expectedParameters = {
+    P0: "hello"
+  };
+
+  expect(queryResult).toEqual(expectedQuery);
+  expect(parametersResult).toEqual(expectedParameters);
 });

@@ -32,6 +32,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.KoraliumClient = void 0;
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 const koralium_grpc_pb_1 = require("./generated/koralium_grpc_pb");
 const grpc = __importStar(require("grpc"));
 const koralium_pb_1 = require("./generated/koralium_pb");
@@ -53,7 +66,7 @@ class KoraliumClient {
         }
         return baseObject;
     }
-    queryScalar(sql, parameters, headers = {}) {
+    queryScalar(sql, parameters = null, headers = {}) {
         const queryRequest = new koralium_pb_1.QueryRequest();
         queryRequest.setQuery(sql);
         if (parameters) {
@@ -64,15 +77,25 @@ class KoraliumClient {
             metadata.add(key, value);
         }
         return new Promise((resolve, reject) => {
-            this.client.queryScalar(queryRequest, metadata, (error, data) => {
-                if (error) {
-                    reject(error.message);
-                }
-                resolve(ScalarDecoder_1.default(data));
-            });
+            try {
+                this.client.queryScalar(queryRequest, metadata, (error, data) => {
+                    if (error) {
+                        reject(error.message);
+                    }
+                    if (data !== undefined) {
+                        resolve(ScalarDecoder_1.default(data));
+                    }
+                    else {
+                        reject("got invalid response.");
+                    }
+                });
+            }
+            catch (error) {
+                reject(error);
+            }
         });
     }
-    query(sql, parameters, headers = {}) {
+    query(sql, parameters = null, headers = {}) {
         return __awaiter(this, void 0, void 0, function* () {
             const queryRequest = new koralium_pb_1.QueryRequest();
             queryRequest.setQuery(sql);
@@ -104,11 +127,17 @@ class KoraliumClient {
                         objects.push(Object.assign({}, baseObject));
                     }
                     const blocks = page.getColumns();
+                    if (blocks === undefined) {
+                        throw new Error("Internal error, blocks are undefined");
+                    }
                     const blockList = blocks.getBlocksList();
                     for (let i = 0; i < decoders.length; i++) {
                         decoders[i].newPage(page);
                         decoders[i].decode(blockList[i], objects, startLength);
                     }
+                });
+                stream.on("error", (error) => {
+                    reject(error);
                 });
                 stream.on("end", () => {
                     resolve(objects);

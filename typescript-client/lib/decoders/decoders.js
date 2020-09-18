@@ -42,7 +42,7 @@ function getDecoder(column) {
     if (type === 8) {
         return new arrayDecoder_1.default(column);
     }
-    return null;
+    throw new Error("Decoder not found for typeId: " + type);
 }
 exports.getDecoder = getDecoder;
 //# sourceMappingURL=decoders.js.map

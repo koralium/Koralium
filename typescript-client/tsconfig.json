@@ -6,8 +6,11 @@
     "sourceMap": true,
     "outDir": "lib",
     "esModuleInterop": true,
-    "allowJs": true,
-    "declaration": true
+    "allowJs": false,
+    "declaration": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true
   },
   "exclude": [
     "node_modules",

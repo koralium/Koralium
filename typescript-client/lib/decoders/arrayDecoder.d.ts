@@ -3,10 +3,10 @@ import { Page, Block, ColumnMetadata } from "../generated/koralium_pb";
 import { IDecoder } from "./decoder";
 export default class ArrayDecoder extends BaseDecoder {
     subDecoder: IDecoder;
-    currentBlock: Block;
+    currentBlock?: Block;
     constructor(column: ColumnMetadata);
-    baseValue(): any[];
+    baseValue(): never[];
     onNewPage(page: Page): void;
     getValuesList(block: Block): any[];
-    getValue(values: any[], index: number): any[];
+    getValue(values: any[], index: number): [];
 }

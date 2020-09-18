@@ -1,13 +1,19 @@
+import { ObjectToSelectMapper } from "./objectToSelectMapper";
 export declare class QueryBuilder {
-    table: string;
-    selects: Array<string>;
-    limit?: number;
-    offset?: number;
-    filter?: string;
-    constructor(table: string);
+    private table;
+    private selects;
+    private limit?;
+    private offset?;
+    private filters;
+    private parameterBuilder;
+    private orderBy?;
+    private mapper?;
+    constructor(table: string, mapper?: ObjectToSelectMapper);
     addSelectElement(expression: string): QueryBuilder;
+    addSelectsWithMapper(value: {}): QueryBuilder;
     setLimit(limit: number): QueryBuilder;
     setOffset(offset: number): QueryBuilder;
-    setFilter(filter: string): QueryBuilder;
-    build(): string;
+    addFilter(filter: string | {}): QueryBuilder;
+    getParameters(): {};
+    buildQuery(): string;
 }

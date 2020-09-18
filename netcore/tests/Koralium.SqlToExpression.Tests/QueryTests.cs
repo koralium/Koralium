@@ -746,6 +746,79 @@ namespace Koralium.SqlToExpression.Tests
             AssertAreEqual(expected, result.Result);
         }
 
+        [Test]
+        public async Task TestStringLikeEqualsParameter()
+        {
+            var parameters = new SqlParameters()
+                .Add(SqlParameter.Create("Parameter", "5-L"));
+
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like @Parameter", parameters);
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderpriority.Equals("5-L"))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestStringLikeStartswithColumn()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like Orderpriority + '%'");
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderpriority.StartsWith(x.Orderpriority))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestStringLikeStartsWithParameter()
+        {
+            var parameters = new SqlParameters()
+                .Add(SqlParameter.Create("Parameter", "5-L"));
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like @Parameter + '%'", parameters);
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderpriority.StartsWith("5-L"))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestStringLikeEndsWithParameter()
+        {
+            var parameters = new SqlParameters()
+                .Add(SqlParameter.Create("Parameter", "5-L"));
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like '%' + @Parameter", parameters);
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderpriority.EndsWith("5-L"))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestStringLikeContainsParameter()
+        {
+            var parameters = new SqlParameters()
+                .Add(SqlParameter.Create("Parameter", "L"));
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like '%' + @Parameter + '%'", parameters);
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderpriority.Contains("L"))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
 
         //select name from customer where name > 'customer#000001500'
         //Gives the wrong results

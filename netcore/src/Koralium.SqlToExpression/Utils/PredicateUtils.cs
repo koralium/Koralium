@@ -88,19 +88,19 @@ namespace Koralium.SqlToExpression.Utils
             right = Expression.Constant(0);
         }
 
-        public static Expression CallContains(Expression left, string value)
+        public static Expression CallContains(Expression left, Expression value)
         {
-            return Expression.Call(instance: left, method: StringContains, arguments: new[] { Expression.Constant(value) });
+            return Expression.Call(instance: left, method: StringContains, arguments: new[] { value });
         }
 
-        public static Expression CallStartsWith(Expression left, string value)
+        public static Expression CallStartsWith(Expression left, Expression value)
         {
-            return Expression.Call(instance: left, method: StringStartsWith, arguments: new[] { Expression.Constant(value) });
+            return Expression.Call(instance: left, method: StringStartsWith, arguments: new[] { value });
         }
         
-        public static Expression CallEndsWith(Expression left, string value)
+        public static Expression CallEndsWith(Expression left, Expression value)
         {
-            return Expression.Call(instance: left, method: StringEndsWith, arguments: new[] { Expression.Constant(value) });
+            return Expression.Call(instance: left, method: StringEndsWith, arguments: new[] { value });
         }
 
         public static Expression CreateComparisonExpression(Expression leftExpression, Expression rightExpression, Microsoft.SqlServer.TransactSql.ScriptDom.BooleanComparisonType comparisonType)

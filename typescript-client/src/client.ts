@@ -1,6 +1,18 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import { KoraliumServiceClient } from "./generated/koralium_grpc_pb"
 import * as grpc from 'grpc';
-import * as grpcEmpty from "google-protobuf/google/protobuf/empty_pb";
 import { QueryRequest, Page, ColumnMetadata } from "./generated/koralium_pb";
 import { IDecoder } from "./decoders/decoder";
 import { getDecoder } from "./decoders/decoders";
@@ -20,7 +32,7 @@ export class KoraliumClient {
 
   private createBaseObject(decoders: IDecoder[]): {} {
 
-    const baseObject = {};
+    const baseObject: {[key: string]: any;} = {};
     for(let i = 0; i < decoders.length; i++) {
       const name = decoders[i].getFieldName();
       baseObject[name] = decoders[i].baseValue();
@@ -28,7 +40,7 @@ export class KoraliumClient {
     return baseObject;
   }
 
-   queryScalar(sql: string, parameters?: {}, headers: {} = {}) {
+   queryScalar(sql: string, parameters: {} | null = null, headers: {} = {}) {
     const queryRequest = new QueryRequest();
     queryRequest.setQuery(sql);
 
@@ -49,8 +61,12 @@ export class KoraliumClient {
           if(error) {
             reject(error.message);
           }
-
-          resolve(decodeScalar(data));
+          if(data !== undefined) {
+            resolve(decodeScalar(data));
+          }
+          else {
+            reject("got invalid response.")
+          }
         });
       }
       catch(error) {
@@ -59,7 +75,7 @@ export class KoraliumClient {
     });
   }
 
-  async query(sql: string, parameters?: {}, headers: {} = {}) {
+  async query(sql: string, parameters: {} | null = null, headers: {} = {}) {
     const queryRequest = new QueryRequest();
     queryRequest.setQuery(sql);
     queryRequest.setMaxbatchsize(1000000);
@@ -105,6 +121,11 @@ export class KoraliumClient {
           }
 
           const blocks = page.getColumns();
+
+          if(blocks === undefined) {
+            throw new Error("Internal error, blocks are undefined");
+          }
+
           const blockList = blocks.getBlocksList();
 
           for (let i = 0; i < decoders.length; i++) {
