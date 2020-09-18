@@ -15,8 +15,15 @@ jobs:
       with:
         node-version: '12.x'
         registry-url: 'https://registry.npmjs.org'
+    - name: Extract tag name
+      id: tag
+      run: echo ::set-output name=VERSION::$(echo ${GITHUB_REF##*/v})
     - run: npm install
       working-directory: typescript-client
+    - name: Update package version
+      run: npm version ${PACKAGE_VERSION}
+      env:
+        PACKAGE_VERSION: ${{ steps.tag.outputs.VERSION }}
     - run: npm publish --access public
       working-directory: typescript-client
       env:
