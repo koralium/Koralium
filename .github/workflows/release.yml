@@ -22,6 +22,7 @@ jobs:
       working-directory: typescript-client
     - name: Update package version
       run: npm version ${PACKAGE_VERSION}
+      working-directory: typescript-client
       env:
         PACKAGE_VERSION: ${{ steps.tag.outputs.VERSION }}
     - run: npm publish --access public
