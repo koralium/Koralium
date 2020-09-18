@@ -15,6 +15,7 @@ using Koralium.SqlToExpression.Exceptions;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Koralium.SqlToExpression.Utils;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Expressions;
@@ -24,6 +25,7 @@ namespace Koralium.SqlToExpression.Visitors.Where
     internal class WhereVisitor : BaseVisitor
     {
         private readonly IQueryStage _previousStage;
+        private readonly VisitorMetadata _visitorMetadata;
         private readonly Stack<Expression> expressions = new Stack<Expression>();
 
         public Expression Expression => GetExpression();
@@ -40,6 +42,7 @@ namespace Koralium.SqlToExpression.Visitors.Where
             Debug.Assert(queryStage != null, $"{nameof(queryStage)} was null");
 
             _previousStage = queryStage;
+            _visitorMetadata = visitorMetadata;
         }
 
         public override void ExplicitVisit(WhereClause whereClause)
@@ -49,55 +52,16 @@ namespace Koralium.SqlToExpression.Visitors.Where
 
         public override void ExplicitVisit(LikePredicate likePredicate)
         {
-            likePredicate.FirstExpression.Accept(this);
+            LikeVisitor likeVisitor = new LikeVisitor(_previousStage, _visitorMetadata);
+            likePredicate.Accept(likeVisitor);
 
-            var leftExpression = PopStack();
-
-            if(likePredicate.SecondExpression is StringLiteral stringLiteral)
+            //Add the properties that was found in the like visitor
+            foreach(var usedProperty in likeVisitor.UsedProperties)
             {
-                var value = stringLiteral.Value;
-                bool startsWith = false;
-                bool endsWith = false;
-                if (value.StartsWith("%"))
-                {
-                    endsWith = true;
-                    value = value.Substring(1);
-                }
-                if (value.EndsWith("%") && (value.Length - 1 == 0 || value[value.Length - 1] != '\\'))
-                {
-                    startsWith = true;
-                    value = value.Substring(0, value.Length - 1);
-                }
+                AddUsedProperty(usedProperty);
+            }
 
-                // Contains
-                if(startsWith && endsWith)
-                {
-                    var containsExpression = PredicateUtils.CallContains(leftExpression, value);
-                    AddExpressionToStack(containsExpression);
-                }
-                //Starts with
-                else if (startsWith)
-                {
-                    var startsWithExpression = PredicateUtils.CallStartsWith(leftExpression, value);
-                    AddExpressionToStack(startsWithExpression);
-                }
-                //Ends with
-                else if (endsWith)
-                {
-                    var endsWithExpression = PredicateUtils.CallEndsWith(leftExpression, value);
-                    AddExpressionToStack(endsWithExpression);
-                }
-                //Equals
-                else
-                {
-                    var equalsExpression = PredicateUtils.CreateComparisonExpression(leftExpression, Expression.Constant(value), BooleanComparisonType.Equals);
-                    AddExpressionToStack(equalsExpression);
-                }
-            }
-            else
-            {
-                throw new SqlErrorException("Like can only be used with strings");
-            }
+            expressions.Push(likeVisitor.Expression);
         }
 
         public override void AddExpressionToStack(Expression expression)

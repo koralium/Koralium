@@ -6,7 +6,9 @@ export default class ObjectDecoder extends BaseDecoder {
     columnNames: string[];
     decoders: IDecoder[];
     cache: Array<{}>;
-    baseObject: {};
+    baseObject: {
+        [key: string]: any;
+    };
     constructor(column: ColumnMetadata);
     baseValue(): any;
     onNewPage(page: Page): void;

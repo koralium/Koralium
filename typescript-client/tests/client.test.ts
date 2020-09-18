@@ -1,8 +1,21 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import { KoraliumClient } from "../src/client"
 import { QueryServer } from "./queryserver"
 import TpchData from "./tpchdata";
-//import jest from "jest"
 
+//Basic jwt token that is used just for testing
 const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlRlc3QgdGVzdCIsInVuaXF1ZV9uYW1lIjoidGVzdCIsImlhdCI6MTUxNjIzOTAyMn0.aF80OiteMckPhSQcAL549V4AcyKHJA8LUs4mhzBnf2w";
 
 var client: KoraliumClient;
@@ -18,8 +31,7 @@ beforeAll(async () => {
   tpchData = new TpchData();
   await tpchData.load();
 
-  //client = new KoraliumClient(`${server.getIpAddress()}:${server.getPort()}`);
-  client = new KoraliumClient("127.0.0.1:5016");
+  client = new KoraliumClient(`${server.getIpAddress()}:${server.getPort()}`);
 });
 
 afterAll(async () => {
