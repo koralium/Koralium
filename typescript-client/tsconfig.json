@@ -6,7 +6,7 @@
     "sourceMap": true,
     "outDir": "lib",
     "esModuleInterop": true,
-    "allowJs": false,
+    "allowJs": true,
     "declaration": true,
     "strict": true,
     "noImplicitAny": true,
