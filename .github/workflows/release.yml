@@ -25,6 +25,8 @@ jobs:
       working-directory: typescript-client
       env:
         PACKAGE_VERSION: ${{ steps.tag.outputs.VERSION }}
+    - run: npm build
+      working-directory: typescript-client
     - run: npm publish --access public
       working-directory: typescript-client
       env:
