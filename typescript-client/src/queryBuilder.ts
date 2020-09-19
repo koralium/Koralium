@@ -60,7 +60,10 @@ export class QueryBuilder {
     return this;
   }
 
-  addFilter(filter: string | {}): QueryBuilder {
+  addFilter(filter: string | {} | null | undefined): QueryBuilder {
+    if(filter === undefined || filter === null) {
+      return this;
+    }
     if(typeof filter === "string") {
       this.filters.push( filter);
     }
