@@ -794,7 +794,7 @@ namespace Koralium.SqlToExpression.Tests
         public async Task TestStringLikeEndsWithParameter()
         {
             var parameters = new SqlParameters()
-                .Add(SqlParameter.Create("Parameter", "5-L"));
+                .Add(SqlParameter.Create<object>("Parameter", "5-L"));
             var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like '%' + @Parameter", parameters);
 
             var expected = TpchData.Orders
