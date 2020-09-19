@@ -42,7 +42,8 @@ namespace Koralium
 
         public ValueTask<object> ExecuteScalar(QueryRequest queryRequest, HttpContext httpContext)
         {
-            return _koraliumExecutor.ExecuteScalar(queryRequest.Query, null, httpContext);
+            var sqlParameters = ParameterDecoder.DecodeParameters(queryRequest.Parameters);
+            return _koraliumExecutor.ExecuteScalar(queryRequest.Query, sqlParameters, httpContext);
         }
 
         public async Task Execute(QueryRequest queryRequest, HttpContext httpContext, ChannelWriter<Page> channelWriter)
