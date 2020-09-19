@@ -90,16 +90,19 @@ namespace Koralium.SqlToExpression.Utils
 
         public static Expression CallContains(Expression left, Expression value)
         {
+            ConvertExpressionTypes(ref left, ref value);
             return Expression.Call(instance: left, method: StringContains, arguments: new[] { value });
         }
 
         public static Expression CallStartsWith(Expression left, Expression value)
         {
+            ConvertExpressionTypes(ref left, ref value);
             return Expression.Call(instance: left, method: StringStartsWith, arguments: new[] { value });
         }
         
         public static Expression CallEndsWith(Expression left, Expression value)
         {
+            ConvertExpressionTypes(ref left, ref value);
             return Expression.Call(instance: left, method: StringEndsWith, arguments: new[] { value });
         }
 
