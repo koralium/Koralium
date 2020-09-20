@@ -72,14 +72,25 @@ export function writeFilterWithParameterBuilder(parameterBuilder: ParameterBuild
           orOperation = writeFilterWithParameterBuilder(parameterBuilder, value);
       }
   }
-  let query = `(${operations.join(" AND ")})`;
+  let query = "";
+  
+  if(operations.length > 0) {
+    query = `(${operations.join(" AND ")})`;
+  }
 
   if (andOperation != null) {
-      query += ` AND ${andOperation}`;
+    if(query !== "") {
+      query += " AND ";
+    }
+    query += andOperation;
   }
   if (orOperation != null) {
-      query += ` OR ${orOperation}`;
+    if(query !== "") {
+      query += " OR ";
+    }
+    query += orOperation;
   }
+
   return query;
 }
 
