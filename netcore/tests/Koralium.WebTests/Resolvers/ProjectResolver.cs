@@ -22,7 +22,7 @@ namespace Koralium.WebTests
 {
     public class ProjectResolver : TableResolver<Project>
     {
-        public override async Task<IQueryable<Project>> GetQueryableData(HttpContext context, IQueryOptions<Project> queryOptions)
+        protected override async Task<IQueryable<Project>> GetQueryableData()
         {
 
             return new List<Project>()

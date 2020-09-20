@@ -23,7 +23,7 @@ namespace QueryProtocolGrpc.TestWeb.Resolvers
 {
     public class EmployeeResolver : TableResolver<Employee>
     {
-        public override Task<IQueryable<Employee>> GetQueryableData(HttpContext context, IQueryOptions<Employee> queryOptions)
+        protected override Task<IQueryable<Employee>> GetQueryableData()
         {
             return Task.FromResult(TestData.GetEmployees());
         }

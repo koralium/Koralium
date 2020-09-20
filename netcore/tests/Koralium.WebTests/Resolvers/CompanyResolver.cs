@@ -21,7 +21,7 @@ namespace Koralium.WebTests.Resolvers
 {
     public class CompanyResolver : TableResolver<Company>
     {
-        public override Task<IQueryable<Company>> GetQueryableData(HttpContext context, IQueryOptions<Company> queryOptions)
+        protected override Task<IQueryable<Company>> GetQueryableData()
         {
             return Task.FromResult(TestData.GetCompanies());
         }

@@ -31,7 +31,6 @@ export class ParameterBuilder {
     for (let [key, value] of Object.entries(this.valuesToParameters)) {
       output[value] = key;
     }
-    console.log(output);
     return output;
   }
 }

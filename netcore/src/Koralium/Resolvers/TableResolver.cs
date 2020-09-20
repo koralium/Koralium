@@ -21,12 +21,18 @@ namespace Koralium
 {
     public abstract class TableResolver<T> : ITableResolver
     {
+        protected HttpContext HttpContext { get; private set; }
+
+        protected IQueryOptions<T> QueryOptions { get; private set; }
+
         public async Task<IQueryable> GetQueryable(HttpContext httpContext, IQueryOptions queryOptions)
         {
             var genericQueryOptions = queryOptions.CreateGeneric<T>();
-            return await GetQueryableData(httpContext, genericQueryOptions);
+            HttpContext = httpContext;
+            QueryOptions = genericQueryOptions;
+            return await GetQueryableData();
         }
 
-        public abstract Task<IQueryable<T>> GetQueryableData(HttpContext context, IQueryOptions<T> queryOptions);
+        protected abstract Task<IQueryable<T>> GetQueryableData();
     }
 }

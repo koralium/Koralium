@@ -24,7 +24,7 @@ namespace Koralium.WebTests.Resolvers.specific
             }).CreateMapper();
         }
 
-        public override Task<IQueryable<AutoMapperCustomer>> GetQueryableData(HttpContext context, IQueryOptions<AutoMapperCustomer> queryOptions)
+        protected override Task<IQueryable<AutoMapperCustomer>> GetQueryableData()
         {
             return Task.FromResult(_mapper.ProjectTo<AutoMapperCustomer>(_testContext.Customers));
         }
