@@ -13,11 +13,12 @@
  */
 import { KoraliumServiceClient } from "./generated/koralium_grpc_pb"
 import * as grpc from 'grpc';
-import { QueryRequest, Page, ColumnMetadata } from "./generated/koralium_pb";
+import { QueryRequest, Page, ColumnMetadata, IndexRequest, TableMetadataResponse } from "./generated/koralium_pb";
 import { IDecoder } from "./decoders/decoder";
 import { getDecoder } from "./decoders/decoders";
 import decodeScalar from "./decoders/ScalarDecoder";
 import encodeParameters from "./encoders/parameterEncoder";
+import { Empty } from "google-protobuf/google/protobuf/empty_pb";
 
 export class KoraliumClient {
   client: KoraliumServiceClient;

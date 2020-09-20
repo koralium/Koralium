@@ -12,6 +12,9 @@
  * limitations under the License.
  */
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -23,6 +26,22 @@ namespace Koralium.SqlToExpression.Utils
         private static readonly MethodInfo StringStartsWith = typeof(string).GetMethod("StartsWith", new Type[] { typeof(string) });
         private static readonly MethodInfo StringContains = typeof(string).GetMethod("Contains", new Type[] { typeof(string) });
         private static readonly MethodInfo StringEndsWith = typeof(string).GetMethod("EndsWith", new Type[] { typeof(string) });
+        private static readonly MethodInfo ListContainsMethod = FindListContainsMethodInfo();
+
+        private static MethodInfo FindListContainsMethodInfo()
+        {
+            var methods = typeof(Enumerable).GetMethods().Where(x => x.Name == "Contains" && x.ContainsGenericParameters && x.GetParameters().Length == 2);
+
+            return methods.First();
+        }
+
+        public static Expression ListContains(Expression parameter, Type type, IList values)
+        {
+            var method = ListContainsMethod.MakeGenericMethod(type);
+
+            return Expression.Call(null, method, arguments: new[] { Expression.Constant(values), parameter });
+        }
+
 
         internal static void ConvertExpressionTypes(ref Expression leftExpression, ref Expression rightExpression)
         {

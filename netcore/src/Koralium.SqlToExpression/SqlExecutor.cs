@@ -90,6 +90,13 @@ namespace Koralium.SqlToExpression
 
             sql = OffsetLimitUtils.TransformQuery(sql);
             var tree = parser.Parse(new StringReader(sql), out var errors);
+
+            if(errors.Count > 0)
+            {
+                var error = errors.FirstOrDefault();
+                throw new SqlErrorException(error.Message);
+            }
+
             var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata));
             tree.Accept(mainVisitor);
 

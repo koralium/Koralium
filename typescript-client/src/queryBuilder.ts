@@ -75,6 +75,27 @@ export class QueryBuilder {
     return this;
   }
 
+  addInFilter(columnName: string, array: Array<any>): QueryBuilder {
+
+    if(array.length == 0) {
+      return this;
+    }
+      
+    const firstValue = array[0];
+    if (typeof firstValue === "string") {
+      const filter = `${columnName} IN (${array.map(x => `'${x}'`).join(", ")})`;
+      this.addFilter(filter);
+    }
+    else if (typeof firstValue === "number") {
+      const filter = `${columnName} IN (${array.join(", ")})`;
+      this.addFilter(filter);
+    }
+    else {
+      throw new Error("Only strings and numbers can be used in IN");
+    }
+    return this;
+  }
+
   getParameters(): {} {
     return this.parameterBuilder.getParameters();
   }

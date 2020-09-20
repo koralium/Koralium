@@ -38,6 +38,8 @@ namespace Koralium.SqlToExpression.Visitors
 
         public IEnumerable<PropertyInfo> UsedProperties => _usedProperties;
 
+        protected bool InOr { get; private set; } = false;
+
         protected void AddUsedProperty(PropertyInfo propertyInfo)
         {
             _usedProperties.Add(propertyInfo);
@@ -111,11 +113,25 @@ namespace Koralium.SqlToExpression.Visitors
             AddExpressionToStack(expression);
         }
 
-
         public override void ExplicitVisit(BooleanBinaryExpression booleanBinaryExpression)
         {
+            bool inOrSet = false;
+            //Check if it is an OR operation and we are not already inside of one
+            //This is used at this time only for checking if an index can be used or not
+            if(booleanBinaryExpression.BinaryExpressionType == BooleanBinaryExpressionType.Or && !InOr)
+            {
+                inOrSet = true;
+                InOr = true;
+            }
+
             booleanBinaryExpression.FirstExpression.Accept(this);
             booleanBinaryExpression.SecondExpression.Accept(this);
+
+            //Reset the in OR flag
+            if (inOrSet)
+            {
+                InOr = false;
+            }
 
             var rightExpression = PopStack();
             var leftExpression = PopStack(); 

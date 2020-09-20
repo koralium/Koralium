@@ -14,6 +14,7 @@
 using Koralium.SqlToExpression.Exceptions;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -818,6 +819,41 @@ namespace Koralium.SqlToExpression.Tests
                 .AsQueryable();
 
             AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestInPredicateLong()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE orderkey in (1)");
+
+
+            var expectedList = new List<long> { 1 };
+            var expected = TpchData.Orders
+                .Where(x => expectedList.Contains(x.Orderkey))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestInPredicateString()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority in ('5-L')");
+
+            var expectedList = new List<string> { "5-L" };
+            var expected = TpchData.Orders
+                .Where(x => expectedList.Contains(x.Orderpriority))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestCallIndex()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE orderkey in (1, 2, 3)");
         }
 
         //select name from customer where name > 'customer#000001500'
