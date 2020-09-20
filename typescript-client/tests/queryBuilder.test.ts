@@ -111,7 +111,7 @@ test("Filter builder equals", () => {
         startsWith: "hello"
       }
     });
-    
+
   const queryResult = queryBuilder.buildQuery();
   const expectedQuery = "SELECT c1, c2, c3 FROM testtable WHERE (c1 = 1 AND c2 LIKE @P0 + '%')"
 
@@ -122,4 +122,26 @@ test("Filter builder equals", () => {
 
   expect(queryResult).toEqual(expectedQuery);
   expect(parametersResult).toEqual(expectedParameters);
+});
+
+test("test in predicate for numbers", () => {
+  const queryBuilder = new QueryBuilder("testtable")
+    .addInFilter("c1", [1, 2])
+    .addSelectElement("c1");
+
+    const result = queryBuilder.buildQuery();
+    const expected = "SELECT c1 FROM testtable WHERE c1 IN (1, 2)";
+
+    expect(result).toEqual(expected);
+});
+
+test("test in predicate for strings", () => {
+  const queryBuilder = new QueryBuilder("testtable")
+    .addInFilter("c1", ["1", "2"])
+    .addSelectElement("c1");
+
+    const result = queryBuilder.buildQuery();
+    const expected = "SELECT c1 FROM testtable WHERE c1 IN ('1', '2')";
+
+    expect(result).toEqual(expected);
 });

@@ -16,8 +16,10 @@ using Koralium.SqlToExpression.Stages.CompileStages;
 using Koralium.SqlToExpression.Utils;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Koralium.SqlToExpression.Visitors.Where
@@ -62,6 +64,87 @@ namespace Koralium.SqlToExpression.Visitors.Where
             }
 
             expressions.Push(likeVisitor.Expression);
+        }
+
+        public override void ExplicitVisit(InPredicate node)
+        {
+            if (node.Values == null)
+            {
+                throw new SqlErrorException("IN predicate only supports a list of values right now");
+            }
+
+            Expression memberExpression;
+            if (node.Expression is ColumnReferenceExpression columnReferenceExpression)
+            {
+                //Check here if any index can be used aswell
+
+                var identifiers = columnReferenceExpression.MultiPartIdentifier.Identifiers.Select(x => x.Value).ToList();
+
+                identifiers = MemberUtils.RemoveAlias(_previousStage, identifiers);
+                memberExpression = MemberUtils.GetMember(_previousStage, identifiers, out var property);
+                AddUsedProperty(property);
+                AddNameToStack(string.Join(".", identifiers));
+            }
+            else
+            {
+                throw new SqlErrorException("IN predicate can only be used against column names");
+            }
+
+            IList list = ListUtils.GetNewListFunction(memberExpression.Type)();
+            foreach (var value in node.Values)
+            {
+                if (value is Literal literal)
+                {
+                    list.Add(Convert.ChangeType(literal.Value, memberExpression.Type));
+                }
+                else
+                {
+                    throw new SqlErrorException("IN predicate only supports literal values.");
+                }
+            }
+            var inPredicate = PredicateUtils.ListContains(memberExpression, memberExpression.Type, list);
+            AddExpressionToStack(inPredicate);
+            //var firstValue = node.Values.FirstOrDefault();
+
+            //Expression inExpression;
+            //if (firstValue is StringLiteral)
+            //{
+            //    List<string> strings = new List<string>();
+            //    foreach (var value in node.Values)
+            //    {
+            //        if (value is StringLiteral stringLiteral)
+            //        {
+            //            strings.Add(stringLiteral.Value);
+            //        }
+            //        else
+            //        {
+            //            throw new SqlErrorException("Missmatching types in 'IN' predicate");
+            //        }
+            //    }
+            //    inExpression = PredicateUtils.ListContains<string>(memberExpression, strings);
+            //}
+            //else if (firstValue is IntegerLiteral)
+            //{
+            //    List<long> integers = new List<long>();
+            //    foreach (var value in node.Values)
+            //    {
+            //        if (value is IntegerLiteral integerLiteral)
+            //        {
+            //            integers.Add(int.Parse(integerLiteral.Value));
+            //        }
+            //        else
+            //        {
+            //            throw new SqlErrorException("Missmatching types in 'IN' predicate");
+            //        }
+            //    }
+            //    inExpression = PredicateUtils.ListContains<int>(memberExpression, integers);
+            //}
+            //else
+            //{
+            //    throw new SqlErrorException("IN predicate only supports strings and integers at this time");
+            //}
+            //Add the expression to the stack
+            //AddExpressionToStack(inExpression);
         }
 
         public override void AddExpressionToStack(Expression expression)
