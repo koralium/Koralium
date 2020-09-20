@@ -145,3 +145,25 @@ test("test in predicate for strings", () => {
 
     expect(result).toEqual(expected);
 });
+
+test("Order by with object ascending", () => {
+  const result = new QueryBuilder("testtable")
+    .orderByWithObject({ asc: "c1" })
+    .addSelectElement("c1")
+    .buildQuery();
+
+  const expected = "SELECT c1 FROM testtable ORDER BY c1";
+
+  expect(result).toEqual(expected);
+}); 
+
+test("Order by with object descending", () => {
+  const result = new QueryBuilder("testtable")
+    .orderByWithObject({ desc: "c1" })
+    .addSelectElement("c1")
+    .buildQuery();
+
+  const expected = "SELECT c1 FROM testtable ORDER BY c1 desc";
+
+  expect(result).toEqual(expected);
+}); 
