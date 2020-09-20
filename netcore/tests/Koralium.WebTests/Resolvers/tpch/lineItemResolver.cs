@@ -27,7 +27,7 @@ namespace Koralium.WebTests.Resolvers.tpch
             _tpchData = tpchData;
         }
 
-        public override Task<IQueryable<LineItem>> GetQueryableData(HttpContext context, IQueryOptions<LineItem> queryOptions)
+        protected override Task<IQueryable<LineItem>> GetQueryableData()
         {
             return Task.FromResult(_tpchData.LineItem.AsQueryable());
         }
