@@ -167,3 +167,25 @@ test("Order by with object descending", () => {
 
   expect(result).toEqual(expected);
 }); 
+
+test.only("Empty filter string", () => {
+  const result = new QueryBuilder("testtable")
+  .addFilter("")
+  .addSelectElement("c1")
+  .buildQuery();
+
+  const expected = "SELECT c1 FROM testtable"
+
+  expect(result).toEqual(expected);
+});
+
+test.only("Empty filter object", () => {
+  const result = new QueryBuilder("testtable")
+  .addFilter({})
+  .addSelectElement("c1")
+  .buildQuery();
+
+  const expected = "SELECT c1 FROM testtable"
+
+  expect(result).toEqual(expected);
+});

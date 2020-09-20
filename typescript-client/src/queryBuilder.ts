@@ -135,7 +135,12 @@ export class QueryBuilder {
     let sql = `SELECT ${selectElements} FROM ${this.table}`;
 
     if(this.filters.length > 0) {
-      sql += ` WHERE ${this.filters.join(" AND ")}`;
+      //Try and filter out any empty filters
+      this.filters = this.filters.filter(x => x.trim() != "");
+      //Check again if there still are filters
+      if(this.filters.length > 0) {
+        sql += ` WHERE ${this.filters.join(" AND ")}`;
+      } 
     }
 
     if(this.orderby != null) {
