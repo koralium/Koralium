@@ -16,6 +16,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Koralium.Json.Extensions;
 using Koralium.WebTests.Database;
 using Koralium.WebTests.Entities;
@@ -146,11 +147,16 @@ namespace Koralium.WebTests
             var context = initScope.ServiceProvider.GetService<TestContext>();
             var tpchData = initScope.ServiceProvider.GetService<TpchData>();
 
-            var b = tpchData.Customers.GroupBy(x => x.Custkey).Where(x => x.Count() > 1).ToList();
-            context.Customers.AddRange(tpchData.Customers);
-            context.SaveChanges();
-            context.Orders.AddRange(tpchData.Orders.ToList());
-            context.SaveChanges();
+            using (var transaction = context.Database.BeginTransaction())
+            {
+                context.BulkInsert(tpchData.Customers);
+                transaction.Commit();
+            }
+            using (var transaction = context.Database.BeginTransaction())
+            {
+                context.BulkInsert(tpchData.Orders);
+                transaction.Commit();
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -26,7 +26,7 @@ export class QueryBuilder {
   private filters: Array<string> = [];
   private parameterBuilder: ParameterBuilder = new ParameterBuilder();
 
-  private orderBy?: string | null = null;
+  private orderby?: string | null = null;
 
   private mapper?: ObjectToSelectMapper;
 
@@ -96,6 +96,35 @@ export class QueryBuilder {
     return this;
   }
 
+  orderBy(columnName: string, descending: boolean) {
+    if(descending) {
+      this.orderby = `${columnName} desc`;
+    }
+    else {
+      this.orderby = `${columnName}`;
+    }
+  }
+
+  //This is used in graphQL and similar scenarios
+  //Example: { asc: Name} or { desc: Name }
+  orderByWithObject(obj: {[key: string]: string;} | undefined | null): QueryBuilder {
+
+    if(obj === undefined || obj === null){
+      return this;
+    }
+
+    if(obj.asc !== undefined) {
+      this.orderby = `${obj.asc}`
+    }
+    else if (obj.desc !== undefined) {
+      this.orderby = `${obj.desc} desc`
+    }
+    else {
+      throw new Error("Could not find either asc or desc field");
+    }
+    return this;
+  }
+
   getParameters(): {} {
     return this.parameterBuilder.getParameters();
   }
@@ -109,8 +138,8 @@ export class QueryBuilder {
       sql += ` WHERE ${this.filters.join(" AND ")}`;
     }
 
-    if(this.orderBy != null) {
-      sql += ` ORDER BY ${this.orderBy}`
+    if(this.orderby != null) {
+      sql += ` ORDER BY ${this.orderby}`
     }
 
     if(this.limit != null) {
