@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.Metadata;
 using Koralium.SqlToExpression;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
@@ -32,7 +33,7 @@ namespace Koralium.Json
 
         public async Task<List<Dictionary<string, object>>> Execute(string sql, SqlParameters sqlParameters, HttpContext httpContext)
         {
-            var result = await _koraliumExecutor.Execute(sql, sqlParameters, httpContext);
+            var result = await _koraliumExecutor.Execute(sql, sqlParameters, httpContext, new Dictionary<string,object>(), new CustomMetadataStore());
 
             List<Dictionary<string, object>> output = new List<Dictionary<string, object>>();
 

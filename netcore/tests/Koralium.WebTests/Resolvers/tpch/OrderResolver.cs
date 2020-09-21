@@ -29,6 +29,7 @@ namespace Koralium.WebTests.Resolvers.tpch
 
         protected override Task<IQueryable<Order>> GetQueryableData()
         {
+            AddCustomMetadata("test", "hello");
             return Task.FromResult(_tpchData.Orders.AsQueryable());
         }
     }

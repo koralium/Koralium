@@ -109,8 +109,11 @@ public class KoraliumBasePageSource
 
         //If the page contains column metadata
         //Use it to create the decoders
-        if (page.getMetadataCount() > 0) {
-            List<Presto.ColumnMetadata> columnMetadatas = page.getMetadataList();
+
+        Presto.QueryMetadata queryMetadata = page.getMetadata();
+
+        if (queryMetadata != null && queryMetadata.getColumnsCount() > 0) {
+            List<Presto.ColumnMetadata> columnMetadatas = queryMetadata.getColumnsList();
 
             List<KoraliumExecutionColumn> executionColumns = GrpcColumnReverter.BuildExecutionColumns(columnMetadatas);
 

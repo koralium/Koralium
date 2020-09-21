@@ -24,10 +24,10 @@ export class Page extends jspb.Message {
   getRowcount(): number;
   setRowcount(value: number): void;
 
-  clearMetadataList(): void;
-  getMetadataList(): Array<ColumnMetadata>;
-  setMetadataList(value: Array<ColumnMetadata>): void;
-  addMetadata(value?: ColumnMetadata, index?: number): ColumnMetadata;
+  hasMetadata(): boolean;
+  clearMetadata(): void;
+  getMetadata(): QueryMetadata | undefined;
+  setMetadata(value?: QueryMetadata): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Page.AsObject;
@@ -45,7 +45,35 @@ export namespace Page {
     stringsList: Array<StringColumn.AsObject>,
     objectsList: Array<ObjectColumn.AsObject>,
     rowcount: number,
-    metadataList: Array<ColumnMetadata.AsObject>,
+    metadata?: QueryMetadata.AsObject,
+  }
+}
+
+export class QueryMetadata extends jspb.Message {
+  clearColumnsList(): void;
+  getColumnsList(): Array<ColumnMetadata>;
+  setColumnsList(value: Array<ColumnMetadata>): void;
+  addColumns(value?: ColumnMetadata, index?: number): ColumnMetadata;
+
+  clearCustommetadataList(): void;
+  getCustommetadataList(): Array<KeyValue>;
+  setCustommetadataList(value: Array<KeyValue>): void;
+  addCustommetadata(value?: KeyValue, index?: number): KeyValue;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): QueryMetadata.AsObject;
+  static toObject(includeInstance: boolean, msg: QueryMetadata): QueryMetadata.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: QueryMetadata, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): QueryMetadata;
+  static deserializeBinaryFromReader(message: QueryMetadata, reader: jspb.BinaryReader): QueryMetadata;
+}
+
+export namespace QueryMetadata {
+  export type AsObject = {
+    columnsList: Array<ColumnMetadata.AsObject>,
+    custommetadataList: Array<KeyValue.AsObject>,
   }
 }
 
@@ -459,9 +487,14 @@ export class QueryRequest extends jspb.Message {
   setMaxbatchsize(value: number): void;
 
   clearParametersList(): void;
-  getParametersList(): Array<Parameter>;
-  setParametersList(value: Array<Parameter>): void;
-  addParameters(value?: Parameter, index?: number): Parameter;
+  getParametersList(): Array<KeyValue>;
+  setParametersList(value: Array<KeyValue>): void;
+  addParameters(value?: KeyValue, index?: number): KeyValue;
+
+  clearExtradataList(): void;
+  getExtradataList(): Array<KeyValue>;
+  setExtradataList(value: Array<KeyValue>): void;
+  addExtradata(value?: KeyValue, index?: number): KeyValue;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): QueryRequest.AsObject;
@@ -477,7 +510,8 @@ export namespace QueryRequest {
   export type AsObject = {
     query: string,
     maxbatchsize: number,
-    parametersList: Array<Parameter.AsObject>,
+    parametersList: Array<KeyValue.AsObject>,
+    extradataList: Array<KeyValue.AsObject>,
   }
 }
 
@@ -551,7 +585,7 @@ export namespace Scalar {
   }
 }
 
-export class Parameter extends jspb.Message {
+export class KeyValue extends jspb.Message {
   getName(): string;
   setName(value: string): void;
 
@@ -561,16 +595,16 @@ export class Parameter extends jspb.Message {
   setValue(value?: Scalar): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): Parameter.AsObject;
-  static toObject(includeInstance: boolean, msg: Parameter): Parameter.AsObject;
+  toObject(includeInstance?: boolean): KeyValue.AsObject;
+  static toObject(includeInstance: boolean, msg: KeyValue): KeyValue.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: Parameter, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): Parameter;
-  static deserializeBinaryFromReader(message: Parameter, reader: jspb.BinaryReader): Parameter;
+  static serializeBinaryToWriter(message: KeyValue, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): KeyValue;
+  static deserializeBinaryFromReader(message: KeyValue, reader: jspb.BinaryReader): KeyValue;
 }
 
-export namespace Parameter {
+export namespace KeyValue {
   export type AsObject = {
     name: string,
     value?: Scalar.AsObject,

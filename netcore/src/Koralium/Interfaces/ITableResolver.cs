@@ -13,6 +13,7 @@
  */
 using Koralium.SqlToExpression;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,6 +21,10 @@ namespace Koralium.Interfaces
 {
     public interface ITableResolver
     {
-        Task<IQueryable> GetQueryable(HttpContext httpContext, IQueryOptions queryOptions);
+        Task<IQueryable> GetQueryable(
+            HttpContext httpContext, 
+            IQueryOptions queryOptions, 
+            IReadOnlyDictionary<string, object> extraData,
+            ICustomMetadataStore customMetadataStore);
     }
 }

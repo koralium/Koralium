@@ -102,14 +102,14 @@ namespace Data.Koralium.Client
             if (page.Metadata != null)
             {
                 //Build up the decoders
-                decoders = new ColumnDecoder[page.Metadata.Count];
-                for(int i = 0; i < page.Metadata.Count; i++)
+                decoders = new ColumnDecoder[page.Metadata.Columns.Count];
+                for(int i = 0; i < page.Metadata.Columns.Count; i++)
                 {
-                    decoders[i] = DecoderUtils.GetDecoder(i, page.Metadata[i]);
+                    decoders[i] = DecoderUtils.GetDecoder(i, page.Metadata.Columns[i]);
                 }
 
                 //add the metadata info
-                columnNames = page.Metadata.Select(x => x.Name).ToArray();
+                columnNames = page.Metadata.Columns.Select(x => x.Name).ToArray();
                 for(int i = 0; i < columnNames.Length; i++)
                 {
                     nameToOrdinal.Add(columnNames[i], i);

@@ -28,7 +28,14 @@ message Page {
     uint32 rowCount = 4;
 
     //Column metadata of all the returned columns
-    repeated ColumnMetadata metadata = 5;
+    QueryMetadata metadata = 5;
+}
+
+message QueryMetadata {
+    repeated ColumnMetadata columns = 1;
+
+    //Contains any custom metadata that the resolver might add
+    repeated KeyValue customMetadata = 2;
 }
 
 message Columns {
@@ -164,7 +171,11 @@ message ObjectColumn {
 message QueryRequest {
     string query = 1;
     int32 maxBatchSize = 2;
-    repeated Parameter parameters = 3;
+    repeated KeyValue parameters = 3;
+
+    //Allows to send in extra data that might not be suited or possible in sql
+    //This can be flags to do a different operation, or a full text search etc.
+    repeated KeyValue extraData = 4;
 }
 
 message Scalar {
@@ -179,7 +190,7 @@ message Scalar {
 	}
 }
 
-message Parameter {
+message KeyValue {
     string name = 1;
 
     Scalar value = 2;

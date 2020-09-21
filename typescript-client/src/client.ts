@@ -103,14 +103,18 @@ export class KoraliumClient {
       stream.on("data", response => {
           const page = (response as unknown) as Page;
           
-          const metadataList = page.getMetadataList()
+          const metadata = page.getMetadata();
+          
+          if(metadata !== undefined) {
+            const metadataColumns = metadata.getColumnsList();
 
-          //Check if it contains metadata, if so, create the decoders
-          if(metadataList.length > 0) {
-            decoders = this.createDecoders(metadataList);
-            baseObject = this.createBaseObject(decoders);
+            //Check if it contains metadata, if so, create the decoders
+            if(metadataColumns.length > 0) {
+              decoders = this.createDecoders(metadataColumns);
+              baseObject = this.createBaseObject(decoders);
+            }
           }
-
+          
           const rowCount = page.getRowcount();
 
           const startLength = objects.length;
