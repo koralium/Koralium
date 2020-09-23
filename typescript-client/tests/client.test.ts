@@ -41,43 +41,42 @@ afterAll(async () => {
 test("Get orders", async () => {
   const expected = tpchData.getOrders();
   const results = await client.query("select orderkey, custkey, orderstatus, totalprice, orderdate, orderpriority, clerk, shippriority, comment from orders");
-  expect(results).toEqual(expected);
+  expect(results.rows).toEqual(expected);
 });
 
 test("Get secure data", async () => {
   const expected = tpchData.getOrders();
-  const results = await client.query("select orderkey, custkey, orderstatus, totalprice, orderdate, orderpriority, clerk, shippriority, comment from secure", null, {
-    Authorization: `Bearer ${accessToken}`
-  });
-  expect(results).toEqual(expected);
+  const results = await client.query(
+    "select orderkey, custkey, orderstatus, totalprice, orderdate, orderpriority, clerk, shippriority, comment from secure",
+    {headers: { Authorization: `Bearer ${accessToken}` }}
+  );
+    
+  expect(results.rows).toEqual(expected);
 });
 
 test("Test limit", async () => {
   const expected = tpchData.getOrders().slice(0, 100);
   const results = await client.query("select orderkey, custkey, orderstatus, totalprice, orderdate, orderpriority, clerk, shippriority, comment from orders limit 100");
-  expect(results).toEqual(expected);
+  expect(results.rows).toEqual(expected);
 });
 
 test("Test limit with parameter", async () => {
   const expected = tpchData.getOrders().slice(0, 100);
   const results = await client.query(
     "select orderkey, custkey, orderstatus, totalprice, orderdate, orderpriority, clerk, shippriority, comment from orders limit @limit",
-    {
-      '@limit': 100
-    }
+    {parameters: { limit: 100 }}
   );
-  expect(results).toEqual(expected);
+  expect(results.rows).toEqual(expected);
 });
 
 test("filter on date in parameter", async () => {
   const expected = tpchData.getOrders().filter(x => new Date(x.orderdate) >= new Date("1993-01-01"));
   const results = await client.query(
     "select orderkey, custkey, orderstatus, totalprice, orderdate, orderpriority, clerk, shippriority, comment from orders where Orderdate >= @date",
-    {
-      '@date': '1993-01-01'
-    }
+    { parameters: { date: '1993-01-01'}}
   );
-  expect(results).toEqual(expected);
+
+  expect(results.rows).toEqual(expected);
 });
 
 test("select single field", async () => {
@@ -85,5 +84,15 @@ test("select single field", async () => {
   const results = await client.query(
     "select orderkey from orders"
   );
-  expect(results).toEqual(expected);
+  expect(results.rows).toEqual(expected);
+});
+
+test("Extra data", async () => {
+  const expected = tpchData.getOrders().filter(x => x.custkey === 1).map(x =>  { return { orderkey: x.orderkey } });
+  const results = await client.query(
+    "select orderkey from orders",
+    { extraData: {test: "test" }}
+  );
+
+  expect(results.rows).toEqual(expected);
 });

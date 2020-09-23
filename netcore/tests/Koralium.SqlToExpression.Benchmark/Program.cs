@@ -16,6 +16,7 @@ using BenchmarkDotNet.Running;
 using Koralium.SqlToExpression.Executors;
 using Koralium.SqlToExpression.Executors.Offset;
 using Koralium.SqlToExpression.Metadata;
+using Koralium.SqlToExpression.Search;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System.IO;
 
@@ -42,7 +43,7 @@ namespace Koralium.SqlToExpression.Benchmark
                 new DefaultOffsetExecutorFactory(),
                 new DefaultDistinctExecutorFactory());
 
-            sqlExecutor = new SqlExecutor(tablesMetadata, queryExecutor);
+            sqlExecutor = new SqlExecutor(tablesMetadata, queryExecutor, new DefaultSearchExpressionProvider());
 
             sql150Parser = new TSql150Parser(true);
         }

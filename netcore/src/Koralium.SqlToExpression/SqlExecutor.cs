@@ -33,22 +33,25 @@ namespace Koralium.SqlToExpression
         private readonly TablesMetadata _tablesMetadata;
         private readonly StageConverter _stageConverter;
         private readonly IQueryExecutor _queryExecutor;
+        private readonly ISearchExpressionProvider _searchExpressionProvider;
 
         private TSql150Parser  parser = new TSql150Parser(true);
         public SqlExecutor(
             TablesMetadata tablesMetadata,
-            IQueryExecutor queryExecutor)
+            IQueryExecutor queryExecutor,
+            ISearchExpressionProvider searchExpressionProvider)
         {
             _tablesMetadata = tablesMetadata;
             _queryExecutor = queryExecutor;
             _stageConverter = new StageConverter();
+            _searchExpressionProvider = searchExpressionProvider;
         }
 
         public async ValueTask<object> ExecuteScalar(string sql, SqlParameters parameters = null, object data = null)
         {
             sql = OffsetLimitUtils.TransformQuery(sql);
             var tree = parser.Parse(new StringReader(sql), out var errors);
-            var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata));
+            var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata, _searchExpressionProvider));
             tree.Accept(mainVisitor);
 
             //Convert into execute stages
@@ -97,7 +100,7 @@ namespace Koralium.SqlToExpression
                 throw new SqlErrorException(error.Message);
             }
 
-            var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata));
+            var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata, _searchExpressionProvider));
             tree.Accept(mainVisitor);
 
             //Convert into execute stages

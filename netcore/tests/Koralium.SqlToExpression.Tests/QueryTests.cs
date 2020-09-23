@@ -851,9 +851,12 @@ namespace Koralium.SqlToExpression.Tests
         }
 
         [Test]
-        public async Task TestCallIndex()
+        public void TestSearchFunction()
         {
-            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE orderkey in (1, 2, 3)");
+            Assert.That(async () =>
+            {
+                await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE CONTAINS(*, 'Text')");
+            }, Throws.InstanceOf<SqlErrorException>().With.Message.EqualTo("Search is not implemented for this table"));
         }
 
         //select name from customer where name > 'customer#000001500'

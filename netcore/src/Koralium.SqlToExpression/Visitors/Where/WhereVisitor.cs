@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.SqlToExpression.Exceptions;
+using Koralium.SqlToExpression.Search;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Koralium.SqlToExpression.Utils;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
@@ -50,6 +51,34 @@ namespace Koralium.SqlToExpression.Visitors.Where
         public override void ExplicitVisit(WhereClause whereClause)
         {
             whereClause.SearchCondition.Accept(this);
+        }
+
+        public override void ExplicitVisit(FullTextPredicate node)
+        {
+            bool allFields = false;
+            List<Expression> columns = new List<Expression>();
+            foreach (var column in node.Columns)
+            {
+                //Check if it is a wildcard
+                if (column is ColumnReferenceExpression columnReferenceExpression &&
+                    columnReferenceExpression.ColumnType == ColumnType.Wildcard)
+                {
+                    allFields = true;
+                }
+                else
+                {
+                    column.Accept(this);
+                    var columnExpression = PopStack();
+                    columns.Add(columnExpression);
+                }
+            }
+            if (!(node.Value is StringLiteral stringLiteral))
+            {
+                throw new SqlErrorException("Search can only be done with strings");
+            }
+            var searchParameters = new SearchParameters(allFields, columns, stringLiteral.Value, _previousStage.ParameterExpression);
+            var searchExpression = _visitorMetadata.SearchExpressionProvider.GetSearchExpression(searchParameters);
+            AddExpressionToStack(searchExpression);
         }
 
         public override void ExplicitVisit(LikePredicate likePredicate)
