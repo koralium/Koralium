@@ -42,7 +42,8 @@ namespace Koralium.SqlToExpression.Stages
                 fromTableStage.ParameterExpression,
                 fromTableStage.WhereExpression,
                 fromTableStage.Limit,
-                fromTableStage.Offset));
+                fromTableStage.Offset,
+                fromTableStage.ContainsFullTextSearch));
         }
 
         public void Visit(GroupByStage groupByStage)

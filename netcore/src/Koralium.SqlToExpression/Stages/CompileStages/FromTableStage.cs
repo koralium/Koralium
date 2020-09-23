@@ -53,6 +53,11 @@ namespace Koralium.SqlToExpression.Stages.CompileStages
         /// </summary>
         public int? Limit { get; set; }
 
+        /// <summary>
+        /// Set if there is a full text search filter
+        /// </summary>
+        public bool ContainsFullTextSearch { get; set; }
+
         public FromTableStage(
             string tableName, 
             SqlTypeInfo sqlTypeInfo, 

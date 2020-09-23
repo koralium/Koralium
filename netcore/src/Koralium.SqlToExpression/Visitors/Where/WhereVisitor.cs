@@ -27,11 +27,14 @@ namespace Koralium.SqlToExpression.Visitors.Where
 {
     internal class WhereVisitor : BaseVisitor
     {
+
         private readonly IQueryStage _previousStage;
         private readonly VisitorMetadata _visitorMetadata;
         private readonly Stack<Expression> expressions = new Stack<Expression>();
 
         public Expression Expression => GetExpression();
+
+        public bool ContainsFullTextSearch { get; private set; }
 
         private Expression GetExpression()
         {
@@ -55,6 +58,7 @@ namespace Koralium.SqlToExpression.Visitors.Where
 
         public override void ExplicitVisit(FullTextPredicate node)
         {
+            ContainsFullTextSearch = true;
             bool allFields = false;
             List<Expression> columns = new List<Expression>();
             foreach (var column in node.Columns)

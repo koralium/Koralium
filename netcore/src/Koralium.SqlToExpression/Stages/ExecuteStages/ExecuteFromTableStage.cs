@@ -35,6 +35,8 @@ namespace Koralium.SqlToExpression.Stages.ExecuteStages
 
         public int? Offset { get; }
 
+        public bool ContainsFullTextSearch { get; }
+
         public ExecuteFromTableStage(
             string tableName,
             Type entityType,
@@ -42,7 +44,8 @@ namespace Koralium.SqlToExpression.Stages.ExecuteStages
             ParameterExpression parameterExpression,
             Expression whereExpression,
             int? limit,
-            int? offset)
+            int? offset,
+            bool containsFullTextSearch)
         {
             TableName = tableName;
             EntityType = entityType;
@@ -51,6 +54,7 @@ namespace Koralium.SqlToExpression.Stages.ExecuteStages
             WhereExpression = whereExpression;
             Limit = limit;
             Offset = offset;
+            ContainsFullTextSearch = containsFullTextSearch;
         }
 
         public ValueTask<IQueryable> Accept(IQueryExecutor queryExecutor)

@@ -40,6 +40,8 @@ namespace Koralium.SqlToExpression
         void CancelOffsetExecution();
 
         IQueryOptions<Entity> CreateGeneric<Entity>();
+
+        bool ContainsFullTextSearch { get; }
     }
 
     public interface IQueryOptions<Entity>
@@ -75,5 +77,7 @@ namespace Koralium.SqlToExpression
         bool TryGetOffset(out int offset);
 
         void CancelOffsetExecution();
+
+        bool ContainsFullTextSearch { get; }
     }
 }
