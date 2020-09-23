@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using Koralium.Encoders;
 
 namespace Koralium
 {
@@ -43,7 +44,16 @@ namespace Koralium
         public ValueTask<object> ExecuteScalar(QueryRequest queryRequest, HttpContext httpContext)
         {
             var sqlParameters = ParameterDecoder.DecodeParameters(queryRequest.Parameters);
-            return _koraliumExecutor.ExecuteScalar(queryRequest.Query, sqlParameters, httpContext);
+
+            Dictionary<string, object> extraDatas = new Dictionary<string, object>();
+            foreach (var extraData in queryRequest.ExtraData)
+            {
+                extraDatas.Add(extraData.Name, ScalarDecoder.DecodeScalar(extraData.Value));
+            }
+
+            CustomMetadataStore customMetadataStore = new CustomMetadataStore();
+
+            return _koraliumExecutor.ExecuteScalar(queryRequest.Query, sqlParameters, httpContext, extraDatas, customMetadataStore);
         }
 
         public async Task Execute(QueryRequest queryRequest, HttpContext httpContext, ChannelWriter<Page> channelWriter)
@@ -55,17 +65,36 @@ namespace Koralium
             parametersStopwatch.Stop();
             _logger.LogTrace($"Parsing parameters took: {parametersStopwatch.ElapsedMilliseconds} ms");
 
+
+            Dictionary<string, object> extraDatas = new Dictionary<string, object>();
+            foreach (var extraData in queryRequest.ExtraData)
+            {
+                extraDatas.Add(extraData.Name, ScalarDecoder.DecodeScalar(extraData.Value));
+            }
+
+            //Create the custom metadata store
+            CustomMetadataStore customMetadataStore = new CustomMetadataStore();
+
             _logger.LogTrace($"Executing query: {queryRequest.Query}");
             System.Diagnostics.Stopwatch executeStopwatch = new System.Diagnostics.Stopwatch();
             executeStopwatch.Start();
-            var result = await _koraliumExecutor.Execute(queryRequest.Query, sqlParameters, httpContext);
+            var result = await _koraliumExecutor.Execute(queryRequest.Query, sqlParameters, httpContext, extraDatas, customMetadataStore);
             var enumerator = result.Result.GetEnumerator();
             executeStopwatch.Stop();
             _logger.LogTrace($"Execute query took {executeStopwatch.ElapsedMilliseconds} ms");
 
             IEncoder[] encoders = new IEncoder[result.Columns.Count];
             Func<object, object>[] propertyGetters = new Func<object, object>[encoders.Length];
-            Page page = new Page();
+            Page page = new Page()
+            {
+                Metadata = new QueryMetadata()
+            };
+
+            //Add the custom metadata
+            foreach(var customMetadata in customMetadataStore.GetMetadataValues())
+            {
+                page.Metadata.CustomMetadata.Add(new KeyValue() { Name = customMetadata.Key, Value = ScalarEncoder.EncodeScalarResult(customMetadata.Value) });
+            }
 
             //Build up metadata and encoders
             int indexCounter = 0;
@@ -91,7 +120,7 @@ namespace Koralium
 
                 encoders[i] = EncoderHelper.GetEncoder(column.Type, columnMetadata, columns);
                 propertyGetters[i] = column.GetFunction;
-                page.Metadata.Add(columnMetadata);
+                page.Metadata.Columns.Add(columnMetadata);
             }
 
             //Encode all results

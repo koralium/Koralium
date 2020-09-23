@@ -46,7 +46,7 @@ namespace Koralium.Resolvers
 
                 var resolver = (ITableResolver)tableResolverData.ServiceProvider.GetRequiredService(table.Resolver);
 
-                return await resolver.GetQueryable(tableResolverData.HttpContext, queryOptions);
+                return await resolver.GetQueryable(tableResolverData.HttpContext, queryOptions, tableResolverData.ExtraData, tableResolverData.CustomMetadataStore);
             }
             else
             {

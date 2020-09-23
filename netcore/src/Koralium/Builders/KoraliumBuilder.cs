@@ -19,6 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using Koralium.SqlToExpression;
 
 namespace Koralium.Builders
 {
@@ -32,11 +33,14 @@ namespace Koralium.Builders
 
         internal ImmutableList<KoraliumTable> Tables => tables.ToImmutable();
 
+        internal Type SearchProviderType { get; set; }
+
         internal KoraliumBuilder(IServiceCollection services)
         {
             Services = services;
         }
 
+        
 
         public IKoraliumBuilder AddTableResolver<Resolver, T>(Action<ITableResolverBuilder<T>> options = null) 
             where Resolver : TableResolver<T>
@@ -81,6 +85,12 @@ namespace Koralium.Builders
         internal MetadataStore Build()
         {
             return new MetadataStore(tables.ToImmutable(), typeLookup);
+        }
+
+        public IKoraliumBuilder AddSearchProvider<T>() where T : ISearchExpressionProvider
+        {
+            SearchProviderType = typeof(T);
+            return this;
         }
     }
 }

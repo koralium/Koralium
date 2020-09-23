@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.SqlToExpression;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Text;
@@ -21,6 +22,8 @@ namespace Koralium.Interfaces
     {
         IKoraliumBuilder AddTableResolver<Resolver, T>(Action<ITableResolverBuilder<T>> options = null)
             where Resolver : TableResolver<T>;
+
+        IKoraliumBuilder AddSearchProvider<T>() where T : ISearchExpressionProvider;
 
         IServiceCollection Services { get; }
     }

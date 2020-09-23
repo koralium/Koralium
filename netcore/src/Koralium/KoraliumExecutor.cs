@@ -11,10 +11,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.Interfaces;
 using Koralium.Models;
 using Koralium.SqlToExpression;
 using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Koralium
@@ -29,14 +31,24 @@ namespace Koralium
             _serviceProvider = serviceProvider;
         }
 
-        public ValueTask<QueryResult> Execute(string sql, SqlParameters sqlParameters, HttpContext httpContext)
+        public ValueTask<QueryResult> Execute(
+            string sql, 
+            SqlParameters sqlParameters, 
+            HttpContext httpContext, 
+            IReadOnlyDictionary<string, object> extraData,
+            ICustomMetadataStore customMetadata)
         {
-            return _sqlExecutor.Execute(sql, sqlParameters, new TableResolverData(httpContext, _serviceProvider));
+            return _sqlExecutor.Execute(sql, sqlParameters, new TableResolverData(httpContext, _serviceProvider, extraData, customMetadata));
         }
 
-        public ValueTask<object> ExecuteScalar(string sql, SqlParameters sqlParameters, HttpContext httpContext)
+        public ValueTask<object> ExecuteScalar(
+            string sql, 
+            SqlParameters sqlParameters, 
+            HttpContext httpContext, 
+            IReadOnlyDictionary<string, object> extraData,
+            ICustomMetadataStore customMetadata)
         {
-            return _sqlExecutor.ExecuteScalar(sql, sqlParameters, new TableResolverData(httpContext, _serviceProvider));
+            return _sqlExecutor.ExecuteScalar(sql, sqlParameters, new TableResolverData(httpContext, _serviceProvider, extraData, customMetadata));
         }
     }
 }

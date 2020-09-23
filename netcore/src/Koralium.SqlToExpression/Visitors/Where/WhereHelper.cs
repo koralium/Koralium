@@ -39,7 +39,8 @@ namespace Koralium.SqlToExpression.Visitors.Where
                 previousStage.ParameterExpression,
                 whereVisitor.Expression,
                 previousStage.CurrentType,
-                previousStage.FromAliases
+                previousStage.FromAliases,
+                whereVisitor.ContainsFullTextSearch
                 );
         }
     }

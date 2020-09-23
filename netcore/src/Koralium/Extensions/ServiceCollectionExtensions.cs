@@ -27,6 +27,8 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddKoralium(this IServiceCollection services, Action<IKoraliumBuilder> builder)
         {
+            
+
             KoraliumBuilder koraliumBuilder = new KoraliumBuilder(services);
             builder?.Invoke(koraliumBuilder);
 
@@ -40,6 +42,12 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             services.AddSqlToExpression(tablesMetadata);
+
+            if(koraliumBuilder.SearchProviderType != null)
+            {
+                services.AddSingleton(typeof(ISearchExpressionProvider), koraliumBuilder.SearchProviderType);
+            }
+
             services.AddScoped<KoraliumExecutor>();
             services.AddScoped<GrpcExecutor>();
             services.AddScoped<Koralium.SqlToExpression.ISqlTableResolver, SqlTableResolver>();

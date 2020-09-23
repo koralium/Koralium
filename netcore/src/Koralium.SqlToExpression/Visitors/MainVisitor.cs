@@ -74,6 +74,7 @@ namespace Koralium.SqlToExpression.Visitors
                 {
                     //Push the where condition into the table resolvers
                     fromTableStage.WhereExpression = whereStage.WhereExpression;
+                    fromTableStage.ContainsFullTextSearch = whereStage.ContainsFullTextSearch;
                 }
                 else
                 {

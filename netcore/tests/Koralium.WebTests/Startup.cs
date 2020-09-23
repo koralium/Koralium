@@ -66,6 +66,8 @@ namespace Koralium.WebTests
 
             services.AddKoralium(opt =>
             {
+                opt.AddSearchProvider<CustomSearchProvider>();
+
                 //Add a new table resolver
                 opt.AddTableResolver<ProjectResolver, Project>(tableOpt =>
                 {

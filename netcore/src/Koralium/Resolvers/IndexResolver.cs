@@ -36,7 +36,10 @@ namespace Koralium
             IEncoder[] encoders = new IEncoder[dataRequest.Fields.Count];
             Func<object, object>[] propertyGetters = new Func<object, object>[dataRequest.Fields.Count];
 
-            Page page = new Page();
+            Page page = new Page()
+            {
+                Metadata = new QueryMetadata()
+            };
 
             //Generate metadata and encoders
             int columnIndex = 0;
@@ -53,7 +56,7 @@ namespace Koralium
 
                 encoders[i] = EncoderHelper.GetEncoder(column.ColumnType, columnMetadata, column.Children);
                 propertyGetters[i] = column.PropertyAccessor;
-                page.Metadata.Add(columnMetadata);
+                page.Metadata.Columns.Add(columnMetadata);
             }
 
             await EncoderHelper.ReadData(logger, page, encoders, propertyGetters, query.GetEnumerator(), dataRequest.MaxBatchSize, channelWriter);

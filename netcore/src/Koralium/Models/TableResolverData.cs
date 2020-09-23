@@ -11,8 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Koralium.Models
@@ -26,10 +28,20 @@ namespace Koralium.Models
 
         public IServiceProvider ServiceProvider { get; }
 
-        public TableResolverData(HttpContext httpContext, IServiceProvider serviceProvider)
+        public IReadOnlyDictionary<string, object> ExtraData { get; }
+
+        public ICustomMetadataStore CustomMetadataStore { get; }
+
+        public TableResolverData(
+            HttpContext httpContext, 
+            IServiceProvider serviceProvider, 
+            IReadOnlyDictionary<string, object> extraData,
+            ICustomMetadataStore customMetadataStore)
         {
             HttpContext = httpContext;
             ServiceProvider = serviceProvider;
+            ExtraData = extraData;
+            CustomMetadataStore = customMetadataStore;
         }
     }
 }

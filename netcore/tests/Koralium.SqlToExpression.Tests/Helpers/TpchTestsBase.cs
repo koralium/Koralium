@@ -14,6 +14,7 @@
 using Koralium.SqlToExpression.Executors;
 using Koralium.SqlToExpression.Executors.Offset;
 using Koralium.SqlToExpression.Metadata;
+using Koralium.SqlToExpression.Search;
 using Koralium.SqlToExpression.Tests.tpch;
 using NUnit.Framework;
 using System.Linq;
@@ -53,7 +54,7 @@ namespace Koralium.SqlToExpression.Tests
                 new DefaultOffsetExecutorFactory(),
                 new DefaultDistinctExecutorFactory());
 
-            sqlExecutor = new SqlExecutor(tablesMetadata, queryExecutor);
+            sqlExecutor = new SqlExecutor(tablesMetadata, queryExecutor, new DefaultSearchExpressionProvider());
         }
 
         protected void AssertAreEqual(IQueryable expected, IQueryable actual)

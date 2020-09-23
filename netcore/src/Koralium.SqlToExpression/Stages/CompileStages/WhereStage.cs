@@ -29,12 +29,15 @@ namespace Koralium.SqlToExpression.Stages.CompileStages
 
         public FromAliases FromAliases { get; }
 
+        public bool ContainsFullTextSearch { get; }
+
         public WhereStage(
             SqlTypeInfo sqlTypeInfo,
             ParameterExpression parameterExpression,
             Expression whereExpression,
             Type type,
-            FromAliases fromAliases
+            FromAliases fromAliases,
+            bool containsFullTextSearch
             )
         {
             TypeInfo = sqlTypeInfo;
@@ -42,6 +45,7 @@ namespace Koralium.SqlToExpression.Stages.CompileStages
             WhereExpression = whereExpression;
             CurrentType = type;
             FromAliases = fromAliases;
+            ContainsFullTextSearch = containsFullTextSearch;
         }
 
         public void Accept(IQueryStageVisitor visitor)

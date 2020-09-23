@@ -20,7 +20,7 @@ namespace Koralium.Decoders
     public static class ParameterDecoder
     {
 
-        public static SqlParameters DecodeParameters(IEnumerable<Parameter> parameters)
+        public static SqlParameters DecodeParameters(IEnumerable<KeyValue> parameters)
         {
             SqlParameters sqlParameters = new SqlParameters();
 
@@ -32,7 +32,7 @@ namespace Koralium.Decoders
             return sqlParameters;
         }
 
-        public static SqlParameter DecodeParameter(Parameter parameter)
+        public static SqlParameter DecodeParameter(KeyValue parameter)
         {
             return SqlParameter.Create(parameter.Name, ScalarDecoder.DecodeScalar(parameter.Value));
             //var scalar = parameter.Value;

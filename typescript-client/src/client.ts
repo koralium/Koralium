@@ -13,12 +13,15 @@
  */
 import { KoraliumServiceClient } from "./generated/koralium_grpc_pb"
 import * as grpc from 'grpc';
-import { QueryRequest, Page, ColumnMetadata, IndexRequest, TableMetadataResponse } from "./generated/koralium_pb";
+import { QueryRequest, Page, ColumnMetadata, IndexRequest, TableMetadataResponse, KeyValue } from "./generated/koralium_pb";
 import { IDecoder } from "./decoders/decoder";
 import { getDecoder } from "./decoders/decoders";
 import decodeScalar from "./decoders/ScalarDecoder";
 import encodeParameters from "./encoders/parameterEncoder";
 import { Empty } from "google-protobuf/google/protobuf/empty_pb";
+import { QueryResult, Metadata } from "./queryResult";
+import { QueryOptions } from "./queryOptions";
+import encodeScalar from "./encoders/scalarEncoder";
 
 export class KoraliumClient {
   client: KoraliumServiceClient;
@@ -76,20 +79,37 @@ export class KoraliumClient {
     });
   }
 
-  async query(sql: string, parameters: {} | null = null, headers: {} = {}) {
+  async query(sql: string, queryOptions?: QueryOptions): Promise<QueryResult> {
     const queryRequest = new QueryRequest();
     queryRequest.setQuery(sql);
     queryRequest.setMaxbatchsize(1000000);
 
-    if (parameters) {
-      queryRequest.setParametersList(encodeParameters(parameters));
-    }
-
     const metadata = new grpc.Metadata();
 
-    for (let [key, value] of Object.entries(headers)) {
-        metadata.add(key, value as any);
+    if (queryOptions) {
+      if (queryOptions.parameters) {
+        queryRequest.setParametersList(encodeParameters(queryOptions.parameters));
+      }
+      if (queryOptions.headers) {
+        for (let [key, value] of Object.entries(queryOptions.headers)) {
+          metadata.add(key, value as any);
+        }
+      }
+      if (queryOptions.extraData) {
+        const extraData: Array<KeyValue> = [];
+
+        //Loop through all the extra data and encode it
+        for (let [key, value] of Object.entries(queryOptions.extraData)) {
+          const kv: KeyValue = new KeyValue();
+          kv.setName(key);
+          kv.setValue(encodeScalar(value));
+          extraData.push(kv);
+        }
+
+        queryRequest.setExtradataList(extraData);
+      }
     }
+    
 
     let stream = this.client.query(queryRequest, metadata);
 
@@ -97,18 +117,34 @@ export class KoraliumClient {
 
     let decoders: Array<IDecoder> = [];
     let baseObject = {};
+    
+    const customMetadatas: {[key: string]: any;} = {};
 
     await new Promise <{}[]>((resolve: any, reject: any) => {
 
       stream.on("data", response => {
           const page = (response as unknown) as Page;
           
-          const metadataList = page.getMetadataList()
+          const metadata = page.getMetadata();
+          
+          if(metadata !== undefined) {
+            const metadataColumns = metadata.getColumnsList();
 
-          //Check if it contains metadata, if so, create the decoders
-          if(metadataList.length > 0) {
-            decoders = this.createDecoders(metadataList);
-            baseObject = this.createBaseObject(decoders);
+            //Check if it contains metadata, if so, create the decoders
+            if(metadataColumns.length > 0) {
+              decoders = this.createDecoders(metadataColumns);
+              baseObject = this.createBaseObject(decoders);
+            }
+
+            for(let customMetdata of metadata.getCustommetadataList()) {
+              const customMetdataValue = customMetdata.getValue();
+
+              if(customMetdataValue === undefined) {
+                continue;
+              }
+
+              customMetadatas[customMetdata.getName()] = decodeScalar(customMetdataValue);
+            }
           }
 
           const rowCount = page.getRowcount();
@@ -148,7 +184,7 @@ export class KoraliumClient {
       });
     });
 
-    return objects;
+    return new QueryResult(objects, new Metadata(customMetadatas));
   }
 
 

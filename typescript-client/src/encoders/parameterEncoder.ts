@@ -11,15 +11,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Parameter } from "../generated/koralium_pb";
+import { KeyValue } from "../generated/koralium_pb";
 import encodeScalar from "./scalarEncoder";
 
 export default function encodeParameters(parameters: {[key: string]: any;}) {
   
-  const output: Array<Parameter> = [];
+  const output: Array<KeyValue> = [];
   
   for (let [key] of Object.entries(parameters)) {
-    const parameter = new Parameter();
+    const parameter = new KeyValue();
     parameter.setName(key);
     parameter.setValue(encodeScalar(parameters[key]));
     output.push(parameter);
