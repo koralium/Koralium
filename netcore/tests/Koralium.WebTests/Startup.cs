@@ -109,6 +109,7 @@ namespace Koralium.WebTests
 
                 //Specific
                 opt.AddTableResolver<AutoMapperCustomerResolver, AutoMapperCustomer>();
+                opt.AddTableResolver<EmptyResolver, Empty>();
             });
             
             var tpchDataPath = Path.Join(Configuration.GetValue<string>(WebHostDefaults.ContentRootKey), Configuration.GetValue<string>("TestDataLocation"));
