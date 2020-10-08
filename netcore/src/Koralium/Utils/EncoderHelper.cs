@@ -120,6 +120,7 @@ namespace Koralium.Utils
             stopwatch.Start();
             if (!enumerator.MoveNext())
             {
+                await channelWriter.WriteAsync(page);
                 channelWriter.Complete();
                 return;
             }
