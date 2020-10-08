@@ -32,5 +32,7 @@ namespace Koralium.SqlToExpression.Stages.CompileStages
         void Visit(OffsetStage offsetStage);
 
         void Visit(DistinctStage distinctStage);
+
+        void Visit(SelectAggregateFunctionStage selectAggregateFunctionStage);
     }
 }

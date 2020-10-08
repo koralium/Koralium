@@ -83,12 +83,14 @@ namespace Koralium.SqlToExpression.Visitors
                 }
             }
 
+            bool containsAggregates = ContainsAggregateHelper.ContainsAggregate(query.SelectElements);
+
             //GROUP BY
-            if(query.GroupByClause != null)
+            if (query.GroupByClause != null)
             {
                 _stages.Add(GroupByHelper.GetGroupByStage(LastStage, query.GroupByClause, _usedProperties));
             }
-            else if (ContainsAggregateHelper.ContainsAggregate(query.SelectElements))
+            else if (containsAggregates && query.SelectElements.Count > 1)
             {
                 _stages.Add(GroupByUtils.CreateStaticGroupBy(LastStage));
             }
@@ -106,7 +108,17 @@ namespace Koralium.SqlToExpression.Visitors
             }
 
             //SELECT
-            _stages.Add(SelectHelper.GetSelectStage(LastStage, query.SelectElements, _visitorMetadata, _usedProperties));
+            if(containsAggregates && query.SelectElements.Count == 1)
+            {
+                //If it is only one aggregate, call the specific linq methods
+                _stages.Add(SelectHelper.GetSelectAggregateFunctionStage(LastStage, query.SelectElements, _visitorMetadata, _usedProperties));
+            }
+            else
+            {
+                //Otherwise do normal select
+                _stages.Add(SelectHelper.GetSelectStage(LastStage, query.SelectElements, _visitorMetadata, _usedProperties));
+            }
+            
 
             //DISTINCT
             if(query.UniqueRowFilter == UniqueRowFilter.Distinct)

@@ -27,6 +27,37 @@ namespace Koralium.SqlToExpression.Visitors.Select
     {
         private static Func<object, object>[] getDelegates = BuildGetDeletages();
 
+        public static SelectAggregateFunctionStage GetSelectAggregateFunctionStage(
+            IQueryStage previousStage,
+            IList<SelectElement> selectElements,
+            VisitorMetadata visitorMetadata,
+            HashSet<PropertyInfo> usedProperties
+            )
+        {
+            SingleAggregateVisitor singleAggregateVisitor = new SingleAggregateVisitor(
+                previousStage,
+                visitorMetadata
+                );
+
+            foreach (var selectElement in selectElements)
+            {
+                selectElement.Accept(singleAggregateVisitor);
+            }
+
+            var typeBuilder = SqlTypeInfo.NewBuilder();
+            var propertyInfo = typeof(AnonType).GetProperty($"P0");
+            typeBuilder.AddProperty(singleAggregateVisitor.ColumnName, propertyInfo);
+
+            return new SelectAggregateFunctionStage(
+                typeBuilder.Build(),
+                Expression.Parameter(typeof(AnonType)),
+                typeof(AnonType),
+                previousStage.FromAliases,
+                singleAggregateVisitor.FunctionName,
+                null
+                );
+        }
+
         public static SelectStage GetSelectStage(
             IQueryStage previousStage, 
             IList<SelectElement> selectElements,
