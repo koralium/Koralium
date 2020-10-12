@@ -78,3 +78,13 @@ jobs:
         TAG_COMMIT: false
         VERSION_STATIC: ${{ steps.tag.outputs.VERSION }}
 
+    - name: publish on version change
+      id: publish_nuget_json
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: netcore/src/Koralium.Json/Koralium.Json.csproj
+        PACKAGE_NAME: Koralium.Json
+        NUGET_KEY: ${{ secrets.NUGET_KEY }}
+        TAG_COMMIT: false
+        VERSION_STATIC: ${{ steps.tag.outputs.VERSION }}
+
