@@ -887,6 +887,17 @@ namespace Koralium.SqlToExpression.Tests
             }, Throws.InstanceOf<SqlErrorException>().With.Message.EqualTo("Search is not implemented for this table"));
         }
 
+        [Test]
+        public void TestSearchFunctionWithParameter()
+        {
+            Assert.That(async () =>
+            {
+                SqlParameters sqlParameters = new SqlParameters()
+                    .Add(SqlParameter.Create("P0", "test"));
+                await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE CONTAINS(*, @P0)", sqlParameters);
+            }, Throws.InstanceOf<SqlErrorException>().With.Message.EqualTo("Search is not implemented for this table"));
+        }
+
         //select name from customer where name > 'customer#000001500'
         //Gives the wrong results
     }
