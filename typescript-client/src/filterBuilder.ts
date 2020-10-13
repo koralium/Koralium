@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { KeyValue } from "./generated/koralium_pb";
 import { ParameterBuilder } from "./parameterBuilder";
 
 
@@ -34,6 +35,7 @@ function isFieldQuery(val: any): val is FieldQuery {
       val.contains !== undefined;
 }
 
+
 function writeSingleValue(arr: Array<string>, parameters: ParameterBuilder, val: string | number | undefined, operation: (string: string) => string): void {
   if (val !== undefined) {
       if (isString(val)) {
@@ -55,8 +57,30 @@ export function writeFilter(filter: {} | FieldQuery): FilterResult {
   return new FilterResult(result, parameters.getParameters());
 }
 
+function writeSearchFilter(parameters: ParameterBuilder, value: SearchFilter): string {
+  
+  if (value.queryString !== undefined) {
+
+    let output = "CONTAINS(";
+
+    if (value.fields !== undefined) {
+      output += `(${value.fields.join(', ')})`;
+    }
+    else{
+      output += "*";
+    }
+    output += ", ";
+    output += `@${parameters.getParameterName(value.queryString)}`;
+    output += ")";
+    
+    return output;
+  }
+
+  return "";
+}
+
 export function writeFilterWithParameterBuilder(parameterBuilder: ParameterBuilder, filter: {} | FieldQuery): string {
-  const operations: Array<string> = [];
+  let operations: Array<string> = [];
   let andOperation = null;
   let orOperation = null;
 
@@ -71,8 +95,13 @@ export function writeFilterWithParameterBuilder(parameterBuilder: ParameterBuild
       if (key === "or") {
           orOperation = writeFilterWithParameterBuilder(parameterBuilder, value);
       }
+      if(key === "search") {
+        operations.push(writeSearchFilter(parameterBuilder, value));
+      }
   }
   let query = "";
+
+  operations = operations.filter(x => x !== "");
   
   if(operations.length > 0) {
     query = `(${operations.join(" AND ")})`;
@@ -124,8 +153,6 @@ export class FilterResult {
   }
 }
 
-
-
 export class FieldQuery {
   eq: string | number | undefined;
 
@@ -138,4 +165,9 @@ export class FieldQuery {
   startsWith: string | number | undefined;
   endsWith: string | number | undefined;
   contains: string | number | undefined;
+}
+
+export class SearchFilter {
+  queryString: string | undefined;
+  fields: Array<string> | undefined;
 }

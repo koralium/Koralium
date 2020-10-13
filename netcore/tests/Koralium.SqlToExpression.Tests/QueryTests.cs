@@ -709,9 +709,22 @@ namespace Koralium.SqlToExpression.Tests
         }
 
         [Test]
-        public async Task TestStringContainsWith()
+        public async Task TestStringContains()
         {
             var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like '%5-L%'");
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderpriority.Contains("5-L"))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestStringContainsIgnoreCase()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like '%5-l%'");
 
             var expected = TpchData.Orders
                 .Where(x => x.Orderpriority.Contains("5-L"))
@@ -816,6 +829,21 @@ namespace Koralium.SqlToExpression.Tests
             var expected = TpchData.Orders
                 .Where(x => x.Orderpriority.Contains("L"))
                 .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestStringLikeContainsParameterNotSelectingWhereParameter()
+        {
+            var parameters = new SqlParameters()
+                .Add(SqlParameter.Create("Parameter", "L"));
+            var result = await SqlExecutor.Execute("SELECT Orderkey FROM \"order\" WHERE Orderpriority like '%' + @Parameter + '%'", parameters);
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderpriority.Contains("L"))
+                .Select(x => new { x.Orderkey })
                 .AsQueryable();
 
             AssertAreEqual(expected, result.Result);

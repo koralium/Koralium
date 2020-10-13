@@ -189,3 +189,60 @@ test("Empty filter object", () => {
 
   expect(result).toEqual(expected);
 });
+
+test("Search filter all fields", () => {
+  const mapper = new ObjectToSelectMapper()
+    .addMapping("c1", "c1")
+    .addMapping("c2", ["c2", "c3"]);
+
+  const queryBuilder = new QueryBuilder("testtable", mapper)
+    .addSelectsWithMapper({
+      c1: {},
+      c2: {}
+    })
+    .addFilter({
+      search: {
+        queryString: "test"
+      }
+    });
+
+  const queryResult = queryBuilder.buildQuery();
+  const expectedQuery = "SELECT c1, c2, c3 FROM testtable WHERE (CONTAINS(*, @P0))"
+
+  const parametersResult = queryBuilder.getParameters();
+  const expectedParameters = {
+    P0: "test"
+  };
+
+  expect(queryResult).toEqual(expectedQuery);
+  expect(parametersResult).toEqual(expectedParameters);
+})
+
+test("Search filter two fields", () => {
+  const mapper = new ObjectToSelectMapper()
+    .addMapping("c1", "c1")
+    .addMapping("c2", ["c2", "c3"]);
+
+  const queryBuilder = new QueryBuilder("testtable", mapper)
+    .addSelectsWithMapper({
+      c1: {},
+      c2: {}
+    })
+    .addFilter({
+      search: {
+        queryString: "test",
+        fields: ["c1, c2"]
+      }
+    });
+
+  const queryResult = queryBuilder.buildQuery();
+  const expectedQuery = "SELECT c1, c2, c3 FROM testtable WHERE (CONTAINS((c1, c2), @P0))"
+
+  const parametersResult = queryBuilder.getParameters();
+  const expectedParameters = {
+    P0: "test"
+  };
+
+  expect(queryResult).toEqual(expectedQuery);
+  expect(parametersResult).toEqual(expectedParameters);
+})
