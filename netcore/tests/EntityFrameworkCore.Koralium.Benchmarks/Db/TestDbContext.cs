@@ -27,6 +27,8 @@ namespace EntityFrameworkCore.Koralium.Tests.Db
 
         public DbSet<Project> Projects { get; set; }
 
+        public DbSet<Customer> Customers { get; set; }
+
         public DbSet<Order> Orders { get; set; }
 
         public DbSet<AutoMapperCustomer> AutoMapperCustomers { get; set; }
@@ -47,6 +49,14 @@ namespace EntityFrameworkCore.Koralium.Tests.Db
                     .HasKey(x => x.Custkey);
 
                 opt.Property(x => x.OrderKeys).IsArrayType();
+            });
+
+            modelBuilder.Entity<Customer>(opt =>
+            {
+                opt.ToTable("customer")
+                    .HasKey(x => x.Custkey);
+
+                opt.Ignore(x => x.Orders);
             });
 
             modelBuilder.Entity<Order>(opt =>
