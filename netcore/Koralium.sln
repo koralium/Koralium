@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data.Koralium", "src\Data.K
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Koralium", "src\Koralium\Koralium.csproj", "{DAB37FD6-E2EF-4F6A-8307-93AA87D032CF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityFrameworkCore.Koralium.Benchmarks", "tests\EntityFrameworkCore.Koralium.Benchmarks\EntityFrameworkCore.Koralium.Benchmarks.csproj", "{4A7EFEF4-3637-4D64-901A-C4EFEB93A533}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{DAB37FD6-E2EF-4F6A-8307-93AA87D032CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAB37FD6-E2EF-4F6A-8307-93AA87D032CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAB37FD6-E2EF-4F6A-8307-93AA87D032CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A7EFEF4-3637-4D64-901A-C4EFEB93A533}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A7EFEF4-3637-4D64-901A-C4EFEB93A533}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A7EFEF4-3637-4D64-901A-C4EFEB93A533}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A7EFEF4-3637-4D64-901A-C4EFEB93A533}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,6 +101,7 @@ Global
 		{0B0BA63A-2713-4AD4-924D-0EDC4D46718D} = {F7D6319E-DD32-4366-9FE5-D9FFA602CD72}
 		{7A9CE18C-F629-4163-91A1-3F9A557276EF} = {6612ACD6-8BB1-41DF-8457-066993C5156C}
 		{DAB37FD6-E2EF-4F6A-8307-93AA87D032CF} = {6612ACD6-8BB1-41DF-8457-066993C5156C}
+		{4A7EFEF4-3637-4D64-901A-C4EFEB93A533} = {F7D6319E-DD32-4366-9FE5-D9FFA602CD72}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {370182A4-5D02-471D-9AC0-8A745D2E3299}
