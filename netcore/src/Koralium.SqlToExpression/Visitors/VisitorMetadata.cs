@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.SqlToExpression.Interfaces;
 using Koralium.SqlToExpression.Metadata;
 using System.Diagnostics;
 
@@ -24,7 +25,13 @@ namespace Koralium.SqlToExpression.Visitors
 
         public ISearchExpressionProvider SearchExpressionProvider { get; }
 
-        public VisitorMetadata(SqlParameters sqlParameters, TablesMetadata tablesMetadata, ISearchExpressionProvider searchExpressionProvider)
+        public IStringOperationsProvider StringOperationsProvider { get; set; }
+
+        public VisitorMetadata(
+            SqlParameters sqlParameters, 
+            TablesMetadata tablesMetadata, 
+            ISearchExpressionProvider searchExpressionProvider,
+            IStringOperationsProvider stringOperationsProvider)
         {
             Debug.Assert(tablesMetadata != null);
 
@@ -38,6 +45,7 @@ namespace Koralium.SqlToExpression.Visitors
             }
             TablesMetadata = tablesMetadata;
             SearchExpressionProvider = searchExpressionProvider;
+            StringOperationsProvider = stringOperationsProvider;
         }
     }
 }

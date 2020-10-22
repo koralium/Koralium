@@ -735,6 +735,45 @@ namespace Koralium.SqlToExpression.Tests
         }
 
         [Test]
+        public async Task TestStringStartsWithIgnoreCase()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like '5-l%'");
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderpriority.StartsWith("5-L"))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestStringEndsWithIgnoreCase()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like '%low'");
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderpriority.EndsWith("LOW"))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestStringEqualsIgnoreCase()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like '5-low'");
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderpriority.Equals("5-LOW"))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
         public async Task TestStringEndsWith()
         {
             var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like '%5-L'");

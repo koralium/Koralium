@@ -38,7 +38,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
             foreach(var table in koraliumBuilder.Tables)
             {
-                tablesMetadata.AddTable(new TableMetadata(table.Name, table.EntityType));
+                tablesMetadata.AddTable(new TableMetadata(
+                    table.Name, 
+                    table.EntityType,
+                    table.StringOperationsProvider));
             }
 
             services.AddSqlToExpression(tablesMetadata);

@@ -18,6 +18,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Koralium.Json.Extensions;
+using Koralium.SqlToExpression.Providers;
 using Koralium.WebTests.Database;
 using Koralium.WebTests.Entities;
 using Koralium.WebTests.Entities.specific;
@@ -95,6 +96,7 @@ namespace Koralium.WebTests
                 opt.AddTableResolver<OrderResolver, Order>(t =>
                 {
                     t.TableName = "orders";
+                    t.UseInMemoryCaseInsensitiveStringOperations();
                 });
                 opt.AddTableResolver<PartResolver, Part>();
                 opt.AddTableResolver<PartsuppResolver, Partsupp>();

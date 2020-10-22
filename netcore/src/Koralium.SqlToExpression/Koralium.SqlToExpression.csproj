@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Authors>Koralium</Authors>
     <RepositoryUrl>https://github.com/koralium/Koralium</RepositoryUrl>

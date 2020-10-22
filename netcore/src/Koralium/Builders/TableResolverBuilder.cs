@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Koralium.SqlToExpression.Interfaces;
 
 namespace Koralium.Builders
 {
@@ -27,7 +28,9 @@ namespace Koralium.Builders
     {
         private readonly List<TableColumn> _columns;
         private readonly List<TableIndex> indicies = new List<TableIndex>();
+        private IStringOperationsProvider _stringOperationsProvider;
         public string TableName { get; set; }
+        
 
         internal IReadOnlyList<TableIndex> Indicies
         {
@@ -37,9 +40,23 @@ namespace Koralium.Builders
             }
         }
 
+        internal IStringOperationsProvider StringOperationsProvider
+        {
+            get
+            {
+                return _stringOperationsProvider;
+            }
+        }
+
         public TableResolverBuilder(List<TableColumn> columns)
         {
             _columns = columns;
+        }
+
+        public ITableResolverBuilder<Entity> SetStringOperationsProvider(IStringOperationsProvider stringOperationsProvider)
+        {
+            _stringOperationsProvider = stringOperationsProvider;
+            return this;
         }
 
         public ITableResolverBuilder<Entity> AddIndexResolver<Resolver, Key1>(Expression<Func<Entity, Key1>> property, string indexName = null)
