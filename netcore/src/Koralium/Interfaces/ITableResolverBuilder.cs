@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.SqlToExpression.Interfaces;
 using System;
 using System.Linq.Expressions;
 
@@ -19,6 +20,8 @@ namespace Koralium.Interfaces
     public interface ITableResolverBuilder<T>
     {
         string TableName { get; set; }
+
+        ITableResolverBuilder<T> SetStringOperationsProvider(IStringOperationsProvider stringOperationsProvider);
 
         ITableResolverBuilder<T> AddIndexResolver<Resolver, Key1>(
             Expression<Func<T, Key1>> property,

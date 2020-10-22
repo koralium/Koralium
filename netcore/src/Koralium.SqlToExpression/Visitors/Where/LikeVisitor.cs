@@ -213,24 +213,37 @@ namespace Koralium.SqlToExpression.Visitors.Where
 
             if (visitResult.StartsWith && visitResult.EndsWith)
             {
-                var containsExpression = PredicateUtils.CallContains(leftExpression, visitResult.Expression);
+                var containsExpression = PredicateUtils.CallContains(
+                    leftExpression, 
+                    visitResult.Expression,
+                    _visitorMetadata.StringOperationsProvider);
                 AddExpressionToStack(containsExpression);
             }
             //Starts with
             else if (visitResult.StartsWith)
             {
-                var startsWithExpression = PredicateUtils.CallStartsWith(leftExpression, visitResult.Expression);
+                var startsWithExpression = PredicateUtils.CallStartsWith(
+                    leftExpression, 
+                    visitResult.Expression,
+                    _visitorMetadata.StringOperationsProvider);
                 AddExpressionToStack(startsWithExpression);
             }
             //Ends with
             else if (visitResult.EndsWith)
             {
-                var endsWithExpression = PredicateUtils.CallEndsWith(leftExpression, visitResult.Expression);
+                var endsWithExpression = PredicateUtils.CallEndsWith(
+                    leftExpression, 
+                    visitResult.Expression,
+                    _visitorMetadata.StringOperationsProvider);
                 AddExpressionToStack(endsWithExpression);
             }
             else
             {
-                var equalsExpression = PredicateUtils.CreateComparisonExpression(leftExpression, visitResult.Expression, BooleanComparisonType.Equals);
+                var equalsExpression = PredicateUtils.CreateComparisonExpression(
+                    leftExpression, 
+                    visitResult.Expression, 
+                    BooleanComparisonType.Equals,
+                    _visitorMetadata.StringOperationsProvider);
                 AddExpressionToStack(equalsExpression);
             }
         }

@@ -13,8 +13,9 @@
  */
 using Koralium.SqlToExpression.Executors;
 using Koralium.SqlToExpression.Executors.Offset;
+using Koralium.SqlToExpression.Interfaces;
 using Koralium.SqlToExpression.Metadata;
-using Koralium.SqlToExpression.Search;
+using Koralium.SqlToExpression.Providers;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text;
 
@@ -35,6 +36,7 @@ namespace Koralium.SqlToExpression.Extensions
             services.AddSingleton<IOffsetExecutorFactory, DefaultOffsetExecutorFactory>();
             services.AddSingleton<IDistinctExecutorFactory, DefaultDistinctExecutorFactory>();
             services.AddSingleton<ISearchExpressionProvider, DefaultSearchExpressionProvider>();
+            services.AddSingleton<IStringOperationsProvider, DefaultStringOperationsProvider>();
 
             services.AddScoped<SqlExecutor>();
 

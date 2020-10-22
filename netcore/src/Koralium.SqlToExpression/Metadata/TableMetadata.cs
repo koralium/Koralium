@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.SqlToExpression.Interfaces;
 using System;
 
 namespace Koralium.SqlToExpression.Metadata
@@ -21,10 +22,16 @@ namespace Koralium.SqlToExpression.Metadata
 
         public Type Type { get; }
 
-        public TableMetadata(string name, Type type)
+        public IStringOperationsProvider StringOperationsProvider { get; }
+
+        public TableMetadata(
+            string name, 
+            Type type,
+            IStringOperationsProvider stringOperationsProvider = null)
         {
             Name = name;
             Type = type;
+            StringOperationsProvider = stringOperationsProvider;
         }
     }
 }

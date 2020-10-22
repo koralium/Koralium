@@ -14,7 +14,7 @@
 using Koralium.SqlToExpression.Executors;
 using Koralium.SqlToExpression.Executors.Offset;
 using Koralium.SqlToExpression.Metadata;
-using Koralium.SqlToExpression.Search;
+using Koralium.SqlToExpression.Providers;
 using Koralium.SqlToExpression.Tests.tpch;
 using NUnit.Framework;
 using System.Linq;
@@ -38,7 +38,7 @@ namespace Koralium.SqlToExpression.Tests
             tablesMetadata.AddTable(new TableMetadata("customer", typeof(Customer)));
             tablesMetadata.AddTable(new TableMetadata("lineitem", typeof(LineItem)));
             tablesMetadata.AddTable(new TableMetadata("nation", typeof(Nation)));
-            tablesMetadata.AddTable(new TableMetadata("order", typeof(Order)));
+            tablesMetadata.AddTable(new TableMetadata("order", typeof(Order), new CaseInsensitiveStringOperationsProvider()));
             tablesMetadata.AddTable(new TableMetadata("part", typeof(Part)));
             tablesMetadata.AddTable(new TableMetadata("partsupp", typeof(Partsupp)));
             tablesMetadata.AddTable(new TableMetadata("region", typeof(Region)));
@@ -54,7 +54,11 @@ namespace Koralium.SqlToExpression.Tests
                 new DefaultOffsetExecutorFactory(),
                 new DefaultDistinctExecutorFactory());
 
-            sqlExecutor = new SqlExecutor(tablesMetadata, queryExecutor, new DefaultSearchExpressionProvider());
+            sqlExecutor = new SqlExecutor(
+                tablesMetadata, 
+                queryExecutor, 
+                new DefaultSearchExpressionProvider(),
+                new DefaultStringOperationsProvider());
         }
 
         protected void AssertAreEqual(IQueryable expected, IQueryable actual)
