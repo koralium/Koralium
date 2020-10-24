@@ -12,7 +12,6 @@
  * limitations under the License.
  */
 using Koralium.SqlToExpression.Exceptions;
-using Koralium.SqlToExpression.Providers;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Koralium.SqlToExpression.Utils;
 using Microsoft.SqlServer.TransactSql.ScriptDom;

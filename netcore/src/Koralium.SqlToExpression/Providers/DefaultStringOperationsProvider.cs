@@ -1,9 +1,7 @@
 ﻿using Koralium.SqlToExpression.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 
 namespace Koralium.SqlToExpression.Providers
 {

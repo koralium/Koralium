@@ -14,7 +14,6 @@
 using Data.Koralium.Client.Decoders;
 using Data.Koralium.Client.Utils;
 using Data.Koralium.Utils;
-using Grpc.Core;
 using Grpc.Net.Client;
 using Koralium.Grpc;
 using System;

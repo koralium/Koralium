@@ -13,7 +13,6 @@
  */
 using Koralium.Interfaces;
 using Koralium.Grpc;
-using System.Text;
 
 namespace Koralium.Encoders
 {

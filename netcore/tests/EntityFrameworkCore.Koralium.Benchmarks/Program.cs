@@ -1,6 +1,4 @@
 ﻿using BenchmarkDotNet.Running;
-using Grpc.Net.Client;
-using System;
 
 namespace EntityFrameworkCore.Koralium.Benchmarks
 {

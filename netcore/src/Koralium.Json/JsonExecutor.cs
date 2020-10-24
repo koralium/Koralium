@@ -14,8 +14,6 @@
 using Koralium.Metadata;
 using Koralium.SqlToExpression;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

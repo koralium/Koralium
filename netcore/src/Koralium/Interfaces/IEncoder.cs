@@ -12,7 +12,6 @@
  * limitations under the License.
  */
 using Koralium.Grpc;
-using System.Text;
 
 namespace Koralium.Interfaces
 {

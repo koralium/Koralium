@@ -12,7 +12,6 @@
  * limitations under the License.
  */
 using Microsoft.AspNetCore.Routing;
-using System.Text;
 using Koralium.Services;
 
 namespace Microsoft.AspNetCore.Builder

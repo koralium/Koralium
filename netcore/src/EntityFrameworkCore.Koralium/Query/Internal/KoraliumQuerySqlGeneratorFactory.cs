@@ -12,7 +12,6 @@
  * limitations under the License.
  */
 using Microsoft.EntityFrameworkCore.Query;
-using System.Text;
 
 namespace EntityFrameworkCore.Koralium.Query.Internal
 {

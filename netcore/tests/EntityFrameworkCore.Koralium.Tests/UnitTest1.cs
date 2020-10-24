@@ -14,8 +14,6 @@
 using Data.Koralium.Tests;
 using EntityFrameworkCore.Koralium.Extensions;
 using EntityFrameworkCore.Koralium.Tests.Db;
-using Koralium.WebTests;
-using Koralium.WebTests.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System;
