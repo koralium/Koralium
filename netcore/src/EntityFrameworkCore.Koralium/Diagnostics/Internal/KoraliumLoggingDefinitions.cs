@@ -12,7 +12,6 @@
  * limitations under the License.
  */
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using System.Text;
 
 namespace EntityFrameworkCore.Koralium.Diagnostics.Internal
 {

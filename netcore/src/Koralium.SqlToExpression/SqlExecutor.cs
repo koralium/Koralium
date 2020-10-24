@@ -22,7 +22,6 @@ using Koralium.SqlToExpression.Utils;
 using Koralium.SqlToExpression.Visitors;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;

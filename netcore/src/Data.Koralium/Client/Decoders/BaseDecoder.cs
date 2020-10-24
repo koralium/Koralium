@@ -14,7 +14,6 @@
 using Google.Protobuf.Collections;
 using Koralium.Grpc;
 using System;
-using System.Text;
 
 namespace Data.Koralium.Client.Decoders
 {

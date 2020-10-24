@@ -2,9 +2,6 @@
 using EntityFrameworkCore.Koralium.Tests.Db;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
 using EntityFrameworkCore.Koralium.Extensions;
 using System.Linq;
 

@@ -12,7 +12,6 @@
  * limitations under the License.
  */
 using Koralium.WebTests.Entities;
-using System.Threading.Tasks;
 
 namespace Koralium.WebTests
 {

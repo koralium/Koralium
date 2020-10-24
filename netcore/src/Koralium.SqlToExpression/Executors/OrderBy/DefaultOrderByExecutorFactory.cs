@@ -14,7 +14,6 @@
 using Koralium.SqlToExpression.Stages.ExecuteStages;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 
 
 namespace Koralium.SqlToExpression.Executors

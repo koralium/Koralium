@@ -15,7 +15,6 @@ using Google.Protobuf.WellKnownTypes;
 using Koralium.Interfaces;
 using Koralium.Grpc;
 using System;
-using System.Text;
 
 namespace Koralium.Encoders
 {

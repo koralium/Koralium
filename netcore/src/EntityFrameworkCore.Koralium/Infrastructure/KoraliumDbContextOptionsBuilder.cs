@@ -14,7 +14,6 @@
 using EntityFrameworkCore.Koralium.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using System.Text;
 
 namespace EntityFrameworkCore.Koralium.Infrastructure
 {

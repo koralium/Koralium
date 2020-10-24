@@ -1,11 +1,7 @@
 ﻿using AutoMapper;
-using Koralium.SqlToExpression;
 using Koralium.WebTests.Database;
 using Koralium.WebTests.Entities.specific;
 using Koralium.WebTests.Entities.tpch;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 

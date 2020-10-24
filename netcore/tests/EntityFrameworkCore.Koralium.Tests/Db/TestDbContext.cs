@@ -15,7 +15,6 @@ using Koralium.WebTests;
 using Koralium.WebTests.Entities.specific;
 using Koralium.WebTests.Entities.tpch;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
 
 namespace EntityFrameworkCore.Koralium.Tests.Db
 {

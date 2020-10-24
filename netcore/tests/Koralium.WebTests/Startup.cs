@@ -14,11 +14,8 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Koralium.Json.Extensions;
-using Koralium.SqlToExpression.Providers;
 using Koralium.WebTests.Database;
 using Koralium.WebTests.Entities;
 using Koralium.WebTests.Entities.specific;

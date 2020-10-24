@@ -19,7 +19,6 @@ using Koralium.SqlToExpression;
 using Koralium.SqlToExpression.Extensions;
 using Koralium.SqlToExpression.Metadata;
 using System;
-using System.Text;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

@@ -12,10 +12,8 @@
  * limitations under the License.
  */
 using Koralium;
-using Koralium.SqlToExpression;
 using Koralium.WebTests;
 using Koralium.WebTests.Entities;
-using Microsoft.AspNetCore.Http;
 using System.Linq;
 using System.Threading.Tasks;
 

@@ -12,7 +12,6 @@
  * limitations under the License.
  */
 using Koralium.SqlToExpression.Extensions;
-using Koralium.SqlToExpression.Metadata;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System.Collections.Generic;
