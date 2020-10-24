@@ -34,7 +34,7 @@ namespace Koralium.SqlToExpression.Visitors
     {
         private readonly List<IQueryStage> _stages = new List<IQueryStage>();
         private readonly VisitorMetadata _visitorMetadata;
-        private HashSet<PropertyInfo> _usedProperties = new HashSet<PropertyInfo>();
+        private readonly HashSet<PropertyInfo> _usedProperties = new HashSet<PropertyInfo>();
         public IReadOnlyList<IQueryStage> Stages => _stages;
 
         private IQueryStage LastStage => _stages.Last();
@@ -44,13 +44,13 @@ namespace Koralium.SqlToExpression.Visitors
             _visitorMetadata = visitorMetadata;
         }
 
-        public override void ExplicitVisit(QuerySpecification query)
+        public override void ExplicitVisit(QuerySpecification node)
         {
             FromTableStage fromTable = null;
             //FROM
-            if(query.FromClause != null)
+            if(node.FromClause != null)
             {
-                var fromStages = FromHelper.GetFromTableStage(query.FromClause, _visitorMetadata);
+                var fromStages = FromHelper.GetFromTableStage(node.FromClause, _visitorMetadata);
 
                 //Check if it is only a from table stage, this is used to add used properties into
                 if(fromStages.Count == 1 && fromStages[0] is FromTableStage fromTableStage)
@@ -66,9 +66,9 @@ namespace Koralium.SqlToExpression.Visitors
             }
 
             //WHERE
-            if(query.WhereClause != null)
+            if(node.WhereClause != null)
             {
-                var whereStage = WhereHelper.GetWhereStage(LastStage, query.WhereClause, _visitorMetadata, _usedProperties);
+                var whereStage = WhereHelper.GetWhereStage(LastStage, node.WhereClause, _visitorMetadata, _usedProperties);
 
                 if(LastStage is FromTableStage fromTableStage)
                 {
@@ -84,40 +84,40 @@ namespace Koralium.SqlToExpression.Visitors
             }
 
             //GROUP BY
-            if(query.GroupByClause != null)
+            if(node.GroupByClause != null)
             {
-                _stages.Add(GroupByHelper.GetGroupByStage(LastStage, query.GroupByClause, _usedProperties));
+                _stages.Add(GroupByHelper.GetGroupByStage(LastStage, node.GroupByClause, _usedProperties));
             }
-            else if (ContainsAggregateHelper.ContainsAggregate(query.SelectElements))
+            else if (ContainsAggregateHelper.ContainsAggregate(node.SelectElements))
             {
                 _stages.Add(GroupByUtils.CreateStaticGroupBy(LastStage));
             }
 
             //HAVING
-            if(query.HavingClause != null)
+            if(node.HavingClause != null)
             {
-                _stages.Add(HavingHelper.GetHavingStage(LastStage, query.HavingClause, _visitorMetadata, _usedProperties));
+                _stages.Add(HavingHelper.GetHavingStage(LastStage, node.HavingClause, _visitorMetadata, _usedProperties));
             }
             
             //ORDER BY
-            if(query.OrderByClause != null)
+            if(node.OrderByClause != null)
             {
-                _stages.Add(OrderByHelper.GetOrderByStage(LastStage, query.OrderByClause, _visitorMetadata, _usedProperties));
+                _stages.Add(OrderByHelper.GetOrderByStage(LastStage, node.OrderByClause, _visitorMetadata, _usedProperties));
             }
 
             //SELECT
-            _stages.Add(SelectHelper.GetSelectStage(LastStage, query.SelectElements, _visitorMetadata, _usedProperties));
+            _stages.Add(SelectHelper.GetSelectStage(LastStage, node.SelectElements, _visitorMetadata, _usedProperties));
 
             //DISTINCT
-            if(query.UniqueRowFilter == UniqueRowFilter.Distinct)
+            if(node.UniqueRowFilter == UniqueRowFilter.Distinct)
             {
                 _stages.Add(DistinctHelper.GetDistinctStage(LastStage));
             }
 
             //OFSET
-            if(query.OffsetClause != null)
+            if(node.OffsetClause != null)
             {
-                var offsetStage = OffsetHelper.GetOffsetStage(LastStage, query.OffsetClause, _visitorMetadata);
+                var offsetStage = OffsetHelper.GetOffsetStage(LastStage, node.OffsetClause, _visitorMetadata);
 
                 //Check if we can push the values into the table scan
                 if(LastStage is FromTableStage fromTableStage)
@@ -127,13 +127,13 @@ namespace Koralium.SqlToExpression.Visitors
                 }
                 else
                 {
-                    _stages.Add(OffsetHelper.GetOffsetStage(LastStage, query.OffsetClause, _visitorMetadata));
+                    _stages.Add(OffsetHelper.GetOffsetStage(LastStage, node.OffsetClause, _visitorMetadata));
                 }
             }
 
             //TOP
-            if(query.TopRowFilter != null){
-                var offsetStage = OffsetHelper.GetOffsetStage(LastStage, query.TopRowFilter, _visitorMetadata);
+            if(node.TopRowFilter != null){
+                var offsetStage = OffsetHelper.GetOffsetStage(LastStage, node.TopRowFilter, _visitorMetadata);
 
                 if(LastStage is FromTableStage fromTableStage)
                 {
@@ -142,7 +142,7 @@ namespace Koralium.SqlToExpression.Visitors
                 }
                 else
                 {
-                    _stages.Add(OffsetHelper.GetOffsetStage(LastStage, query.TopRowFilter, _visitorMetadata));
+                    _stages.Add(OffsetHelper.GetOffsetStage(LastStage, node.TopRowFilter, _visitorMetadata));
                 }
             }
 

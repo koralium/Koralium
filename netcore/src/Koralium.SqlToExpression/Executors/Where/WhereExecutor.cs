@@ -21,9 +21,9 @@ namespace Koralium.SqlToExpression.Executors
 {
     public abstract class WhereExecutor<Entity> : IWhereExecutor
     {
-        public async ValueTask<IQueryable> Execute(IQueryable queryable, ExecuteWhereStage whereStage)
+        public async ValueTask<IQueryable> Execute(IQueryable queryable, ExecuteWhereStage executeWhereStage)
         {
-            return await ExecuteWhere((IQueryable<Entity>)queryable, whereStage);
+            return await ExecuteWhere((IQueryable<Entity>)queryable, executeWhereStage);
         }
 
         public abstract ValueTask<IQueryable<Entity>> ExecuteWhere(IQueryable<Entity> queryable, ExecuteWhereStage whereStage);

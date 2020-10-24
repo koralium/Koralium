@@ -29,23 +29,43 @@ namespace Koralium.SqlToExpression.Visitors
             _previousStage = previousStage;
         }
 
-        public override void ExplicitVisit(FunctionCall functionCall)
+        public override void ExplicitVisit(FunctionCall node)
         {
-            var functionName = functionCall.FunctionName.Value.ToLower();
+            var functionName = node.FunctionName.Value.ToLower();
             switch (functionName)
             {
                 case "sum":
-                    HandleSum(functionCall);
+                    HandleSum(node);
                     break;
                 case "avg":
-                    //HandleAvg(functionCall);
                     break;
                 case "count":
-                    HandleCount(functionCall);
+                    HandleCount(node);
                     break;
                 default:
-                    throw new NotSupportedException(functionCall.FunctionName.Value);
+                    throw new NotSupportedException(node.FunctionName.Value);
             }
+        }
+
+        public override void ExplicitVisit(ColumnReferenceExpression columnReferenceExpression)
+        {
+            var identifiers = columnReferenceExpression.MultiPartIdentifier.Identifiers.Select(x => x.Value).ToList();
+            identifiers = MemberUtils.RemoveAlias(_previousStage, identifiers);
+
+            Expression expression;
+            if (_inAggregateFunction)
+            {
+                expression = MemberUtils.GetMemberGroupByInValue(_previousStage, identifiers, out var property);
+                AddUsedProperty(property);
+            }
+            else
+            {
+                expression = MemberUtils.GetMemberGroupByInKey(_previousStage, identifiers, out var property);
+                AddUsedProperty(property);
+            }
+
+            AddExpressionToStack(expression);
+            AddNameToStack(string.Join(".", identifiers));
         }
 
         private void HandleCount(FunctionCall functionCall)
@@ -89,26 +109,7 @@ namespace Koralium.SqlToExpression.Visitors
             AddNameToStack($"sum({lastName})");
         }
 
-        public override void ExplicitVisit(ColumnReferenceExpression columnReferenceExpression)
-        {
-            var identifiers = columnReferenceExpression.MultiPartIdentifier.Identifiers.Select(x => x.Value).ToList();
-            identifiers = MemberUtils.RemoveAlias(_previousStage, identifiers);
-
-            Expression expression;
-            if (_inAggregateFunction)
-            {
-                expression = MemberUtils.GetMemberGroupByInValue(_previousStage, identifiers, out var property);
-                AddUsedProperty(property);
-            }
-            else
-            {
-                expression = MemberUtils.GetMemberGroupByInKey(_previousStage, identifiers, out var property);
-                AddUsedProperty(property);
-            }
-
-            AddExpressionToStack(expression);
-            AddNameToStack(string.Join(".", identifiers));
-        }
+        
 
     }
 }
