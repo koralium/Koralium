@@ -31,16 +31,16 @@ namespace Koralium.SqlToExpression.Visitors.Offset
             _visitorMetadata = visitorMetadata;
         }
 
-        public override void ExplicitVisit(OffsetClause offsetClause)
+        public override void ExplicitVisit(OffsetClause node)
         {
             {
-                if (offsetClause.OffsetExpression != null)
+                if (node.OffsetExpression != null)
                 {
-                    if (offsetClause.OffsetExpression is IntegerLiteral integerLiteral && int.TryParse(integerLiteral.Value, out var value))
+                    if (node.OffsetExpression is IntegerLiteral integerLiteral && int.TryParse(integerLiteral.Value, out var value))
                     {
                         offsetCount = value;
                     }
-                    else if(offsetClause.OffsetExpression is VariableReference variableReference)
+                    else if(node.OffsetExpression is VariableReference variableReference)
                     {
                         if(!_visitorMetadata.Parameters.TryGetParameter(variableReference.Name, out var parameter))
                         {
@@ -62,13 +62,13 @@ namespace Koralium.SqlToExpression.Visitors.Offset
                 }
             }
             {
-                if (offsetClause.FetchExpression != null)
+                if (node.FetchExpression != null)
                 {
-                    if (offsetClause.FetchExpression is IntegerLiteral integerLiteral && int.TryParse(integerLiteral.Value, out var value))
+                    if (node.FetchExpression is IntegerLiteral integerLiteral && int.TryParse(integerLiteral.Value, out var value))
                     {
                         takeCount = value;
                     }
-                    else if (offsetClause.FetchExpression is VariableReference variableReference)
+                    else if (node.FetchExpression is VariableReference variableReference)
                     {
                         if (!_visitorMetadata.Parameters.TryGetParameter(variableReference.Name, out var parameter))
                         {

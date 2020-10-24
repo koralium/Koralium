@@ -24,23 +24,21 @@ namespace Koralium.SqlToExpression.Visitors.From
     internal class FromVisitor : TSqlFragmentVisitor
     {
         private readonly VisitorMetadata _visitorMetadata;
-        private IReadOnlyList<IQueryStage> _subStages = null;
         private TableMetadata _table;
-        private FromAliases fromAliases = new FromAliases();
 
         public TableMetadata Table => _table;
-        public FromAliases FromAliases => fromAliases;
+        public FromAliases FromAliases { get; } = new FromAliases();
 
-        public IReadOnlyList<IQueryStage> Stages => _subStages;
+        public IReadOnlyList<IQueryStage> Stages { get; private set; } = null;
 
         public FromVisitor(VisitorMetadata visitorMetadata)
         {
             _visitorMetadata = visitorMetadata;
         }
 
-        public override void ExplicitVisit(FromClause fromClause)
+        public override void ExplicitVisit(FromClause node)
         {
-            foreach (var tableReference in fromClause.TableReferences)
+            foreach (var tableReference in node.TableReferences)
             {
                 //At this point no sub queries or joins are allowed
                 if (tableReference is NamedTableReference namedTableReference)
@@ -56,19 +54,19 @@ namespace Koralium.SqlToExpression.Visitors.From
                     var alias = namedTableReference?.Alias?.Value;
                     if (alias != null)
                     {
-                        fromAliases.AddAlias(alias);
+                        FromAliases.AddAlias(alias);
                     }
                 }
                 else if (tableReference is QueryDerivedTable queryDerivedTable)
                 {
                     MainVisitor mainVisitor = new MainVisitor(_visitorMetadata);
                     queryDerivedTable.Accept(mainVisitor);
-                    _subStages = mainVisitor.Stages;
+                    Stages = mainVisitor.Stages;
 
                     var alias = queryDerivedTable?.Alias?.Value;
                     if (alias != null)
                     {
-                        fromAliases.AddAlias(alias);
+                        FromAliases.AddAlias(alias);
                     }
                 }
                 else

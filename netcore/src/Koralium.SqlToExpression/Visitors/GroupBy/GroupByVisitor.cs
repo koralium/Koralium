@@ -35,9 +35,9 @@ namespace Koralium.SqlToExpression.Visitors.GroupBy
             _previousStage = previousStage;
         }
 
-        public override void ExplicitVisit(ColumnReferenceExpression columnReferenceExpression)
+        public override void ExplicitVisit(ColumnReferenceExpression node)
         {
-            var identifiers = columnReferenceExpression.MultiPartIdentifier.Identifiers.Select(x => x.Value).ToList();
+            var identifiers = node.MultiPartIdentifier.Identifiers.Select(x => x.Value).ToList();
 
             identifiers = MemberUtils.RemoveAlias(_previousStage, identifiers);
             var memberAccess = MemberUtils.GetMember(_previousStage, identifiers, out var property);

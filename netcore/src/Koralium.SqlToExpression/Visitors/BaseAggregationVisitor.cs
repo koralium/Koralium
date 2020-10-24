@@ -47,9 +47,9 @@ namespace Koralium.SqlToExpression.Visitors
             }
         }
 
-        public override void ExplicitVisit(ColumnReferenceExpression columnReferenceExpression)
+        public override void ExplicitVisit(ColumnReferenceExpression node)
         {
-            var identifiers = columnReferenceExpression.MultiPartIdentifier.Identifiers.Select(x => x.Value).ToList();
+            var identifiers = node.MultiPartIdentifier.Identifiers.Select(x => x.Value).ToList();
             identifiers = MemberUtils.RemoveAlias(_previousStage, identifiers);
 
             Expression expression;
