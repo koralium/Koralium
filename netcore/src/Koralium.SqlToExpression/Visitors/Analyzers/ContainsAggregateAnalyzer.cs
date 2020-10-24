@@ -21,9 +21,9 @@ namespace Koralium.SqlToExpression.Visitors.Analyzers
 
         public bool IsAggregate => isAggregate;
 
-        public override void Visit(ScalarExpression scalarExpression)
+        public override void Visit(ScalarExpression node)
         {
-            if (scalarExpression is FunctionCall functionCall)
+            if (node is FunctionCall functionCall)
             {
                 HandleFunctionCall(functionCall);
             }

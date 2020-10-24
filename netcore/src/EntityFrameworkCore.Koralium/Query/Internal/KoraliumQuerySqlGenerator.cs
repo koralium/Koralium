@@ -20,10 +20,9 @@ namespace EntityFrameworkCore.Koralium.Query.Internal
 {
     public class KoraliumQuerySqlGenerator : QuerySqlGenerator
     {
-        private readonly ISqlGenerationHelper _sqlGenerationHelper;
         public KoraliumQuerySqlGenerator(QuerySqlGeneratorDependencies dependencies) : base(dependencies)
         {
-            _sqlGenerationHelper = dependencies.SqlGenerationHelper;
+            //NOP
         }
 
         protected override void GenerateLimitOffset(SelectExpression selectExpression)

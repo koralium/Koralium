@@ -25,14 +25,12 @@ namespace Koralium.Json.Extensions
     /// </summary>
     public class ApiPrefixConvention : IApplicationModelConvention
     {
-        private readonly string prefix;
         private readonly Func<ControllerModel, bool> controllerSelector;
         private readonly AttributeRouteModel onlyPrefixRoute;
         private readonly AttributeRouteModel fullRoute;
 
         public ApiPrefixConvention(string prefix, Func<ControllerModel, bool> controllerSelector)
         {
-            this.prefix = prefix;
             this.controllerSelector = controllerSelector;
 
             // Prepare AttributeRouteModel local instances, ready to be added to the controllers

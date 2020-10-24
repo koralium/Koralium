@@ -26,11 +26,11 @@ namespace Koralium.SqlToExpression.Visitors
 {
     internal abstract class BaseVisitor : TSqlFragmentVisitor
     {
-        private IQueryStage _previousStage;
+        private readonly IQueryStage _previousStage;
         private readonly VisitorMetadata _visitorMetadata;
         private readonly List<PropertyInfo> _usedProperties = new List<PropertyInfo>();
 
-        public BaseVisitor(IQueryStage previousStage, VisitorMetadata visitorMetadata)
+        protected BaseVisitor(IQueryStage previousStage, VisitorMetadata visitorMetadata)
         {
             _previousStage = previousStage;
             _visitorMetadata = visitorMetadata;
@@ -84,9 +84,9 @@ namespace Koralium.SqlToExpression.Visitors
             AddNameToStack("null");
         }
 
-        public override void ExplicitVisit(ColumnReferenceExpression columnReferenceExpression)
+        public override void ExplicitVisit(ColumnReferenceExpression node)
         {
-            var identifiers = columnReferenceExpression.MultiPartIdentifier.Identifiers.Select(x => x.Value).ToList();
+            var identifiers = node.MultiPartIdentifier.Identifiers.Select(x => x.Value).ToList();
 
             identifiers = MemberUtils.RemoveAlias(_previousStage, identifiers);
             var memberAccess = MemberUtils.GetMember(_previousStage, identifiers, out var property);
@@ -99,33 +99,33 @@ namespace Koralium.SqlToExpression.Visitors
         /// Handle any binary operations in the select, such as addition etc
         /// </summary>
         /// <param name="binaryExpression"></param>
-        public override void ExplicitVisit(Microsoft.SqlServer.TransactSql.ScriptDom.BinaryExpression binaryExpression)
+        public override void ExplicitVisit(Microsoft.SqlServer.TransactSql.ScriptDom.BinaryExpression node)
         {
-            binaryExpression.FirstExpression.Accept(this);
-            binaryExpression.SecondExpression.Accept(this);
+            node.FirstExpression.Accept(this);
+            node.SecondExpression.Accept(this);
 
 
             var rightExpression = PopStack();
             var leftExpression = PopStack();
 
-            var expression = BinaryUtils.CreateBinaryExpression(leftExpression, rightExpression, binaryExpression.BinaryExpressionType);
+            var expression = BinaryUtils.CreateBinaryExpression(leftExpression, rightExpression, node.BinaryExpressionType);
 
             AddExpressionToStack(expression);
         }
 
-        public override void ExplicitVisit(BooleanBinaryExpression booleanBinaryExpression)
+        public override void ExplicitVisit(BooleanBinaryExpression node)
         {
             bool inOrSet = false;
             //Check if it is an OR operation and we are not already inside of one
             //This is used at this time only for checking if an index can be used or not
-            if(booleanBinaryExpression.BinaryExpressionType == BooleanBinaryExpressionType.Or && !InOr)
+            if(node.BinaryExpressionType == BooleanBinaryExpressionType.Or && !InOr)
             {
                 inOrSet = true;
                 InOr = true;
             }
 
-            booleanBinaryExpression.FirstExpression.Accept(this);
-            booleanBinaryExpression.SecondExpression.Accept(this);
+            node.FirstExpression.Accept(this);
+            node.SecondExpression.Accept(this);
 
             //Reset the in OR flag
             if (inOrSet)
@@ -137,7 +137,7 @@ namespace Koralium.SqlToExpression.Visitors
             var leftExpression = PopStack(); 
 
             Expression expression = null;
-            switch (booleanBinaryExpression.BinaryExpressionType)
+            switch (node.BinaryExpressionType)
             {
                 case BooleanBinaryExpressionType.And:
                     expression = Expression.AndAlso(leftExpression, rightExpression);
@@ -150,40 +150,40 @@ namespace Koralium.SqlToExpression.Visitors
             AddExpressionToStack(expression);
         }
 
-        public override void ExplicitVisit(VariableReference variableReference)
+        public override void ExplicitVisit(VariableReference node)
         {
-            if(!_visitorMetadata.Parameters.TryGetParameter(variableReference.Name, out var parameter))
+            if(!_visitorMetadata.Parameters.TryGetParameter(node.Name, out var parameter))
             {
-                throw new SqlErrorException($"The parameter {variableReference.Name} could not be found, did you have include @ before the parameter name?");
+                throw new SqlErrorException($"The parameter {node.Name} could not be found, did you have include @ before the parameter name?");
             }
             AddExpressionToStack(parameter.GetValueAsExpression());
         }
 
-        public override void ExplicitVisit(BooleanComparisonExpression booleanComparisonExpression)
+        public override void ExplicitVisit(BooleanComparisonExpression node)
         {
-            booleanComparisonExpression.FirstExpression.Accept(this);
-            booleanComparisonExpression.SecondExpression.Accept(this);
+            node.FirstExpression.Accept(this);
+            node.SecondExpression.Accept(this);
 
             var rightExpression = PopStack();
             var leftExpression = PopStack();
 
             var expression = PredicateUtils.CreateComparisonExpression(
                 leftExpression, 
-                rightExpression, 
-                booleanComparisonExpression.ComparisonType,
+                rightExpression,
+                node.ComparisonType,
                 _visitorMetadata.StringOperationsProvider);
 
             AddExpressionToStack(expression);
         }
 
-        public override void ExplicitVisit(BooleanIsNullExpression booleanIsNullExpression)
+        public override void ExplicitVisit(BooleanIsNullExpression node)
         {
-            booleanIsNullExpression.Expression.Accept(this);
+            node.Expression.Accept(this);
 
             var expression = PopStack();
 
 
-            if (booleanIsNullExpression.IsNot)
+            if (node.IsNot)
             {
                 if (expression.Type.IsPrimitive)
                 {
