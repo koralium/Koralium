@@ -15,7 +15,6 @@ namespace EntityFrameworkCore.Koralium.Benchmarks
         private IServiceProvider serviceProvider;
         public SelectAllBenchmark()
         {
-            //var webFactory = new TestWebFactory();
             ServiceCollection services = new ServiceCollection();
             AppContext.SetSwitch(
                 "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
@@ -31,8 +30,7 @@ namespace EntityFrameworkCore.Koralium.Benchmarks
         public void SelectAllProject()
         {
             var context = serviceProvider.GetRequiredService<TestDbContext>();
-
-            context.Projects.ToList();
+            _ = context.Projects.ToList();
         }
 
         [Benchmark]
@@ -40,7 +38,7 @@ namespace EntityFrameworkCore.Koralium.Benchmarks
         {
             var context = serviceProvider.GetRequiredService<TestDbContext>();
 
-            context.Orders.ToList();
+            _ = context.Orders.ToList();
         }
 
         [Benchmark]
@@ -48,7 +46,7 @@ namespace EntityFrameworkCore.Koralium.Benchmarks
         {
             var context = serviceProvider.GetRequiredService<TestDbContext>();
 
-            context.Customers.ToList();
+            _ = context.Customers.ToList();
         }
     }
 }
