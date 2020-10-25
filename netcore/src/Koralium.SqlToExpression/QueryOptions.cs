@@ -5,7 +5,7 @@ namespace Koralium.SqlToExpression
 {
     internal class QueryOptions : IQueryOptions
     {
-        private ParameterExpression _parameterExpression;
+        private readonly ParameterExpression _parameterExpression;
         private MemberInitExpression _selectExpression;
         private Expression _whereExpression;
         private int? _limit;

@@ -141,6 +141,13 @@ namespace Data.Koralium.Client
             return columnNames[ordinal];
         }
 
+        public virtual string GetName(int ordinal, KoraliumRow row)
+        {
+            Debug.Assert(ordinal < decoders.Length);
+            throw new NotImplementedException();
+        }
+
+
         public virtual int GetOrdinal(string name)
         {
             if(nameToOrdinal.TryGetValue(name, out var ordinal))
@@ -239,13 +246,7 @@ namespace Data.Koralium.Client
             Debug.Assert(ordinal < decoders.Length);
             return decoders[ordinal].GetInt64(row);
         }
-
-        public virtual string GetName(int ordinal, KoraliumRow row)
-        {
-            Debug.Assert(ordinal < decoders.Length);
-            throw new NotImplementedException();
-        }
-
+        
         public virtual string GetString(int ordinal, KoraliumRow row)
         {
             Debug.Assert(ordinal < decoders.Length);
