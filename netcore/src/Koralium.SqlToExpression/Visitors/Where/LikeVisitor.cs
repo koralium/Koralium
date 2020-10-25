@@ -29,8 +29,8 @@ namespace Koralium.SqlToExpression.Visitors.Where
     /// </summary>
     internal class LikeVisitor : BaseVisitor
     {
-        private IQueryStage _previousStage;
-        private Stack<Expression> expressions = new Stack<Expression>();
+        private readonly IQueryStage _previousStage;
+        private readonly Stack<Expression> expressions = new Stack<Expression>();
         private readonly VisitorMetadata _visitorMetadata;
         public LikeVisitor(IQueryStage previousStage, VisitorMetadata visitorMetadata) : base(previousStage, visitorMetadata)
         {
@@ -220,13 +220,13 @@ namespace Koralium.SqlToExpression.Visitors.Where
             }
         }
 
-        public override void ExplicitVisit(LikePredicate likePredicate)
+        public override void ExplicitVisit(LikePredicate node)
         {
-            likePredicate.FirstExpression.Accept(this);
+            node.FirstExpression.Accept(this);
 
             var leftExpression = PopStack();
 
-            var visitResult = VisitInternal(likePredicate.SecondExpression);
+            var visitResult = VisitInternal(node.SecondExpression);
 
             if (visitResult.StartsWith && visitResult.EndsWith)
             {
