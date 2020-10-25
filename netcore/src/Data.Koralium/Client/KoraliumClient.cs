@@ -32,10 +32,10 @@ namespace Data.Koralium.Client
         private readonly KoraliumService.KoraliumServiceClient _client;
         private ColumnDecoder[] decoders;
 
-        private DummyTask gotMetadataTask;
+        private readonly DummyTask gotMetadataTask;
 
         private string[] columnNames;
-        private Dictionary<string, int> nameToOrdinal = new Dictionary<string, int>(); 
+        private readonly Dictionary<string, int> nameToOrdinal = new Dictionary<string, int>(); 
 
         public KoraliumClient(GrpcChannel grpcChannel, CancellationToken cancellationToken)
         {

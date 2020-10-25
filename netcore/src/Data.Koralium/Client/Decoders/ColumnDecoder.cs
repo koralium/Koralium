@@ -18,11 +18,11 @@ namespace Data.Koralium.Client.Decoders
     public abstract class ColumnDecoder : BaseDecoder
     {
         protected readonly int ordinal;
-        public ColumnDecoder(int ordinal)
+
+        protected ColumnDecoder(int ordinal)
         {
             this.ordinal = ordinal;
         }
-
 
         public virtual bool GetBoolean(KoraliumRow row)
         {

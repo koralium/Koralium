@@ -23,8 +23,6 @@ namespace Data.Koralium
 {
     public class KoraliumConnectionStringBuilder : DbConnectionStringBuilder
     {
-        private const string defaultUser = "root";
-
         private const string DataSourceKeyword = "Data Source";
         private const string DataSourceNoSpaceKeyword = "DataSource";
         private const string AccessTokenKeyword = "AccessToken";

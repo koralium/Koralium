@@ -29,7 +29,7 @@ namespace Data.Koralium
         private KoraliumClient client = null;
         private Channel<KoraliumRow> channel = null;
         private Task executeTask = null;
-        private CancellationTokenSource cancellationToken = new CancellationTokenSource();
+        private readonly CancellationTokenSource cancellationToken = new CancellationTokenSource();
 
         public override string CommandText { get; set; }
         public override int CommandTimeout { get; set; }

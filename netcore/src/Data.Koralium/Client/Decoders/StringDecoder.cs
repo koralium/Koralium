@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Data.Koralium.Exceptions;
 using Koralium.Grpc;
 using System;
 using System.Collections.Generic;
@@ -48,8 +49,7 @@ namespace Data.Koralium.Client.Decoders
 
             if (stringColumn == null)
             {
-                //TODO
-                throw new Exception();
+                throw new KoraliumInternalException("Could not find string column in result");
             }
 
             if (stringColumn.ClearPrevious)
