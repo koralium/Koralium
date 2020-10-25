@@ -18,7 +18,6 @@ using Koralium.SqlToExpression.Metadata;
 using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages;
 using Koralium.SqlToExpression.Utils;
-//using Koralium.SqlToExpression.Visitors;
 using Koralium.SqlToExpression.Visitors;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System;
@@ -36,7 +35,7 @@ namespace Koralium.SqlToExpression
         private readonly ISearchExpressionProvider _searchExpressionProvider;
         private readonly IStringOperationsProvider _stringOperationsProvider;
 
-        private TSql150Parser  parser = new TSql150Parser(true);
+        private readonly TSql150Parser parser = new TSql150Parser(true);
         public SqlExecutor(
             TablesMetadata tablesMetadata,
             IQueryExecutor queryExecutor,
@@ -60,23 +59,16 @@ namespace Koralium.SqlToExpression
             //Convert into execute stages
             var executeStages = _stageConverter.Convert(mainVisitor.Stages);
 
-            try
+            var result = await _queryExecutor.Execute(executeStages, data);
+            var enumerator = result.Result.GetEnumerator();
+            if(!enumerator.MoveNext())
             {
-                var result = await _queryExecutor.Execute(executeStages, data);
-                var enumerator = result.Result.GetEnumerator();
-                if(!enumerator.MoveNext())
-                {
-                    return null;
-                }
-                else
-                {
-                    var obj = (AnonType)enumerator.Current;
-                    return obj.P0;
-                }
+                return null;
             }
-            catch (Exception e)
+            else
             {
-                throw e;
+                var obj = (AnonType)enumerator.Current;
+                return obj.P0;
             }
         }
 
@@ -109,15 +101,7 @@ namespace Koralium.SqlToExpression
             //Convert into execute stages
             var executeStages = _stageConverter.Convert(mainVisitor.Stages);
 
-            try
-            {
-                return _queryExecutor.Execute(executeStages, data);
-            }
-            catch(Exception e)
-            {
-                throw e;
-            }
-            
+            return _queryExecutor.Execute(executeStages, data);
         }
     }
 }

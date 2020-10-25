@@ -26,8 +26,6 @@ namespace Data.Koralium
     {
         private KoraliumParameterCollection _parameters;
         private KoraliumConnection _koraliumConnection;
-        private KoraliumClient client = null;
-        private Channel<KoraliumRow> channel = null;
         private Task executeTask = null;
         private readonly CancellationTokenSource cancellationToken = new CancellationTokenSource();
 
@@ -91,7 +89,7 @@ namespace Data.Koralium
 
         public override object ExecuteScalar()
         {
-            client = new KoraliumClient(KoraliumConnection.Channel, cancellationToken.Token);
+            var client = new KoraliumClient(KoraliumConnection.Channel, cancellationToken.Token);
             return client.QueryScalar(CommandText);
         }
 
@@ -107,8 +105,8 @@ namespace Data.Koralium
 
         protected override DbDataReader ExecuteDbDataReader(CommandBehavior behavior)
         {
-            client = new KoraliumClient(KoraliumConnection.Channel, cancellationToken.Token);
-            channel = Channel.CreateUnbounded<KoraliumRow>();
+            var client = new KoraliumClient(KoraliumConnection.Channel, cancellationToken.Token);
+            var channel = Channel.CreateUnbounded<KoraliumRow>();
             executeTask = client.Query(CommandText, channel.Writer);
             client.MetadataCollected.Wait(cancellationToken.Token); //Wait for metadata to be collected
             return new KoraliumDataReader(client, channel.Reader, cancellationToken.Token);

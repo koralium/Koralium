@@ -19,7 +19,7 @@ using System.Linq.Expressions;
 
 namespace Koralium.SqlToExpression.Utils
 {
-    class GroupByUtils
+    static class GroupByUtils
     {
 
         internal static GroupByStage CreateStaticGroupBy(

@@ -17,7 +17,7 @@ namespace Koralium.SqlToExpression.Models
 {
     internal class FromAliases
     {
-        private HashSet<string> _aliases = new HashSet<string>();
+        private readonly HashSet<string> _aliases = new HashSet<string>();
 
         public void AddAlias(string alias)
         {
