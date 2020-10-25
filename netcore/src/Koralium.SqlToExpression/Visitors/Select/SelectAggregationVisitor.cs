@@ -23,21 +23,20 @@ namespace Koralium.SqlToExpression.Visitors.Select
         protected readonly List<SelectExpression> selectExpressions = new List<SelectExpression>();
         protected readonly Stack<Expression> expressionStack = new Stack<Expression>();
         protected readonly Stack<string> nameStack = new Stack<string>();
-        private readonly GroupedStage _previousStage;
 
         public IReadOnlyList<SelectExpression> SelectExpressions => selectExpressions;
 
         public SelectAggregationVisitor(GroupedStage previousStage, VisitorMetadata visitorMetadata) : base(previousStage, visitorMetadata)
         {
-            _previousStage = previousStage;
+            //NOP
         }
 
-        public override void ExplicitVisit(SelectScalarExpression selectScalarExpression)
+        public override void ExplicitVisit(SelectScalarExpression node)
         {
-            selectScalarExpression.Expression.Accept(this);
+            node.Expression.Accept(this);
 
             var expression = expressionStack.Pop();
-            string columnName = selectScalarExpression.ColumnName?.Value ?? nameStack.Pop();
+            string columnName = node.ColumnName?.Value ?? nameStack.Pop();
 
             selectExpressions.Add(new SelectExpression(expression, columnName));
         }
