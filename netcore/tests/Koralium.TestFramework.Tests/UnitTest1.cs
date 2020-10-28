@@ -26,6 +26,11 @@ namespace Koralium.TestFramework.Tests
             base.OnSetup(services);
         }
 
+        protected override void OnTeardown()
+        {
+            testWebFactory.Stop();
+        }
+
         public override IEnumerable<Customer> TestData()
         {
             return tpchData.Customers;

@@ -24,6 +24,11 @@ namespace Koralium.TestFramework.Tests
             webFactory = new TestWebFactory();
         }
 
+        protected override void OnTeardown()
+        {
+            webFactory.Stop();
+        }
+
         [Test]
         public void CustomTest()
         {

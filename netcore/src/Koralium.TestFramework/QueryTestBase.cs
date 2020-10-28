@@ -36,6 +36,12 @@ namespace Koralium.TestFramework
             ServiceProvider = services.BuildServiceProvider();
         }
 
+        [OneTimeTearDown]
+        public void OnTeardown_Internal()
+        {
+            OnTeardown();
+        }
+
         protected void SetAccessToken(string accessToken)
         {
             ServiceProvider.GetService<TestContextSettings>().AccessToken = accessToken;
@@ -44,6 +50,11 @@ namespace Koralium.TestFramework
         protected virtual void OnSetup(IServiceCollection services)
         {
             
+        }
+
+        protected virtual void OnTeardown()
+        {
+
         }
     }
 }
