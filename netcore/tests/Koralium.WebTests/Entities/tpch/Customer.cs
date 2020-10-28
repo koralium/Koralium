@@ -44,13 +44,13 @@ namespace Koralium.WebTests.Entities.tpch
             if(obj is Customer c)
             {
                 return Custkey.Equals(c.Custkey) &&
-                    Name.Equals(c.Name) &&
-                    Address.Equals(c.Address) &&
+                    Equals(Name, c.Name) &&
+                    Equals(Address, c.Address) &&
                     Nationkey.Equals(c.Nationkey) &&
-                    Phone.Equals(c.Phone) &&
+                    Equals(Phone, c.Phone) &&
                     Acctbal.Equals(c.Acctbal) &&
-                    Mktsegment.Equals(c.Mktsegment) &&
-                    Comment.Equals(c.Comment);
+                    Equals(Mktsegment, c.Mktsegment) &&
+                    Equals(Comment, c.Comment);
             }
             return false;
         }
