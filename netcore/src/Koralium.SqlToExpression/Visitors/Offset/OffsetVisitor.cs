@@ -31,63 +31,69 @@ namespace Koralium.SqlToExpression.Visitors.Offset
             _visitorMetadata = visitorMetadata;
         }
 
-        public override void ExplicitVisit(OffsetClause offsetClause)
+        private void VisitOffsetExpression(ScalarExpression offsetExpression)
         {
+            if (offsetExpression is IntegerLiteral integerLiteral && int.TryParse(integerLiteral.Value, out var value))
             {
-                if (offsetClause.OffsetExpression != null)
+                offsetCount = value;
+            }
+            else if (offsetExpression is VariableReference variableReference)
+            {
+                if (!_visitorMetadata.Parameters.TryGetParameter(variableReference.Name, out var parameter))
                 {
-                    if (offsetClause.OffsetExpression is IntegerLiteral integerLiteral && int.TryParse(integerLiteral.Value, out var value))
-                    {
-                        offsetCount = value;
-                    }
-                    else if(offsetClause.OffsetExpression is VariableReference variableReference)
-                    {
-                        if(!_visitorMetadata.Parameters.TryGetParameter(variableReference.Name, out var parameter))
-                        {
-                            throw new SqlErrorException($"The parameter {variableReference.Name} was not found");
-                        }
-                        if(parameter.TryGetValue<int>(out var parameterValue))
-                        {
-                            offsetCount = parameterValue;
-                        }
-                        else
-                        {
-                            throw new SqlErrorException($"The value in parameter {variableReference.Name} used in offset can only contain integer values");
-                        }
-                    }
-                    else
-                    {
-                        throw new SqlErrorException("Only integers or variables can be used as offset");
-                    }
+                    throw new SqlErrorException($"The parameter {variableReference.Name} was not found");
+                }
+                if (parameter.TryGetValue<int>(out var parameterValue))
+                {
+                    offsetCount = parameterValue;
+                }
+                else
+                {
+                    throw new SqlErrorException($"The value in parameter {variableReference.Name} used in offset can only contain integer values");
                 }
             }
+            else
             {
-                if (offsetClause.FetchExpression != null)
+                throw new SqlErrorException("Only integers or variables can be used as offset");
+            }
+        }
+
+        private void VisitFetchExpression(ScalarExpression fetchExpression)
+        {
+            if (fetchExpression is IntegerLiteral integerLiteral && int.TryParse(integerLiteral.Value, out var value))
+            {
+                takeCount = value;
+            }
+            else if (fetchExpression is VariableReference variableReference)
+            {
+                if (!_visitorMetadata.Parameters.TryGetParameter(variableReference.Name, out var parameter))
                 {
-                    if (offsetClause.FetchExpression is IntegerLiteral integerLiteral && int.TryParse(integerLiteral.Value, out var value))
-                    {
-                        takeCount = value;
-                    }
-                    else if (offsetClause.FetchExpression is VariableReference variableReference)
-                    {
-                        if (!_visitorMetadata.Parameters.TryGetParameter(variableReference.Name, out var parameter))
-                        {
-                            throw new SqlErrorException($"The parameter {variableReference.Name} was not found");
-                        }
-                        if (parameter.TryGetValue<int>(out var parameterValue))
-                        {
-                            takeCount = parameterValue;
-                        }
-                        else
-                        {
-                            throw new SqlErrorException($"The value in parameter {variableReference.Name} used in fetch can only contain integer values");
-                        }
-                    }
-                    else
-                    {
-                        throw new SqlErrorException("Only integers or variables can be used as offset");
-                    }
+                    throw new SqlErrorException($"The parameter {variableReference.Name} was not found");
                 }
+                if (parameter.TryGetValue<int>(out var parameterValue))
+                {
+                    takeCount = parameterValue;
+                }
+                else
+                {
+                    throw new SqlErrorException($"The value in parameter {variableReference.Name} used in fetch can only contain integer values");
+                }
+            }
+            else
+            {
+                throw new SqlErrorException("Only integers or variables can be used as offset");
+            }
+        }
+
+        public override void ExplicitVisit(OffsetClause node)
+        {
+            if (node.OffsetExpression != null)
+            {
+                VisitOffsetExpression(node.OffsetExpression);
+            }
+            if (node.FetchExpression != null)
+            {
+                VisitFetchExpression(node.FetchExpression);
             }
         }
     }

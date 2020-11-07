@@ -12,7 +12,6 @@
  * limitations under the License.
  */
 using Koralium.SqlToExpression.Extensions;
-using Koralium.SqlToExpression.Metadata;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System.Collections.Generic;
@@ -44,6 +43,12 @@ namespace Koralium.SqlToExpression.Visitors.From
             else
             {
                 var type = fromVisitor.Table.Type;
+
+                if(fromVisitor.Table.StringOperationsProvider != null)
+                {
+                    visitorMetadata.StringOperationsProvider = fromVisitor.Table.StringOperationsProvider;
+                }
+
                 stages.Add(new FromTableStage(fromVisitor.Table.Name, type.ToSqlTypeInfo(), Expression.Parameter(type), type, fromVisitor.FromAliases));
             }
 

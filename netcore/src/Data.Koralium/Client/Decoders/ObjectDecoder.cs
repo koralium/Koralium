@@ -12,12 +12,12 @@
  * limitations under the License.
  */
 using Data.Koralium.Client.Utils;
+using Data.Koralium.Exceptions;
 using Koralium.Grpc;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Data.Koralium.Client.Decoders
 {
@@ -85,7 +85,7 @@ namespace Data.Koralium.Client.Decoders
 
             if (objectColumn == null)
             {
-                throw new Exception("Object column could not be found in results");
+                throw new KoraliumInternalException("Object column could not be found in results");
             }
 
             if (objectColumn.ClearPrevious)

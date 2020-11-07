@@ -19,7 +19,6 @@ using Koralium.SqlToExpression;
 using Koralium.SqlToExpression.Extensions;
 using Koralium.SqlToExpression.Metadata;
 using System;
-using System.Text;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -38,7 +37,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
             foreach(var table in koraliumBuilder.Tables)
             {
-                tablesMetadata.AddTable(new TableMetadata(table.Name, table.EntityType));
+                tablesMetadata.AddTable(new TableMetadata(
+                    table.Name, 
+                    table.EntityType,
+                    table.StringOperationsProvider));
             }
 
             services.AddSqlToExpression(tablesMetadata);

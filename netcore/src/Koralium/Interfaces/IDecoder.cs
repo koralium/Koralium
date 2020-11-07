@@ -14,7 +14,6 @@
 using Koralium.Metadata;
 using Koralium.Grpc;
 using System;
-using System.Text;
 
 namespace Koralium.Interfaces
 {

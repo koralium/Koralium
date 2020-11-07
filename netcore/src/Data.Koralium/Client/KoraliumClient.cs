@@ -14,7 +14,6 @@
 using Data.Koralium.Client.Decoders;
 using Data.Koralium.Client.Utils;
 using Data.Koralium.Utils;
-using Grpc.Core;
 using Grpc.Net.Client;
 using Koralium.Grpc;
 using System;
@@ -33,10 +32,10 @@ namespace Data.Koralium.Client
         private readonly KoraliumService.KoraliumServiceClient _client;
         private ColumnDecoder[] decoders;
 
-        private DummyTask gotMetadataTask;
+        private readonly DummyTask gotMetadataTask;
 
         private string[] columnNames;
-        private Dictionary<string, int> nameToOrdinal = new Dictionary<string, int>(); 
+        private readonly Dictionary<string, int> nameToOrdinal = new Dictionary<string, int>(); 
 
         public KoraliumClient(GrpcChannel grpcChannel, CancellationToken cancellationToken)
         {
@@ -142,6 +141,13 @@ namespace Data.Koralium.Client
             return columnNames[ordinal];
         }
 
+        public virtual string GetName(int ordinal, KoraliumRow row)
+        {
+            Debug.Assert(ordinal < decoders.Length);
+            throw new NotImplementedException();
+        }
+
+
         public virtual int GetOrdinal(string name)
         {
             if(nameToOrdinal.TryGetValue(name, out var ordinal))
@@ -240,13 +246,7 @@ namespace Data.Koralium.Client
             Debug.Assert(ordinal < decoders.Length);
             return decoders[ordinal].GetInt64(row);
         }
-
-        public virtual string GetName(int ordinal, KoraliumRow row)
-        {
-            Debug.Assert(ordinal < decoders.Length);
-            throw new NotImplementedException();
-        }
-
+        
         public virtual string GetString(int ordinal, KoraliumRow row)
         {
             Debug.Assert(ordinal < decoders.Length);

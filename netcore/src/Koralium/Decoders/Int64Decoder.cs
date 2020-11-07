@@ -15,7 +15,6 @@ using Koralium.Interfaces;
 using Koralium.Metadata;
 using Koralium.Grpc;
 using System;
-using System.Text;
 
 namespace Koralium.Decoders
 {

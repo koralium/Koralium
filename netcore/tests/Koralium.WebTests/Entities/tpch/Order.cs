@@ -14,6 +14,7 @@
 using CsvHelper.Configuration.Attributes;
 using Newtonsoft.Json;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Koralium.WebTests.Entities.tpch
 {
@@ -39,6 +40,7 @@ namespace Koralium.WebTests.Entities.tpch
 
         [KoraliumIgnore]
         [Ignore]
+        [NotMapped]
         public Customer Customer { get; set; }
 
         public override bool Equals(object obj)
@@ -47,13 +49,13 @@ namespace Koralium.WebTests.Entities.tpch
             {
                 return Orderkey.Equals(o.Orderkey) &&
                     Custkey.Equals(o.Custkey) &&
-                    Orderstatus.Equals(o.Orderstatus) &&
+                    Equals(Orderstatus, o.Orderstatus) &&
                     Totalprice.Equals(o.Totalprice) &&
                     Orderdate.Equals(o.Orderdate) &&
-                    Orderpriority.Equals(o.Orderpriority) &&
-                    Clerk.Equals(o.Clerk) &&
+                    Equals(Orderpriority, o.Orderpriority) &&
+                    Equals(Clerk, o.Clerk) &&
                     Shippriority.Equals(o.Shippriority) &&
-                    Comment.Equals(o.Comment);
+                    Equals(Comment, o.Comment);
             }
             return false;
         }

@@ -13,15 +13,14 @@
  */
 using Koralium.SqlToExpression.Exceptions;
 using Koralium.SqlToExpression.Executors;
+using Koralium.SqlToExpression.Interfaces;
 using Koralium.SqlToExpression.Metadata;
 using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages;
 using Koralium.SqlToExpression.Utils;
-//using Koralium.SqlToExpression.Visitors;
 using Koralium.SqlToExpression.Visitors;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,46 +33,42 @@ namespace Koralium.SqlToExpression
         private readonly StageConverter _stageConverter;
         private readonly IQueryExecutor _queryExecutor;
         private readonly ISearchExpressionProvider _searchExpressionProvider;
+        private readonly IStringOperationsProvider _stringOperationsProvider;
 
-        private TSql150Parser  parser = new TSql150Parser(true);
+        private readonly TSql150Parser parser = new TSql150Parser(true);
         public SqlExecutor(
             TablesMetadata tablesMetadata,
             IQueryExecutor queryExecutor,
-            ISearchExpressionProvider searchExpressionProvider)
+            ISearchExpressionProvider searchExpressionProvider,
+            IStringOperationsProvider stringOperationsProvider)
         {
             _tablesMetadata = tablesMetadata;
             _queryExecutor = queryExecutor;
             _stageConverter = new StageConverter();
             _searchExpressionProvider = searchExpressionProvider;
+            _stringOperationsProvider = stringOperationsProvider;
         }
 
         public async ValueTask<object> ExecuteScalar(string sql, SqlParameters parameters = null, object data = null)
         {
             sql = OffsetLimitUtils.TransformQuery(sql);
             var tree = parser.Parse(new StringReader(sql), out var errors);
-            var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata, _searchExpressionProvider));
+            var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata, _searchExpressionProvider, _stringOperationsProvider));
             tree.Accept(mainVisitor);
 
             //Convert into execute stages
             var executeStages = _stageConverter.Convert(mainVisitor.Stages);
 
-            try
+            var result = await _queryExecutor.Execute(executeStages, data);
+            var enumerator = result.Result.GetEnumerator();
+            if(!enumerator.MoveNext())
             {
-                var result = await _queryExecutor.Execute(executeStages, data);
-                var enumerator = result.Result.GetEnumerator();
-                if(!enumerator.MoveNext())
-                {
-                    return null;
-                }
-                else
-                {
-                    var obj = (AnonType)enumerator.Current;
-                    return obj.P0;
-                }
+                return null;
             }
-            catch (Exception e)
+            else
             {
-                throw e;
+                var obj = (AnonType)enumerator.Current;
+                return obj.P0;
             }
         }
 
@@ -100,21 +95,13 @@ namespace Koralium.SqlToExpression
                 throw new SqlErrorException(error.Message);
             }
 
-            var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata, _searchExpressionProvider));
+            var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata, _searchExpressionProvider, _stringOperationsProvider));
             tree.Accept(mainVisitor);
 
             //Convert into execute stages
             var executeStages = _stageConverter.Convert(mainVisitor.Stages);
 
-            try
-            {
-                return _queryExecutor.Execute(executeStages, data);
-            }
-            catch(Exception e)
-            {
-                throw e;
-            }
-            
+            return _queryExecutor.Execute(executeStages, data);
         }
     }
 }

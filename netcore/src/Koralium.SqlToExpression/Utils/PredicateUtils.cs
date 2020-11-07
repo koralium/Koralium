@@ -11,9 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.SqlToExpression.Interfaces;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -107,25 +107,38 @@ namespace Koralium.SqlToExpression.Utils
             right = Expression.Constant(0);
         }
 
-        public static Expression CallContains(Expression left, Expression value)
+        public static Expression CallContains(
+            Expression left, 
+            Expression value,
+            IStringOperationsProvider stringOperationsProvider)
         {
             ConvertExpressionTypes(ref left, ref value);
-            return Expression.Call(instance: left, method: StringContains, arguments: new[] { value });
+            return stringOperationsProvider.GetContainsExpression(left, value);
         }
 
-        public static Expression CallStartsWith(Expression left, Expression value)
+        public static Expression CallStartsWith(
+            Expression left, 
+            Expression value,
+            IStringOperationsProvider stringOperationsProvider)
         {
             ConvertExpressionTypes(ref left, ref value);
-            return Expression.Call(instance: left, method: StringStartsWith, arguments: new[] { value });
+            return stringOperationsProvider.GetStartsWithExpression(left, value);
         }
         
-        public static Expression CallEndsWith(Expression left, Expression value)
+        public static Expression CallEndsWith(
+            Expression left, 
+            Expression value,
+            IStringOperationsProvider stringOperationsProvider)
         {
             ConvertExpressionTypes(ref left, ref value);
-            return Expression.Call(instance: left, method: StringEndsWith, arguments: new[] { value });
+            return stringOperationsProvider.GetEndsWithExpression(left, value);
         }
 
-        public static Expression CreateComparisonExpression(Expression leftExpression, Expression rightExpression, Microsoft.SqlServer.TransactSql.ScriptDom.BooleanComparisonType comparisonType)
+        public static Expression CreateComparisonExpression(
+            Expression leftExpression, 
+            Expression rightExpression, 
+            Microsoft.SqlServer.TransactSql.ScriptDom.BooleanComparisonType comparisonType,
+            IStringOperationsProvider stringOperationsProvider)
         {
             ConvertExpressionTypes(ref leftExpression, ref rightExpression);
 
@@ -138,7 +151,16 @@ namespace Koralium.SqlToExpression.Utils
                     {
                         return Expression.Constant(false);
                     }
-                    expression = Expression.Equal(leftExpression, rightExpression);
+                    //String is a special case since one might want to do case insensitive comparisions
+                    if (leftExpression.Type.Equals(typeof(string)))
+                    {
+                        expression = stringOperationsProvider.GetEqualsExpressions(leftExpression, rightExpression);
+                    }
+                    else
+                    {
+                        expression = Expression.Equal(leftExpression, rightExpression);
+                    }
+                    
                     break;
                 case Microsoft.SqlServer.TransactSql.ScriptDom.BooleanComparisonType.GreaterThan:
                     if (leftExpression.Type.Equals(typeof(string)))

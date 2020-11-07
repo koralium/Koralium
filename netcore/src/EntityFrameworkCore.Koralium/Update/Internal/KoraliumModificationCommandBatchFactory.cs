@@ -12,7 +12,6 @@
  * limitations under the License.
  */
 using Microsoft.EntityFrameworkCore.Update;
-using System.Text;
 
 namespace EntityFrameworkCore.Koralium.Update.Internal
 {

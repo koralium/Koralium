@@ -1,0 +1,5 @@
+[ReportGenerator]
+	report = tests/Data.Koralium.Tests/TestResults/**/coverage.opencover.xml
+	report = tests/EntityFrameworkCore.Koralium.Tests/TestResults/**/coverage.opencover.xml
+	report = tests/Koralium.SqlToExpression.Tests/TestResults/**/coverage.opencover.xml
+	report = tests/Koralium.TestFramework.Tests/TestResults/**/coverage.opencover.xml

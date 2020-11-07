@@ -14,8 +14,6 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using EFCore.BulkExtensions;
 using Koralium.Json.Extensions;
 using Koralium.WebTests.Database;
@@ -95,6 +93,7 @@ namespace Koralium.WebTests
                 opt.AddTableResolver<OrderResolver, Order>(t =>
                 {
                     t.TableName = "orders";
+                    t.UseInMemoryCaseInsensitiveStringOperations();
                 });
                 opt.AddTableResolver<PartResolver, Part>();
                 opt.AddTableResolver<PartsuppResolver, Partsupp>();
@@ -109,6 +108,7 @@ namespace Koralium.WebTests
 
                 //Specific
                 opt.AddTableResolver<AutoMapperCustomerResolver, AutoMapperCustomer>();
+                opt.AddTableResolver<EmptyResolver, Empty>();
             });
             
             var tpchDataPath = Path.Join(Configuration.GetValue<string>(WebHostDefaults.ContentRootKey), Configuration.GetValue<string>("TestDataLocation"));

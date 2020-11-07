@@ -32,17 +32,17 @@ namespace Koralium.SqlToExpression.Visitors.OrderBy
         {
         }
 
-        public override void ExplicitVisit(OrderByClause orderByClause)
+        public override void ExplicitVisit(OrderByClause node)
         {
-            foreach (var element in orderByClause.OrderByElements)
+            foreach (var element in node.OrderByElements)
             {
                 element.Accept(this);
             }
         }
 
-        public override void ExplicitVisit(ExpressionWithSortOrder expressionWithSortOrder)
+        public override void ExplicitVisit(ExpressionWithSortOrder node)
         {
-            expressionWithSortOrder.Expression.Accept(this);
+            node.Expression.Accept(this);
 
             //Ignore empty stacks, since you can sort by SELECT NULL
             if(expressionStack.Count > 0)
@@ -51,7 +51,7 @@ namespace Koralium.SqlToExpression.Visitors.OrderBy
 
                 bool descending = false;
 
-                if (expressionWithSortOrder.SortOrder == SortOrder.Descending)
+                if (node.SortOrder == SortOrder.Descending)
                 {
                     descending = true;
                 }

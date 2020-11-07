@@ -14,3 +14,5 @@
 export * from "./client"
 export * from "./queryBuilder"
 export * from "./objectToSelectMapper"
+export * from "./queryOptions"
+export * from "./queryResult"

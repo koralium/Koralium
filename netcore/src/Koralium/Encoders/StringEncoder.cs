@@ -13,7 +13,6 @@
  */
 using Koralium.Interfaces;
 using Koralium.Grpc;
-using System;
 using System.Collections.Generic;
 
 namespace Koralium.Encoders

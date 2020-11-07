@@ -13,7 +13,6 @@
  */
 using Koralium.WebTests.Entities;
 using NUnit.Framework;
-using System.Threading.Tasks;
 
 namespace Data.Koralium.Tests
 {

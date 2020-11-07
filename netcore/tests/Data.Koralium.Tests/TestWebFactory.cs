@@ -16,6 +16,7 @@ using Koralium.WebTests;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Net;
 
@@ -45,6 +46,10 @@ namespace Data.Koralium.Tests
                                 // Note: TLS with HTTP/2 isn't supported in mac
                                 // Wait for next version of macOS
                                 c.Listen(IPEndPoint.Parse("0.0.0.0:5016"), l => l.Protocols = HttpProtocols.Http2);
+                            })
+                            .ConfigureAppConfiguration(opt =>
+                            {
+                                opt.AddJsonFile("testappsettings.json");
                             })
                             .UseStartup<Startup>();
                         });

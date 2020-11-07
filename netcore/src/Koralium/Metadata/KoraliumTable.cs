@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.Grpc;
+using Koralium.SqlToExpression.Interfaces;
 using System;
 using System.Collections.Generic;
 
@@ -35,6 +36,8 @@ namespace Koralium.Metadata
 
         public IReadOnlyList<TableIndex> Indices { get; }
 
+        public IStringOperationsProvider StringOperationsProvider { get; }
+
         public KoraliumTable(
             TableMetadata tableMetadata,
             int tableId,
@@ -43,7 +46,8 @@ namespace Koralium.Metadata
             Type entityType,
             IReadOnlyList<TableColumn> columns,
             string securityPolicy,
-            IReadOnlyList<TableIndex> indices)
+            IReadOnlyList<TableIndex> indices,
+            IStringOperationsProvider stringOperationsProvider)
         {
             TableMetadata = tableMetadata;
             TableId = tableId;
@@ -53,6 +57,7 @@ namespace Koralium.Metadata
             Columns = columns;
             SecurityPolicy = securityPolicy;
             Indices = indices;
+            StringOperationsProvider = stringOperationsProvider;
         }
     }
 }

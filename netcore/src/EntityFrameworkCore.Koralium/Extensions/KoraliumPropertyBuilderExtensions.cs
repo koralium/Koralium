@@ -12,7 +12,6 @@
  * limitations under the License.
  */
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Text;
 
 namespace Microsoft.EntityFrameworkCore
 {

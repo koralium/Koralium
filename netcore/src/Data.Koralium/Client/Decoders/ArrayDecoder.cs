@@ -17,7 +17,6 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Data.Koralium.Client.Decoders
 {

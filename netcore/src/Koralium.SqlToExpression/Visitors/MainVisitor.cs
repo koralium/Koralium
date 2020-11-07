@@ -34,7 +34,9 @@ namespace Koralium.SqlToExpression.Visitors
     {
         private readonly List<IQueryStage> _stages = new List<IQueryStage>();
         private readonly VisitorMetadata _visitorMetadata;
-        private HashSet<PropertyInfo> _usedProperties = new HashSet<PropertyInfo>();
+        private readonly HashSet<PropertyInfo> _usedProperties = new HashSet<PropertyInfo>();
+        private FromTableStage _fromTable;
+
         public IReadOnlyList<IQueryStage> Stages => _stages;
 
         private IQueryStage LastStage => _stages.Last();
@@ -44,18 +46,16 @@ namespace Koralium.SqlToExpression.Visitors
             _visitorMetadata = visitorMetadata;
         }
 
-        public override void ExplicitVisit(QuerySpecification query)
+        private void HandleFromClause(QuerySpecification node)
         {
-            FromTableStage fromTable = null;
-            //FROM
-            if(query.FromClause != null)
+            if (node.FromClause != null)
             {
-                var fromStages = FromHelper.GetFromTableStage(query.FromClause, _visitorMetadata);
+                var fromStages = FromHelper.GetFromTableStage(node.FromClause, _visitorMetadata);
 
                 //Check if it is only a from table stage, this is used to add used properties into
-                if(fromStages.Count == 1 && fromStages[0] is FromTableStage fromTableStage)
+                if (fromStages.Count == 1 && fromStages[0] is FromTableStage fromTableStage)
                 {
-                    fromTable = fromTableStage;
+                    _fromTable = fromTableStage;
                 }
 
                 _stages.AddRange(fromStages);
@@ -64,13 +64,15 @@ namespace Koralium.SqlToExpression.Visitors
             {
                 throw new SqlErrorException("Selects must always have FROM");
             }
+        }
 
-            //WHERE
-            if(query.WhereClause != null)
+        private void HandleWhereClause(QuerySpecification node)
+        {
+            if (node.WhereClause != null)
             {
-                var whereStage = WhereHelper.GetWhereStage(LastStage, query.WhereClause, _visitorMetadata, _usedProperties);
+                var whereStage = WhereHelper.GetWhereStage(LastStage, node.WhereClause, _visitorMetadata, _usedProperties);
 
-                if(LastStage is FromTableStage fromTableStage)
+                if (LastStage is FromTableStage fromTableStage)
                 {
                     //Push the where condition into the table resolvers
                     fromTableStage.WhereExpression = whereStage.WhereExpression;
@@ -82,89 +84,105 @@ namespace Koralium.SqlToExpression.Visitors
                     _stages.Add(whereStage);
                 }
             }
+        }
 
-            bool containsAggregates = ContainsAggregateHelper.ContainsAggregate(query.SelectElements);
-
-            //GROUP BY
-            if (query.GroupByClause != null)
+        private void HandleGroupByClause(QuerySpecification node)
+        {
+            if (node.GroupByClause != null)
             {
-                _stages.Add(GroupByHelper.GetGroupByStage(LastStage, query.GroupByClause, _usedProperties));
+                _stages.Add(GroupByHelper.GetGroupByStage(LastStage, node.GroupByClause, _usedProperties));
             }
-            else if (containsAggregates && query.SelectElements.Count > 1)
+            else if (ContainsAggregateHelper.ContainsAggregate(node.SelectElements))
             {
                 _stages.Add(GroupByUtils.CreateStaticGroupBy(LastStage));
             }
+        }
 
-            //HAVING
-            if(query.HavingClause != null)
+        private void HandleHavingClause(QuerySpecification node)
+        {
+            if (node.HavingClause != null)
             {
-                _stages.Add(HavingHelper.GetHavingStage(LastStage, query.HavingClause, _visitorMetadata, _usedProperties));
+                _stages.Add(HavingHelper.GetHavingStage(LastStage, node.HavingClause, _visitorMetadata, _usedProperties));
             }
-            
-            //ORDER BY
-            if(query.OrderByClause != null)
-            {
-                _stages.Add(OrderByHelper.GetOrderByStage(LastStage, query.OrderByClause, _visitorMetadata, _usedProperties));
-            }
+        }
 
-            //SELECT
-            if(containsAggregates && query.SelectElements.Count == 1)
+        private void HandleOrderByClause(QuerySpecification node)
+        {
+            if (node.OrderByClause != null)
             {
-                //If it is only one aggregate, call the specific linq methods
-                _stages.Add(SelectHelper.GetSelectAggregateFunctionStage(LastStage, query.SelectElements, _visitorMetadata, _usedProperties));
+                _stages.Add(OrderByHelper.GetOrderByStage(LastStage, node.OrderByClause, _visitorMetadata, _usedProperties));
             }
-            else
-            {
-                //Otherwise do normal select
-                _stages.Add(SelectHelper.GetSelectStage(LastStage, query.SelectElements, _visitorMetadata, _usedProperties));
-            }
-            
+        }
 
-            //DISTINCT
-            if(query.UniqueRowFilter == UniqueRowFilter.Distinct)
+        private void HandleSelect(QuerySpecification node)
+        {
+            _stages.Add(SelectHelper.GetSelectStage(LastStage, node.SelectElements, _visitorMetadata, _usedProperties));
+        }
+
+        private void HandleDistinct(QuerySpecification node)
+        {
+            if (node.UniqueRowFilter == UniqueRowFilter.Distinct)
             {
                 _stages.Add(DistinctHelper.GetDistinctStage(LastStage));
             }
+        }
 
-            //OFSET
-            if(query.OffsetClause != null)
+        private void HandleOffsetClause(QuerySpecification node)
+        {
+            if (node.OffsetClause != null)
             {
-                var offsetStage = OffsetHelper.GetOffsetStage(LastStage, query.OffsetClause, _visitorMetadata);
+                var offsetStage = OffsetHelper.GetOffsetStage(LastStage, node.OffsetClause, _visitorMetadata);
 
                 //Check if we can push the values into the table scan
-                if(LastStage is FromTableStage fromTableStage)
+                if (LastStage is FromTableStage fromTableStage)
                 {
                     fromTableStage.Limit = offsetStage.Take;
                     fromTableStage.Offset = offsetStage.Skip;
                 }
                 else
                 {
-                    _stages.Add(OffsetHelper.GetOffsetStage(LastStage, query.OffsetClause, _visitorMetadata));
+                    _stages.Add(OffsetHelper.GetOffsetStage(LastStage, node.OffsetClause, _visitorMetadata));
                 }
             }
+        }
 
-            //TOP
-            if(query.TopRowFilter != null){
-                var offsetStage = OffsetHelper.GetOffsetStage(LastStage, query.TopRowFilter, _visitorMetadata);
+        private void HandleTop(QuerySpecification node)
+        {
+            if (node.TopRowFilter != null)
+            {
+                var offsetStage = OffsetHelper.GetOffsetStage(LastStage, node.TopRowFilter, _visitorMetadata);
 
-                if(LastStage is FromTableStage fromTableStage)
+                if (LastStage is FromTableStage fromTableStage)
                 {
                     fromTableStage.Limit = offsetStage.Take;
                     fromTableStage.Offset = offsetStage.Skip;
                 }
                 else
                 {
-                    _stages.Add(OffsetHelper.GetOffsetStage(LastStage, query.TopRowFilter, _visitorMetadata));
+                    _stages.Add(OffsetHelper.GetOffsetStage(LastStage, node.TopRowFilter, _visitorMetadata));
                 }
             }
+        }
+
+        public override void ExplicitVisit(QuerySpecification node)
+        {
+            HandleFromClause(node);
+            HandleWhereClause(node);
+            HandleGroupByClause(node);
+            HandleHavingClause(node);
+            HandleOrderByClause(node);
+            HandleSelect(node);
+            HandleDistinct(node);
+            HandleOffsetClause(node);
+            HandleTop(node);
 
             //Add a select stage that selects all the properties required
             //This should be added to be done directly after the 'from table' stage
             //This helps solve some issues with automapper related issues where extra complicated queries in
             //entity framework are created
-            if (fromTable != null)
+            if (_fromTable != null)
             {
-                fromTable.SelectExpression = SelectExpressionUtils.CreateSelectExpression(fromTable, _usedProperties);
+                _fromTable.SelectExpression = SelectExpressionUtils.CreateSelectExpression(_fromTable, _usedProperties);
             }
         }
     }

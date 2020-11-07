@@ -25,7 +25,7 @@ jobs:
       working-directory: typescript-client
       env:
         PACKAGE_VERSION: ${{ steps.tag.outputs.VERSION }}
-    - run: npm build
+    - run: npm run-script build
       working-directory: typescript-client
     - run: npm publish --access public
       working-directory: typescript-client
@@ -74,6 +74,16 @@ jobs:
       with:
         PROJECT_FILE_PATH: netcore/src/Koralium/Koralium.csproj
         PACKAGE_NAME: Koralium
+        NUGET_KEY: ${{ secrets.NUGET_KEY }}
+        TAG_COMMIT: false
+        VERSION_STATIC: ${{ steps.tag.outputs.VERSION }}
+
+    - name: publish on version change
+      id: publish_nuget_json
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: netcore/src/Koralium.Json/Koralium.Json.csproj
+        PACKAGE_NAME: Koralium.Json
         NUGET_KEY: ${{ secrets.NUGET_KEY }}
         TAG_COMMIT: false
         VERSION_STATIC: ${{ steps.tag.outputs.VERSION }}

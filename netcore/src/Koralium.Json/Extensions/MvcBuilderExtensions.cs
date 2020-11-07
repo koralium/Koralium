@@ -13,8 +13,6 @@
  */
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
 
 namespace Koralium.Json.Extensions
 {

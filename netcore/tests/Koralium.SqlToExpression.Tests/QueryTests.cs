@@ -709,12 +709,64 @@ namespace Koralium.SqlToExpression.Tests
         }
 
         [Test]
-        public async Task TestStringContainsWith()
+        public async Task TestStringContains()
         {
             var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like '%5-L%'");
 
             var expected = TpchData.Orders
                 .Where(x => x.Orderpriority.Contains("5-L"))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestStringContainsIgnoreCase()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like '%5-l%'");
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderpriority.Contains("5-L"))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestStringStartsWithIgnoreCase()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like '5-l%'");
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderpriority.StartsWith("5-L"))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestStringEndsWithIgnoreCase()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like '%low'");
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderpriority.EndsWith("LOW"))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestStringEqualsIgnoreCase()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like '5-low'");
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderpriority.Equals("5-LOW"))
                 .Select(x => new { x.Orderkey, x.Orderpriority })
                 .AsQueryable();
 
@@ -822,6 +874,21 @@ namespace Koralium.SqlToExpression.Tests
         }
 
         [Test]
+        public async Task TestStringLikeContainsParameterNotSelectingWhereParameter()
+        {
+            var parameters = new SqlParameters()
+                .Add(SqlParameter.Create("Parameter", "L"));
+            var result = await SqlExecutor.Execute("SELECT Orderkey FROM \"order\" WHERE Orderpriority like '%' + @Parameter + '%'", parameters);
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderpriority.Contains("L"))
+                .Select(x => new { x.Orderkey })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
         public async Task TestInPredicateLong()
         {
             var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE orderkey in (1)");
@@ -856,6 +923,17 @@ namespace Koralium.SqlToExpression.Tests
             Assert.That(async () =>
             {
                 await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE CONTAINS(*, 'Text')");
+            }, Throws.InstanceOf<SqlErrorException>().With.Message.EqualTo("Search is not implemented for this table"));
+        }
+
+        [Test]
+        public void TestSearchFunctionWithParameter()
+        {
+            Assert.That(async () =>
+            {
+                SqlParameters sqlParameters = new SqlParameters()
+                    .Add(SqlParameter.Create("P0", "test"));
+                await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE CONTAINS(*, @P0)", sqlParameters);
             }, Throws.InstanceOf<SqlErrorException>().With.Message.EqualTo("Search is not implemented for this table"));
         }
 

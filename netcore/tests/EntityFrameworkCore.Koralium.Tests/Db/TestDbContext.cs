@@ -13,8 +13,8 @@
  */
 using Koralium.WebTests;
 using Koralium.WebTests.Entities.specific;
+using Koralium.WebTests.Entities.tpch;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
 
 namespace EntityFrameworkCore.Koralium.Tests.Db
 {
@@ -25,6 +25,8 @@ namespace EntityFrameworkCore.Koralium.Tests.Db
         }
 
         public DbSet<Project> Projects { get; set; }
+
+        public DbSet<Order> Orders { get; set; }
 
         public DbSet<AutoMapperCustomer> AutoMapperCustomers { get; set; }
 
@@ -44,6 +46,14 @@ namespace EntityFrameworkCore.Koralium.Tests.Db
                     .HasKey(x => x.Custkey);
 
                 opt.Property(x => x.OrderKeys).IsArrayType();
+            });
+
+            modelBuilder.Entity<Order>(opt =>
+            {
+                opt.ToTable("orders")
+                    .HasKey(x => x.Orderkey);
+
+                opt.Ignore(x => x.Customer);
             });
 
             base.OnModelCreating(modelBuilder);

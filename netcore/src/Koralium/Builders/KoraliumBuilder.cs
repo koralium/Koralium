@@ -77,7 +77,16 @@ namespace Koralium.Builders
                 tableMetadata.Columns.Add(column.Metadata);
             }
 
-            tables.Add(new KoraliumTable(tableMetadata, tableMetadata.TableId, opt.TableName, typeof(Resolver), typeof(T), columns, securityPolicy, opt.Indicies));
+            tables.Add(new KoraliumTable(
+                tableMetadata, 
+                tableMetadata.TableId,
+                opt.TableName, 
+                typeof(Resolver), 
+                typeof(T), 
+                columns, 
+                securityPolicy, 
+                opt.Indicies,
+                opt.StringOperationsProvider));
 
             return this;
         }

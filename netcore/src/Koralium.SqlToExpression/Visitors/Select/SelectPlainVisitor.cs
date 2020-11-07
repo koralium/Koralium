@@ -36,16 +36,16 @@ namespace Koralium.SqlToExpression.Visitors.Select
             _previousStage = previousStage;
         }
 
-        public override void ExplicitVisit(SelectScalarExpression selectScalarExpression)
+        public override void ExplicitVisit(SelectScalarExpression node)
         {
-            selectScalarExpression.Expression.Accept(this);
+            node.Expression.Accept(this);
             var expression = expressionStack.Pop();
-            string columnName = selectScalarExpression.ColumnName?.Value ?? nameStack.Pop();
+            string columnName = node.ColumnName?.Value ?? nameStack.Pop();
 
             selectExpressions.Add(new SelectExpression(expression, columnName));
         }
 
-        public override void ExplicitVisit(SelectStarExpression selectStarExpression)
+        public override void ExplicitVisit(SelectStarExpression node)
         {
             if (expressionStack.Count == 0)
             {

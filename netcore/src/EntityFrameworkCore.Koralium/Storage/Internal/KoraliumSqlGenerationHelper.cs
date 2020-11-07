@@ -12,7 +12,6 @@
  * limitations under the License.
  */
 using Microsoft.EntityFrameworkCore.Storage;
-using System.Text;
 
 namespace EntityFrameworkCore.Koralium.Storage.Internal
 {

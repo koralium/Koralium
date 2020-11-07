@@ -29,15 +29,15 @@ namespace Data.Koralium.Utils
         static Action<Task, bool> GetFinishDelegate()
         {
             var finishMethod = typeof(Task).GetMethod("Finish", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-            var finishDelegate = (Action<Task, bool>)Delegate.CreateDelegate(typeof(Action<Task, bool>), finishMethod);
-            return finishDelegate;
+            var finishDelegateAction = (Action<Task, bool>)Delegate.CreateDelegate(typeof(Action<Task, bool>), finishMethod);
+            return finishDelegateAction;
         }
 
         static Action<Task, object, bool> GetAddExceptionDelegate()
         {
             var addExceptionMethod = typeof(Task).GetMethod("AddException", BindingFlags.Instance | BindingFlags.NonPublic, null, new Type[] { typeof(object), typeof(bool) }, null);
-            var addExceptionDelegate = (Action<Task, object, bool>)Delegate.CreateDelegate(typeof(Action<Task, object, bool>), addExceptionMethod);
-            return addExceptionDelegate;
+            var addExceptionDelegateAction = (Action<Task, object, bool>)Delegate.CreateDelegate(typeof(Action<Task, object, bool>), addExceptionMethod);
+            return addExceptionDelegateAction;
         }
 
         private bool finished = false;

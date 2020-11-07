@@ -14,8 +14,6 @@
 using Data.Koralium.Tests;
 using EntityFrameworkCore.Koralium.Extensions;
 using EntityFrameworkCore.Koralium.Tests.Db;
-using Koralium.WebTests;
-using Koralium.WebTests.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System;
@@ -57,6 +55,27 @@ namespace EntityFrameworkCore.Koralium.Tests
         }
 
         [Test]
+        public void TestSelectAll()
+        {
+            var db = serviceProvider.GetService<TestDbContext>();
+
+            var project = db.Projects.ToList();
+
+            Assert.Pass();
+        }
+
+        [Test]
+        public void TestSelectAllOrders()
+        {
+            var db = serviceProvider.GetService<TestDbContext>();
+
+            var project = db.Orders.ToList();
+            
+
+            Assert.Pass();
+        }
+
+        [Test]
         public void TestCountAll()
         {
             var db = serviceProvider.GetService<TestDbContext>();
@@ -81,7 +100,7 @@ namespace EntityFrameworkCore.Koralium.Tests
         {
             var db = serviceProvider.GetService<TestDbContext>();
 
-            var projects = db.Projects.Where(x => x.Name == "alex").ToList();
+            var projects = db.Projects.Where(x => x.Name == "alex").Select(x => new { x.Name }).ToList();
 
             Assert.Pass();
         }

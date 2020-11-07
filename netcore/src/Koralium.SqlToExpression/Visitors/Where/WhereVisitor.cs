@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 using Koralium.SqlToExpression.Exceptions;
-using Koralium.SqlToExpression.Search;
+using Koralium.SqlToExpression.Providers;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Koralium.SqlToExpression.Utils;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
@@ -51,9 +51,9 @@ namespace Koralium.SqlToExpression.Visitors.Where
             _visitorMetadata = visitorMetadata;
         }
 
-        public override void ExplicitVisit(WhereClause whereClause)
+        public override void ExplicitVisit(WhereClause node)
         {
-            whereClause.SearchCondition.Accept(this);
+            node.SearchCondition.Accept(this);
         }
 
         public override void ExplicitVisit(FullTextPredicate node)
@@ -76,19 +76,42 @@ namespace Koralium.SqlToExpression.Visitors.Where
                     columns.Add(columnExpression);
                 }
             }
-            if (!(node.Value is StringLiteral stringLiteral))
+            if(node.Value is VariableReference variableReference)
+            {
+                if(_visitorMetadata.Parameters.TryGetParameter(variableReference.Name, out var parameter))
+                {
+                    if(parameter.TryGetValue<string>(out var searchString))
+                    {
+                        var searchParameters = new SearchParameters(allFields, columns, searchString, _previousStage.ParameterExpression);
+                        var searchExpression = _visitorMetadata.SearchExpressionProvider.GetSearchExpression(searchParameters);
+                        AddExpressionToStack(searchExpression);
+                    }
+                    else
+                    {
+                        throw new SqlErrorException("Search can only be done with strings");
+                    }
+                }
+                else
+                {
+                    throw new SqlErrorException($"No parameter could be found with name {variableReference.Name}");
+                }
+            }
+            else if(node.Value is StringLiteral stringLiteral)
+            {
+                var searchParameters = new SearchParameters(allFields, columns, stringLiteral.Value, _previousStage.ParameterExpression);
+                var searchExpression = _visitorMetadata.SearchExpressionProvider.GetSearchExpression(searchParameters);
+                AddExpressionToStack(searchExpression);
+            }
+            else
             {
                 throw new SqlErrorException("Search can only be done with strings");
             }
-            var searchParameters = new SearchParameters(allFields, columns, stringLiteral.Value, _previousStage.ParameterExpression);
-            var searchExpression = _visitorMetadata.SearchExpressionProvider.GetSearchExpression(searchParameters);
-            AddExpressionToStack(searchExpression);
         }
 
-        public override void ExplicitVisit(LikePredicate likePredicate)
+        public override void ExplicitVisit(LikePredicate node)
         {
             LikeVisitor likeVisitor = new LikeVisitor(_previousStage, _visitorMetadata);
-            likePredicate.Accept(likeVisitor);
+            node.Accept(likeVisitor);
 
             //Add the properties that was found in the like visitor
             foreach(var usedProperty in likeVisitor.UsedProperties)
@@ -137,47 +160,6 @@ namespace Koralium.SqlToExpression.Visitors.Where
             }
             var inPredicate = PredicateUtils.ListContains(memberExpression, memberExpression.Type, list);
             AddExpressionToStack(inPredicate);
-            //var firstValue = node.Values.FirstOrDefault();
-
-            //Expression inExpression;
-            //if (firstValue is StringLiteral)
-            //{
-            //    List<string> strings = new List<string>();
-            //    foreach (var value in node.Values)
-            //    {
-            //        if (value is StringLiteral stringLiteral)
-            //        {
-            //            strings.Add(stringLiteral.Value);
-            //        }
-            //        else
-            //        {
-            //            throw new SqlErrorException("Missmatching types in 'IN' predicate");
-            //        }
-            //    }
-            //    inExpression = PredicateUtils.ListContains<string>(memberExpression, strings);
-            //}
-            //else if (firstValue is IntegerLiteral)
-            //{
-            //    List<long> integers = new List<long>();
-            //    foreach (var value in node.Values)
-            //    {
-            //        if (value is IntegerLiteral integerLiteral)
-            //        {
-            //            integers.Add(int.Parse(integerLiteral.Value));
-            //        }
-            //        else
-            //        {
-            //            throw new SqlErrorException("Missmatching types in 'IN' predicate");
-            //        }
-            //    }
-            //    inExpression = PredicateUtils.ListContains<int>(memberExpression, integers);
-            //}
-            //else
-            //{
-            //    throw new SqlErrorException("IN predicate only supports strings and integers at this time");
-            //}
-            //Add the expression to the stack
-            //AddExpressionToStack(inExpression);
         }
 
         public override void AddExpressionToStack(Expression expression)
