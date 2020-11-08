@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.SqlToExpression.Models;
+using Koralium.SqlToExpression.Tests.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -50,7 +51,7 @@ namespace Koralium.SqlToExpression.Tests
             var expectedType = expectedObj.GetType();
             var actualType = actualObj.GetType();
 
-            if (!CheckIfAnonymousType(expectedType))
+            if (!(CheckIfAnonymousType(expectedType)))
             {
                 throw new NotSupportedException("Only anonymous types can be used for the expected value");
             }
@@ -112,6 +113,11 @@ namespace Koralium.SqlToExpression.Tests
         {
             if (type == null)
                 throw new ArgumentNullException("type");
+
+            if (type.Name.StartsWith("AnonType"))
+            {
+                return true;
+            }
 
             // HACK: The only way to detect anonymous types right now.
             return Attribute.IsDefined(type, typeof(CompilerGeneratedAttribute), false)

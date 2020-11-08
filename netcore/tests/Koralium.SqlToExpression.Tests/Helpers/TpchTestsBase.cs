@@ -16,6 +16,7 @@ using Koralium.SqlToExpression.Executors.AggregateFunction;
 using Koralium.SqlToExpression.Executors.Offset;
 using Koralium.SqlToExpression.Metadata;
 using Koralium.SqlToExpression.Providers;
+using Koralium.SqlToExpression.Tests.Models;
 using Koralium.SqlToExpression.Tests.tpch;
 using NUnit.Framework;
 using System.Linq;
@@ -44,6 +45,7 @@ namespace Koralium.SqlToExpression.Tests
             tablesMetadata.AddTable(new TableMetadata("partsupp", typeof(Partsupp)));
             tablesMetadata.AddTable(new TableMetadata("region", typeof(Region)));
             tablesMetadata.AddTable(new TableMetadata("supplier", typeof(Supplier)));
+            tablesMetadata.AddTable(new TableMetadata("columntest", typeof(ColumnTest)));
 
             var queryExecutor = new QueryExecutor(
                 new TableResolver(tpchData),

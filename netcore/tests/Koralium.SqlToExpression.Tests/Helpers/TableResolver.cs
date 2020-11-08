@@ -11,7 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.SqlToExpression.Tests.Helpers;
+using Koralium.SqlToExpression.Tests.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -43,6 +46,9 @@ namespace Koralium.SqlToExpression.Tests
                     return _tpchData.Region.AsQueryable();
                 case "supplier":
                     return _tpchData.Supplier.AsQueryable();
+                case "columntest":
+                    return ColumnTestData.GetData();
+                    
             }
             throw new NotImplementedException();
         }

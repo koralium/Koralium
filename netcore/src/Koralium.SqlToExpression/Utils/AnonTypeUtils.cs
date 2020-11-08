@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Koralium.SqlToExpression.Utils
 {
-    internal static class AnonTypeUtils
+    public static class AnonTypeUtils
     {
         private static Type[] anonTypes = new Type[]
             {
