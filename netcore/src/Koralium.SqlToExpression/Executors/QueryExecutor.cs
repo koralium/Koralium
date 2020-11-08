@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.SqlToExpression.Executors.AggregateFunction;
 using Koralium.SqlToExpression.Executors.Offset;
 using Koralium.SqlToExpression.Stages.ExecuteStages;
 using System.Collections.Immutable;
@@ -30,6 +31,7 @@ namespace Koralium.SqlToExpression.Executors
         private readonly IOrderByExecutorFactory _orderByExecutorFactory;
         private readonly IOffsetExecutorFactory _offsetExecutorFactory;
         private readonly IDistinctExecutorFactory _distinctExecutorFactory;
+        private readonly IAggregateFunctionExecutorFactory _aggregateFunctionExecutorFactory;
 
         IQueryable queryable = null;
         IImmutableList<ColumnMetadata> columns = null;
@@ -43,7 +45,8 @@ namespace Koralium.SqlToExpression.Executors
             ISelectExecutorFactory selectExecutorFactory,
             IOrderByExecutorFactory orderByExecutorFactory,
             IOffsetExecutorFactory offsetExecutorFactory,
-            IDistinctExecutorFactory distinctExecutorFactory
+            IDistinctExecutorFactory distinctExecutorFactory,
+            IAggregateFunctionExecutorFactory aggregateFunctionExecutorFactory
             )
         {
             Debug.Assert(tableResolver != null);
@@ -54,6 +57,7 @@ namespace Koralium.SqlToExpression.Executors
             Debug.Assert(orderByExecutorFactory != null);
             Debug.Assert(offsetExecutorFactory != null);
             Debug.Assert(distinctExecutorFactory != null);
+            Debug.Assert(aggregateFunctionExecutorFactory != null);
 
             _tableResolver = tableResolver;
             _fromTableExecutorFactory = fromTableExecutorFactory;
@@ -63,6 +67,7 @@ namespace Koralium.SqlToExpression.Executors
             _orderByExecutorFactory = orderByExecutorFactory;
             _offsetExecutorFactory = offsetExecutorFactory;
             _distinctExecutorFactory = distinctExecutorFactory;
+            _aggregateFunctionExecutorFactory = aggregateFunctionExecutorFactory;
         }
 
         public async ValueTask<QueryResult> Execute(IImmutableList<IExecuteStage> stages, object data)
@@ -123,14 +128,26 @@ namespace Koralium.SqlToExpression.Executors
 
         public ValueTask<IQueryable> Visit(ExecuteOffsetStage executeOffsetStage)
         {
+            Debug.Assert(queryable != null);
             var offsetExecutor = _offsetExecutorFactory.GetOffsetExecutor(executeOffsetStage);
             return offsetExecutor.Execute(queryable, executeOffsetStage);
         }
 
         public ValueTask<IQueryable> Visit(ExecuteDistinctStage executeDistinctStage)
         {
+            Debug.Assert(queryable != null);
             var distinctExecutor = _distinctExecutorFactory.GetDistinctExecutor(executeDistinctStage);
             return distinctExecutor.Execute(queryable, executeDistinctStage);
+        }
+
+        public async ValueTask<IQueryable> Visit(ExecuteAggregateFunctionStage executeAggregateFunctionStage)
+        {
+            Debug.Assert(queryable != null);
+            var aggregateFunctionExecutor = _aggregateFunctionExecutorFactory.GetAggregateFunctionExecutor(executeAggregateFunctionStage);
+            var selectResult = await aggregateFunctionExecutor.Execute(queryable, executeAggregateFunctionStage);
+
+            columns = selectResult.Columns;
+            return selectResult.Queryable;
         }
     }
 }

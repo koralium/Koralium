@@ -86,16 +86,31 @@ namespace Koralium.SqlToExpression.Visitors
             }
         }
 
-        private void HandleGroupByClause(QuerySpecification node)
+        private void HandleGroupByClause(QuerySpecification node, bool containsAggregates)
         {
             if (node.GroupByClause != null)
             {
                 _stages.Add(GroupByHelper.GetGroupByStage(LastStage, node.GroupByClause, _usedProperties));
             }
-            else if (ContainsAggregateHelper.ContainsAggregate(node.SelectElements))
+            else if (containsAggregates && !IsSimpleAggregate(node))
             {
                 _stages.Add(GroupByUtils.CreateStaticGroupBy(LastStage));
             }
+        }
+
+        private static bool IsSimpleAggregate(QuerySpecification node)
+        {
+            if(node.SelectElements.Count > 1 || node.HavingClause != null || node.GroupByClause != null)
+            {
+                return false;
+            }
+            if(node.SelectElements.Count == 1 &&
+                node.SelectElements[0] is SelectScalarExpression selectScalarExpression &&
+                selectScalarExpression.Expression is FunctionCall)
+            {
+                return true;
+            }
+            return false;
         }
 
         private void HandleHavingClause(QuerySpecification node)
@@ -114,9 +129,16 @@ namespace Koralium.SqlToExpression.Visitors
             }
         }
 
-        private void HandleSelect(QuerySpecification node)
+        private void HandleSelect(QuerySpecification node, bool containsAggregates)
         {
-            _stages.Add(SelectHelper.GetSelectStage(LastStage, node.SelectElements, _visitorMetadata, _usedProperties));
+            if (containsAggregates && IsSimpleAggregate(node))
+            {
+                _stages.Add(SelectHelper.GetSelectAggregateFunctionStage(LastStage, node.SelectElements, _visitorMetadata, _usedProperties));
+            }
+            else
+            {
+                _stages.Add(SelectHelper.GetSelectStage(LastStage, node.SelectElements, _visitorMetadata, _usedProperties));
+            }   
         }
 
         private void HandleDistinct(QuerySpecification node)
@@ -168,10 +190,13 @@ namespace Koralium.SqlToExpression.Visitors
         {
             HandleFromClause(node);
             HandleWhereClause(node);
-            HandleGroupByClause(node);
+
+            var containsAggregates = ContainsAggregateHelper.ContainsAggregate(node.SelectElements);
+
+            HandleGroupByClause(node, containsAggregates);
             HandleHavingClause(node);
             HandleOrderByClause(node);
-            HandleSelect(node);
+            HandleSelect(node, containsAggregates);
             HandleDistinct(node);
             HandleOffsetClause(node);
             HandleTop(node);
@@ -180,7 +205,7 @@ namespace Koralium.SqlToExpression.Visitors
             //This should be added to be done directly after the 'from table' stage
             //This helps solve some issues with automapper related issues where extra complicated queries in
             //entity framework are created
-            if (_fromTable != null)
+            if (_fromTable != null && _usedProperties.Count > 0)
             {
                 _fromTable.SelectExpression = SelectExpressionUtils.CreateSelectExpression(_fromTable, _usedProperties);
             }

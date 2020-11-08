@@ -112,5 +112,17 @@ namespace Koralium.SqlToExpression.Stages
         {
             builder.Add(new ExecuteDistinctStage(distinctStage.CurrentType));
         }
+
+        public void Visit(SelectAggregateFunctionStage selectAggregateFunctionStage)
+        {
+            builder.Add(new ExecuteAggregateFunctionStage(
+                selectAggregateFunctionStage.FunctionName,
+                selectAggregateFunctionStage.OldType,
+                selectAggregateFunctionStage.ColumnName,
+                selectAggregateFunctionStage.Parameters,
+                selectAggregateFunctionStage.InParameter,
+                selectAggregateFunctionStage.FunctionOutType
+                ));
+        }
     }
 }

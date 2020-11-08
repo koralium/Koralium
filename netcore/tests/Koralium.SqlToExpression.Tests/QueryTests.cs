@@ -62,6 +62,15 @@ namespace Koralium.SqlToExpression.Tests
         }
 
         [Test]
+        public async Task TestSumNoGroupByWithOuterAddition()
+        {
+            var result = await SqlExecutor.Execute("select sum(Acctbal) + 1 from customer");
+            var expected = TpchData.Customers.GroupBy(x => 1).Select(x => new { sum = x.Sum(y => y.Acctbal) + 1 }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
         public async Task TestSumGroupBySingleTableAlias()
         {
             var result = await SqlExecutor.Execute("select sum(c.Acctbal) from customer c group by c.name");
@@ -75,6 +84,15 @@ namespace Koralium.SqlToExpression.Tests
         {
             var result = await SqlExecutor.Execute("select sum(c.Acctbal) + 1 from customer c group by c.name");
             var expected = TpchData.Customers.GroupBy(x => x.Name).Select(x => new { sum = x.Sum(y => y.Acctbal) + 1 }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestSumDividedBySum()
+        {
+            var result = await SqlExecutor.Execute("select sum(c.Acctbal) / sum(c.Custkey) from customer c");
+            var expected = TpchData.Customers.GroupBy(x => 1).Select(x => new { sum = x.Sum(y => y.Acctbal) / x.Sum(y => y.Custkey) }).AsQueryable();
 
             AssertAreEqual(expected, result.Result);
         }
@@ -563,7 +581,7 @@ namespace Koralium.SqlToExpression.Tests
 
             var expected = TpchData.Customers
                 .GroupBy(x => 1)
-                .Select(x => new { count = x.Count() })
+                .Select(x => new { count = x.LongCount() })
                 .AsQueryable();
 
             AssertAreEqual(expected, result.Result);
@@ -582,7 +600,7 @@ namespace Koralium.SqlToExpression.Tests
         [Test]
         public async Task TestIsNull()
         {
-            var result = await SqlExecutor.Execute("SELECT count(*) FROM customer where name IS NULL");
+            var result = await SqlExecutor.Execute("SELECT name FROM customer where name IS NULL");
 
             var expected = TpchData.Customers
                 .Where(x => x.Name == null)

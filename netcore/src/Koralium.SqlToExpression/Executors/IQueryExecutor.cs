@@ -35,5 +35,7 @@ namespace Koralium.SqlToExpression.Executors
         ValueTask<IQueryable> Visit(ExecuteOffsetStage executeOffsetStage);
 
         ValueTask<IQueryable> Visit(ExecuteDistinctStage executeDistinctStage);
+
+        ValueTask<IQueryable> Visit(ExecuteAggregateFunctionStage executeAggregateFunctionStage);
     }
 }
