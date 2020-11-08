@@ -67,8 +67,9 @@ namespace Koralium.SqlToExpression
             }
             else
             {
-                var obj = (AnonType)enumerator.Current;
-                return obj.P0;
+                var obj = enumerator.Current;
+
+                return AnonTypeUtils.GetDelegates(obj.GetType())[0](obj);
             }
         }
 

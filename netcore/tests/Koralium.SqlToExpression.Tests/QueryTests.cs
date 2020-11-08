@@ -183,6 +183,16 @@ namespace Koralium.SqlToExpression.Tests
         }
 
         [Test]
+        public async Task TestSubQueryAdditionInOuter()
+        {
+            var result = await SqlExecutor.Execute($"select c.sum + 1 from (select sum(Acctbal) AS sum from customer) c");
+            var expected = TpchData.Customers
+                .GroupBy(x => 1).Select(x => new { sum = x.Sum(y => y.Acctbal) + 1 }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
         public async Task TestSubQueryColumnAlias()
         {
             var result = await SqlExecutor.Execute($"select c.TEST from (select name AS TEST from customer) c");

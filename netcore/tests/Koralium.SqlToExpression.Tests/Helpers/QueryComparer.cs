@@ -55,10 +55,10 @@ namespace Koralium.SqlToExpression.Tests
                 throw new NotSupportedException("Only anonymous types can be used for the expected value");
             }
 
-            if (!actualType.Equals(typeof(AnonType)))
-            {
-                throw new NotSupportedException("'Actual' queryables can only be from the executor");
-            }
+            //if (!actualType.Equals(typeof(AnonType)))
+            //{
+            //    throw new NotSupportedException("'Actual' queryables can only be from the executor");
+            //}
 
             var expectedProperties = expectedType.GetProperties();
             var actualProperties = actualType.GetProperties();

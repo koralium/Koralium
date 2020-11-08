@@ -49,13 +49,14 @@ namespace Koralium.SqlToExpression.Visitors.Select
             }
 
             var typeBuilder = SqlTypeInfo.NewBuilder();
-            var propertyInfo = typeof(AnonType).GetProperty($"P0");
+            var anonType = AnonTypeUtils.GetAnonType(singleAggregateVisitor.OutType);
+            var propertyInfo = anonType.GetProperty($"P0");
             typeBuilder.AddProperty(singleAggregateVisitor.ColumnName, propertyInfo);
 
             return new SelectAggregateFunctionStage(
                 typeBuilder.Build(),
-                Expression.Parameter(typeof(AnonType)),
-                typeof(AnonType),
+                Expression.Parameter(anonType),
+                anonType,
                 previousStage.CurrentType,
                 previousStage.FromAliases,
                 singleAggregateVisitor.FunctionName,
@@ -98,16 +99,28 @@ namespace Koralium.SqlToExpression.Visitors.Select
             Debug.Assert(selects.Count > 0);
 
             var typeBuilder = SqlTypeInfo.NewBuilder();
-            NewExpression newExpression = Expression.New(typeof(AnonType));
+
+            Type[] propertyTypes = new Type[selects.Count];
+
+            for(int i = 0; i < selects.Count; i++)
+            {
+                propertyTypes[i] = selects[i].Expression.Type;
+            }
+
+            var anonType = AnonTypeUtils.GetAnonType(propertyTypes);
+
+            var getDelegates = AnonTypeUtils.GetDelegates(anonType);
+
+            NewExpression newExpression = Expression.New(anonType);
 
             List<MemberAssignment> assignments = new List<MemberAssignment>();
             var columnsBuilder = ImmutableList.CreateBuilder<ColumnMetadata>();
             for (int i = 0; i < selects.Count; i++)
             {
-                columnsBuilder.Add(new ColumnMetadata(selects[i].Alias, selects[i].Expression.Type, AnonTypeUtils.GetDelegate(i)));
-                var convertedSelect = Expression.Convert(selects[i].Expression, typeof(object));
-                var propertyInfo = typeof(AnonType).GetProperty($"P{i}");
-                var assignment = Expression.Bind(propertyInfo, convertedSelect);
+                columnsBuilder.Add(new ColumnMetadata(selects[i].Alias, selects[i].Expression.Type, getDelegates[i]));
+                //var convertedSelect = Expression.Convert(selects[i].Expression, typeof(object));
+                var propertyInfo = anonType.GetProperty($"P{i}");
+                var assignment = Expression.Bind(propertyInfo, selects[i].Expression);
                 assignments.Add(assignment);
                 typeBuilder.AddProperty(selects[i].Alias, propertyInfo);
             }
@@ -115,9 +128,9 @@ namespace Koralium.SqlToExpression.Visitors.Select
             var memberInit = Expression.MemberInit(newExpression, assignments);
 
             return new SelectStage(typeBuilder.Build(),
-                Expression.Parameter(typeof(AnonType)),
+                Expression.Parameter(anonType),
                 memberInit,
-                typeof(AnonType),
+                anonType,
                 previousStage.CurrentType,
                 previousStage.ParameterExpression,
                 previousStage.FromAliases,
