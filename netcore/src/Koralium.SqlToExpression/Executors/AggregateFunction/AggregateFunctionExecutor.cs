@@ -18,11 +18,13 @@ namespace Koralium.SqlToExpression.Executors.AggregateFunction
         {
             var result = await ExecuteAggregateFunction((IQueryable<Entity>)queryable, executeAggregateFunctionStage);
 
-            var columnMetadata = new ColumnMetadata(executeAggregateFunctionStage.ColumnName, result.GetType(), AnonTypeUtils.GetDelegate(0));
+            var anonType = AnonTypeUtils.GetAnonType(result.GetType());
+            var getDelegate = AnonTypeUtils.GetDelegates(anonType)[0];
+            var columnMetadata = new ColumnMetadata(executeAggregateFunctionStage.ColumnName, result.GetType(), getDelegate);
 
-            List<AnonType> output = new List<AnonType>()
+            List<AnonType<OutType>> output = new List<AnonType<OutType>>()
             {
-                new AnonType()
+                new AnonType<OutType>()
                 {
                     P0 = result
                 }

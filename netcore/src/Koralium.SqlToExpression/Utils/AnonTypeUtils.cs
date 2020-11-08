@@ -1,28 +1,65 @@
 ﻿using Koralium.SqlToExpression.Models;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
 namespace Koralium.SqlToExpression.Utils
 {
-    internal static class AnonTypeUtils
+    public static class AnonTypeUtils
     {
-        private static Func<object, object>[] getDelegates = BuildGetDeletages();
+        private static Type[] anonTypes = new Type[]
+            {
+                typeof(AnonType),
+                typeof(AnonType<>),
+                typeof(AnonType<,>),
+                typeof(AnonType<,,>),
+                typeof(AnonType<,,,>),
+                typeof(AnonType<,,,,>),
+                typeof(AnonType<,,,,,>),
+                typeof(AnonType<,,,,,,>),
+                typeof(AnonType<,,,,,,,>),
+                typeof(AnonType<,,,,,,,,>),
+                typeof(AnonType<,,,,,,,,,>),
+                typeof(AnonType<,,,,,,,,,,>),
+                typeof(AnonType<,,,,,,,,,,,>),
+                typeof(AnonType<,,,,,,,,,,,,>),
+                typeof(AnonType<,,,,,,,,,,,,,>),
+                typeof(AnonType<,,,,,,,,,,,,,,>),
+                typeof(AnonType<,,,,,,,,,,,,,,,>),
+                typeof(AnonType<,,,,,,,,,,,,,,,,>),
+                typeof(AnonType<,,,,,,,,,,,,,,,,,>),
+                typeof(AnonType<,,,,,,,,,,,,,,,,,,>),
+                typeof(AnonType<,,,,,,,,,,,,,,,,,,,>),
+                typeof(AnonType<,,,,,,,,,,,,,,,,,,,,>)
+            };
 
-        public static Func<object, object> GetDelegate(int index)
+        private static ConcurrentDictionary<Type, Func<object, object>[]> typeToGetDelegates = new ConcurrentDictionary<Type, Func<object, object>[]>();
+
+        public static Type GetAnonType(params Type[] propertyTypes)
         {
-            return getDelegates[index];
+            return anonTypes[propertyTypes.Length].MakeGenericType(propertyTypes);
         }
 
-        private static Func<object, object>[] BuildGetDeletages()
+        public static Func<object, object>[] GetDelegates(Type anonType)
         {
-            var properties = typeof(AnonType).GetProperties();
+            if(!typeToGetDelegates.TryGetValue(anonType, out var delegates))
+            {
+                delegates = BuildGetDeletages(anonType);
+                typeToGetDelegates.TryAdd(anonType, delegates);
+            }
+            return delegates;
+        }
+
+        private static Func<object, object>[] BuildGetDeletages(Type type)
+        {
+            var properties = type.GetProperties();
             Func<object, object>[] output = new Func<object, object>[properties.Length];
 
             for (int i = 0; i < output.Length; i++)
             {
-                output[i] = CreateGetDelegate(typeof(AnonType), properties[i].GetGetMethod());
+                output[i] = CreateGetDelegate(type, properties[i].GetGetMethod());
             }
             return output;
         }
