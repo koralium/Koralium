@@ -111,7 +111,7 @@ namespace Koralium.SqlToExpression.Tests
             var expected = ColumnTestData.GetData().Select(selectLambda).ToList();
             AssertAreEqual(expected.AsQueryable(), result.Result);
         }
-
+                
         [TestCaseSource(nameof(SelectColumnsDistinctTestCase))]
         public async Task TestSelectColumnsDistinct(TestCaseClass testCase)
         {
