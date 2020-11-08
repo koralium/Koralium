@@ -965,6 +965,276 @@ namespace Koralium.SqlToExpression.Tests
             }, Throws.InstanceOf<SqlErrorException>().With.Message.EqualTo("Search is not implemented for this table"));
         }
 
+        [Test]
+        public async Task TestSelect1Column()
+        {
+            var result = await SqlExecutor.Execute("select Comment from lineitem");
+            var expected = TpchData.LineItem.Select(x => new { x.Comment }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestSelect2Column()
+        {
+            var result = await SqlExecutor.Execute("select Comment, Commitdate from lineitem");
+            var expected = TpchData.LineItem.Select(x => new { x.Comment, x.Commitdate }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestSelect3Column()
+        {
+            var result = await SqlExecutor.Execute("select Comment, Commitdate, Discount from lineitem");
+            var expected = TpchData.LineItem.Select(x => new { x.Comment, x.Commitdate, x.Discount }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestSelect4Column()
+        {
+            var result = await SqlExecutor.Execute("select Comment, Commitdate, Discount, Extendedprice from lineitem");
+            var expected = TpchData.LineItem.Select(x => new { x.Comment, x.Commitdate, x.Discount, x.Extendedprice }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestSelect5Column()
+        {
+            var result = await SqlExecutor.Execute("select Comment, Commitdate, Discount, Extendedprice, Linenumber from lineitem");
+            var expected = TpchData.LineItem.Select(x => new { x.Comment, x.Commitdate, x.Discount, x.Extendedprice, x.Linenumber }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestSelect6Column()
+        {
+            var result = await SqlExecutor.Execute("select Comment, Commitdate, Discount, Extendedprice, Linenumber, Linestatus from lineitem");
+            var expected = TpchData.LineItem.Select(x => new { x.Comment, x.Commitdate, x.Discount, x.Extendedprice, x.Linenumber, x.Linestatus }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestSelect7Column()
+        {
+            var result = await SqlExecutor.Execute("select Comment, Commitdate, Discount, Extendedprice, Linenumber, Linestatus, Orderkey from lineitem");
+            var expected = TpchData.LineItem.Select(x => new { 
+                x.Comment, 
+                x.Commitdate, 
+                x.Discount, 
+                x.Extendedprice, 
+                x.Linenumber, 
+                x.Linestatus,
+                x.Orderkey
+            }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestSelect8Column()
+        {
+            var result = await SqlExecutor.Execute("select Comment, Commitdate, Discount, Extendedprice, Linenumber, Linestatus, Orderkey, Partkey from lineitem");
+            var expected = TpchData.LineItem.Select(x => new {
+                x.Comment,
+                x.Commitdate,
+                x.Discount,
+                x.Extendedprice,
+                x.Linenumber,
+                x.Linestatus,
+                x.Orderkey,
+                x.Partkey
+            }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestSelect9Column()
+        {
+            var result = await SqlExecutor.Execute("select Comment, Commitdate, Discount, Extendedprice, Linenumber, Linestatus, Orderkey, Partkey, Quantity from lineitem");
+            var expected = TpchData.LineItem.Select(x => new {
+                x.Comment,
+                x.Commitdate,
+                x.Discount,
+                x.Extendedprice,
+                x.Linenumber,
+                x.Linestatus,
+                x.Orderkey,
+                x.Partkey,
+                x.Quantity
+            }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestSelect10Column()
+        {
+            var result = await SqlExecutor.Execute("select Comment, Commitdate, Discount, Extendedprice, Linenumber, Linestatus, Orderkey, Partkey, Quantity, Receiptdate from lineitem");
+            var expected = TpchData.LineItem.Select(x => new {
+                x.Comment,
+                x.Commitdate,
+                x.Discount,
+                x.Extendedprice,
+                x.Linenumber,
+                x.Linestatus,
+                x.Orderkey,
+                x.Partkey,
+                x.Quantity,
+                x.Receiptdate
+            }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestSelect11Column()
+        {
+            var result = await SqlExecutor.Execute("select Comment, Commitdate, Discount, Extendedprice, Linenumber, Linestatus, Orderkey, Partkey, Quantity, Receiptdate, Returnflag from lineitem");
+            var expected = TpchData.LineItem.Select(x => new {
+                x.Comment,
+                x.Commitdate,
+                x.Discount,
+                x.Extendedprice,
+                x.Linenumber,
+                x.Linestatus,
+                x.Orderkey,
+                x.Partkey,
+                x.Quantity,
+                x.Receiptdate,
+                x.Returnflag
+            }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestSelect12Column()
+        {
+            var result = await SqlExecutor.Execute("select Comment, Commitdate, Discount, Extendedprice, Linenumber, Linestatus, Orderkey, Partkey, Quantity, Receiptdate, Returnflag, Shipdate from lineitem");
+            var expected = TpchData.LineItem.Select(x => new {
+                x.Comment,
+                x.Commitdate,
+                x.Discount,
+                x.Extendedprice,
+                x.Linenumber,
+                x.Linestatus,
+                x.Orderkey,
+                x.Partkey,
+                x.Quantity,
+                x.Receiptdate,
+                x.Returnflag,
+                x.Shipdate
+            }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestSelect13Column()
+        {
+            var result = await SqlExecutor.Execute("select Comment, Commitdate, Discount, Extendedprice, Linenumber, Linestatus, Orderkey, Partkey, Quantity, Receiptdate, Returnflag, Shipdate, Shipinstruct from lineitem");
+            var expected = TpchData.LineItem.Select(x => new {
+                x.Comment,
+                x.Commitdate,
+                x.Discount,
+                x.Extendedprice,
+                x.Linenumber,
+                x.Linestatus,
+                x.Orderkey,
+                x.Partkey,
+                x.Quantity,
+                x.Receiptdate,
+                x.Returnflag,
+                x.Shipdate,
+                x.Shipinstruct
+            }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestSelect14Column()
+        {
+            var result = await SqlExecutor.Execute("select Comment, Commitdate, Discount, Extendedprice, Linenumber, Linestatus, Orderkey, Partkey, Quantity, Receiptdate, Returnflag, Shipdate, Shipinstruct, Shipmode from lineitem");
+            var expected = TpchData.LineItem.Select(x => new {
+                x.Comment,
+                x.Commitdate,
+                x.Discount,
+                x.Extendedprice,
+                x.Linenumber,
+                x.Linestatus,
+                x.Orderkey,
+                x.Partkey,
+                x.Quantity,
+                x.Receiptdate,
+                x.Returnflag,
+                x.Shipdate,
+                x.Shipinstruct,
+                x.Shipmode
+            }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestSelect15Column()
+        {
+            var result = await SqlExecutor.Execute("select Comment, Commitdate, Discount, Extendedprice, Linenumber, Linestatus, Orderkey, Partkey, Quantity, Receiptdate, Returnflag, Shipdate, Shipinstruct, Shipmode, Suppkey from lineitem");
+            var expected = TpchData.LineItem.Select(x => new {
+                x.Comment,
+                x.Commitdate,
+                x.Discount,
+                x.Extendedprice,
+                x.Linenumber,
+                x.Linestatus,
+                x.Orderkey,
+                x.Partkey,
+                x.Quantity,
+                x.Receiptdate,
+                x.Returnflag,
+                x.Shipdate,
+                x.Shipinstruct,
+                x.Shipmode,
+                x.Suppkey
+            }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestSelect16Column()
+        {
+            var result = await SqlExecutor.Execute("select Comment, Commitdate, Discount, Extendedprice, Linenumber, Linestatus, Orderkey, Partkey, Quantity, Receiptdate, Returnflag, Shipdate, Shipinstruct, Shipmode, Suppkey, Tax from lineitem");
+            var expected = TpchData.LineItem.Select(x => new {
+                x.Comment,
+                x.Commitdate,
+                x.Discount,
+                x.Extendedprice,
+                x.Linenumber,
+                x.Linestatus,
+                x.Orderkey,
+                x.Partkey,
+                x.Quantity,
+                x.Receiptdate,
+                x.Returnflag,
+                x.Shipdate,
+                x.Shipinstruct,
+                x.Shipmode,
+                x.Suppkey,
+                x.Tax
+            }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+
         //select name from customer where name > 'customer#000001500'
         //Gives the wrong results
     }
