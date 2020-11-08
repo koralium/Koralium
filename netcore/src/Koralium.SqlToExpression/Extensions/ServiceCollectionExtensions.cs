@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.SqlToExpression.Executors;
+using Koralium.SqlToExpression.Executors.AggregateFunction;
 using Koralium.SqlToExpression.Executors.Offset;
 using Koralium.SqlToExpression.Interfaces;
 using Koralium.SqlToExpression.Metadata;
@@ -36,6 +37,7 @@ namespace Koralium.SqlToExpression.Extensions
             services.AddSingleton<IDistinctExecutorFactory, DefaultDistinctExecutorFactory>();
             services.AddSingleton<ISearchExpressionProvider, DefaultSearchExpressionProvider>();
             services.AddSingleton<IStringOperationsProvider, DefaultStringOperationsProvider>();
+            services.AddSingleton<IAggregateFunctionExecutorFactory, DefaultAggregateFunctionFactory>();
 
             services.AddScoped<SqlExecutor>();
 

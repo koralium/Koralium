@@ -14,6 +14,7 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
 using Koralium.SqlToExpression.Executors;
+using Koralium.SqlToExpression.Executors.AggregateFunction;
 using Koralium.SqlToExpression.Executors.Offset;
 using Koralium.SqlToExpression.Metadata;
 using Koralium.SqlToExpression.Providers;
@@ -41,7 +42,8 @@ namespace Koralium.SqlToExpression.Benchmark
                 new DefaultSelectExecutorFactory(),
                 new DefaultOrderByExecutorFactory(),
                 new DefaultOffsetExecutorFactory(),
-                new DefaultDistinctExecutorFactory());
+                new DefaultDistinctExecutorFactory(),
+                new DefaultAggregateFunctionFactory());
 
             sqlExecutor = new SqlExecutor(
                 tablesMetadata, 

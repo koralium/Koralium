@@ -15,22 +15,31 @@ namespace Koralium.SqlToExpression.Stages.CompileStages
 
         public Type CurrentType { get; }
 
+        public Type OldType { get; }
+
         public FromAliases FromAliases { get; }
 
         public string FunctionName { get; }
 
-        public Expression Parameter { get; }
+        public ParameterExpression InParameter { get; }
 
-        public IImmutableList<ColumnMetadata> Columns { get; }
+        public string ColumnName { get; }
+
+        public IImmutableList<Expression> Parameters { get; }
+
+        public Type FunctionOutType { get; }
 
         public SelectAggregateFunctionStage(
             SqlTypeInfo sqlTypeInfo,
             ParameterExpression parameterExpression,
             Type currentType,
+            Type oldType,
             FromAliases fromAliases,
             string functionName,
-            Expression parameter,
-            IImmutableList<ColumnMetadata> columns
+            ParameterExpression inParameter,
+            string columnName,
+            IImmutableList<Expression> parameters,
+            Type functionOutType
             )
         {
             TypeInfo = sqlTypeInfo;
@@ -38,8 +47,11 @@ namespace Koralium.SqlToExpression.Stages.CompileStages
             CurrentType = currentType;
             FromAliases = fromAliases;
             FunctionName = functionName;
-            Parameter = parameter;
-            Columns = columns;
+            InParameter = inParameter;
+            OldType = oldType;
+            ColumnName = columnName;
+            Parameters = parameters;
+            FunctionOutType = functionOutType;
         }
 
         public void Accept(IQueryStageVisitor visitor)
