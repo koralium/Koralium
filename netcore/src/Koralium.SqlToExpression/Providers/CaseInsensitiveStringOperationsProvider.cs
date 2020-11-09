@@ -7,9 +7,13 @@ namespace Koralium.SqlToExpression.Providers
 {
     public class CaseInsensitiveStringOperationsProvider : IStringOperationsProvider
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Only used in this class")]
         private static readonly MethodInfo StringContains = typeof(CaseInsensitiveStringOperationsProvider).GetMethod("InternalStringContains", BindingFlags.NonPublic | BindingFlags.Static);
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Only used in this class")]
         private static readonly MethodInfo StringStartsWith = typeof(CaseInsensitiveStringOperationsProvider).GetMethod("InternalStringStartsWith", BindingFlags.NonPublic | BindingFlags.Static);
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Only used in this class")]
         private static readonly MethodInfo StringEndsWith = typeof(CaseInsensitiveStringOperationsProvider).GetMethod("InternalStringEndsWith", BindingFlags.NonPublic | BindingFlags.Static);
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Only used in this class")]
         private static readonly MethodInfo StringEquals = typeof(CaseInsensitiveStringOperationsProvider).GetMethod("InternalStringEquals", BindingFlags.NonPublic | BindingFlags.Static);
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1144:Unused private types or members should be removed", Justification = "Used in reflection")]
