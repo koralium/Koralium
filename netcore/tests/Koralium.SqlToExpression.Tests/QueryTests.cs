@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.SqlToExpression.Exceptions;
+using Koralium.SqlToExpression.Tests.Helpers;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -763,6 +764,16 @@ namespace Koralium.SqlToExpression.Tests
         }
 
         [Test]
+        public async Task TestStringContainsIgnoreCaseIsNull()
+        {
+            var result = await SqlExecutor.Execute("SELECT * FROM nulltest WHERE isnull like '%test%'");
+
+            var expected = TestData.GetNullTestData().Where(x => x.IsNull == "test").Select(x => new { x.IsNull }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
         public async Task TestStringStartsWithIgnoreCase()
         {
             var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like '5-l%'");
@@ -771,6 +782,16 @@ namespace Koralium.SqlToExpression.Tests
                 .Where(x => x.Orderpriority.StartsWith("5-L"))
                 .Select(x => new { x.Orderkey, x.Orderpriority })
                 .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestStringStartsWithIgnoreCaseIsNull()
+        {
+            var result = await SqlExecutor.Execute("SELECT * FROM nulltest WHERE isnull like 'test%'");
+
+            var expected = TestData.GetNullTestData().Where(x => x.IsNull == "test").Select(x => new { x.IsNull }).AsQueryable();
 
             AssertAreEqual(expected, result.Result);
         }
@@ -789,6 +810,16 @@ namespace Koralium.SqlToExpression.Tests
         }
 
         [Test]
+        public async Task TestStringEndsWithIgnoreCaseIsNull()
+        {
+            var result = await SqlExecutor.Execute("SELECT * FROM nulltest WHERE isnull like '%test'");
+
+            var expected = TestData.GetNullTestData().Where(x => x.IsNull == "test").Select(x => new { x.IsNull }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
         public async Task TestStringEqualsIgnoreCase()
         {
             var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like '5-low'");
@@ -797,6 +828,26 @@ namespace Koralium.SqlToExpression.Tests
                 .Where(x => x.Orderpriority.Equals("5-LOW"))
                 .Select(x => new { x.Orderkey, x.Orderpriority })
                 .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestStringEqualsIgnoreCaseIsNull()
+        {
+            var result = await SqlExecutor.Execute("SELECT * FROM nulltest WHERE isnull = 'test'");
+
+            var expected = TestData.GetNullTestData().Where(x => x.IsNull == "test").Select(x => new { x.IsNull }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestStringEqualsIgnoreCaseIsNullEqualsNull()
+        {
+            var result = await SqlExecutor.Execute("SELECT * FROM nulltest WHERE isnull is null");
+
+            var expected = TestData.GetNullTestData().Where(x => x.IsNull == null).Select(x => new { x.IsNull }).AsQueryable();
 
             AssertAreEqual(expected, result.Result);
         }
@@ -813,6 +864,8 @@ namespace Koralium.SqlToExpression.Tests
 
             AssertAreEqual(expected, result.Result);
         }
+
+        
 
         [Test]
         public async Task TestStringLikeEquals()
@@ -963,6 +1016,15 @@ namespace Koralium.SqlToExpression.Tests
                     .Add(SqlParameter.Create("P0", "test"));
                 await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE CONTAINS(*, @P0)", sqlParameters);
             }, Throws.InstanceOf<SqlErrorException>().With.Message.EqualTo("Search is not implemented for this table"));
+        }
+
+        [Test]
+        public async Task TestSetVariable()
+        {
+            var result = await SqlExecutor.Execute(@"
+            SET @test = 'test';
+            select name from customer;
+            ");
         }
 
 

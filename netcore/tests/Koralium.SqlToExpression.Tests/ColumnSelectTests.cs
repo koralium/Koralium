@@ -108,7 +108,7 @@ namespace Koralium.SqlToExpression.Tests
 
             var selectLambda = GenerateSelectExpression(testCase.Properties);
 
-            var expected = ColumnTestData.GetData().Select(selectLambda).ToList();
+            var expected = TestData.GetColumnTestData().Select(selectLambda).ToList();
             AssertAreEqual(expected.AsQueryable(), result.Result);
         }
                 
@@ -122,7 +122,7 @@ namespace Koralium.SqlToExpression.Tests
             var result = await SqlExecutor.Execute(sql);
 
             var selectLambda = GenerateSelectExpression(testCase.Properties);
-            var expected = ColumnTestData.GetData().Select(selectLambda).Distinct().ToList();
+            var expected = TestData.GetColumnTestData().Select(selectLambda).Distinct().ToList();
             AssertAreEqual(expected.AsQueryable(), result.Result);
         }
     }

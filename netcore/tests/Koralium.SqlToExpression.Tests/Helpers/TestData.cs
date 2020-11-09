@@ -6,9 +6,21 @@ using System.Text;
 
 namespace Koralium.SqlToExpression.Tests.Helpers
 {
-    public static class ColumnTestData
+    public static class TestData
     {
-        public static IQueryable<ColumnTest> GetData()
+
+        public static IQueryable<NullTest> GetNullTestData()
+        {
+            return new List<NullTest>()
+            {
+                new NullTest()
+                {
+                    IsNull = null
+                }
+            }.AsQueryable();
+        }
+
+        public static IQueryable<ColumnTest> GetColumnTestData()
         {
             return new List<ColumnTest>()
                     {

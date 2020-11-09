@@ -80,7 +80,10 @@ namespace Koralium.SqlToExpression.Tests
 
                 foreach(var propertyMethod in propertyMethods)
                 {
-                    if(!propertyMethod.Item1.Invoke(expectedObj, null).Equals(propertyMethod.Item2.Invoke(actualObj, null)))
+                    var left = propertyMethod.Item1.Invoke(expectedObj, null);
+                    var right = propertyMethod.Item2.Invoke(actualObj, null);
+
+                    if(!Equals(left, right))
                     {
                         return false;
                     }
