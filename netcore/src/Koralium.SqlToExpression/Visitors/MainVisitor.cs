@@ -24,7 +24,9 @@ using Koralium.SqlToExpression.Visitors.OrderBy;
 using Koralium.SqlToExpression.Visitors.Select;
 using Koralium.SqlToExpression.Visitors.Where;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
@@ -184,6 +186,36 @@ namespace Koralium.SqlToExpression.Visitors
                     _stages.Add(OffsetHelper.GetOffsetStage(LastStage, node.TopRowFilter, _visitorMetadata));
                 }
             }
+        }
+
+        public override void ExplicitVisit(SetVariableStatement node)
+        {
+            if(node.Expression is StringLiteral stringLiteral)
+            {
+                _visitorMetadata.Parameters.Add(SqlParameter.Create(node.Variable.Name, stringLiteral.Value));
+            }
+            else if(node.Expression is IntegerLiteral integerLiteral)
+            {
+                if(int.TryParse(integerLiteral.Value, out var value))
+                {
+                    _visitorMetadata.Parameters.Add(SqlParameter.Create(node.Variable.Name, value));
+                }
+                else
+                {
+                    throw new SqlErrorException($"Could not parse '{integerLiteral.Value}' as an integer");
+                }
+            }
+            else if(node.Expression is NumericLiteral numericLiteral)
+            {
+                var value = double.Parse(numericLiteral.Value, CultureInfo.InvariantCulture);
+                _visitorMetadata.Parameters.Add(SqlParameter.Create(node.Variable.Name, value));
+            }
+            else
+            {
+                throw new NotImplementedException($"The parameter type: {node.Expression.GetType().Name} is not implemented");
+            }
+            
+            //node.Expression
         }
 
         public override void ExplicitVisit(QuerySpecification node)
