@@ -32,7 +32,7 @@ namespace Koralium.SqlToExpression.Tests
 
         protected TpchData TpchData => tpchData;
 
-        [SetUp]
+        [OneTimeSetUp]
         public void Setup()
         {
             tpchData = new TpchData();
@@ -46,6 +46,7 @@ namespace Koralium.SqlToExpression.Tests
             tablesMetadata.AddTable(new TableMetadata("region", typeof(Region)));
             tablesMetadata.AddTable(new TableMetadata("supplier", typeof(Supplier)));
             tablesMetadata.AddTable(new TableMetadata("columntest", typeof(ColumnTest)));
+            tablesMetadata.AddTable(new TableMetadata("nulltest", typeof(NullTest), new CaseInsensitiveStringOperationsProvider()));
 
             var queryExecutor = new QueryExecutor(
                 new TableResolver(tpchData),

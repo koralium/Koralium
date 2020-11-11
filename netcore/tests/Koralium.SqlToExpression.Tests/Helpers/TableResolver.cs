@@ -47,8 +47,9 @@ namespace Koralium.SqlToExpression.Tests
                 case "supplier":
                     return _tpchData.Supplier.AsQueryable();
                 case "columntest":
-                    return ColumnTestData.GetData();
-                    
+                    return TestData.GetColumnTestData();
+                case "nulltest":
+                    return TestData.GetNullTestData();
             }
             throw new NotImplementedException();
         }
