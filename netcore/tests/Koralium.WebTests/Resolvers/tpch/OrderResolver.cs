@@ -14,6 +14,13 @@ namespace Koralium.WebTests.Resolvers.tpch
 
         protected override Task<IQueryable<Order>> GetQueryableData()
         {
+            if(QueryOptions.Parameters.TryGetParameter("test", out var parameter))
+            {
+                if(parameter.TryGetValue<string>(out var stringValue))
+                {
+                    return Task.FromResult(_tpchData.Orders.AsQueryable().Where(x => x.Custkey == 1));
+                }
+            }
             //This just exists to be able to see that extra data is being sent correctly
             if (ExtraData.TryGetValue("test", out var extraDataValue))
             {

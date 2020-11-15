@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.SqlToExpression.Interfaces;
 using Koralium.SqlToExpression.Models;
 using System;
 using System.Diagnostics;
@@ -58,24 +59,29 @@ namespace Koralium.SqlToExpression.Stages.CompileStages
         /// </summary>
         public bool ContainsFullTextSearch { get; set; }
 
+        public IReadSqlParameters Parameters { get; }
+
         public FromTableStage(
             string tableName, 
             SqlTypeInfo sqlTypeInfo, 
             ParameterExpression parameterExpression, 
             Type currentType,
-            FromAliases fromAliases)
+            FromAliases fromAliases,
+            IReadSqlParameters parameters)
         {
             Debug.Assert(tableName != null, $"{nameof(tableName)} was null");
             Debug.Assert(sqlTypeInfo != null, $"{nameof(sqlTypeInfo)} was null");
             Debug.Assert(parameterExpression != null, $"{nameof(parameterExpression)} was null");
             Debug.Assert(currentType != null, $"{nameof(currentType)} was null");
             Debug.Assert(fromAliases != null, $"{nameof(fromAliases)} was null");
+            Debug.Assert(parameters != null, $"{nameof(parameters)} was null");
 
             TableName = tableName;
             TypeInfo = sqlTypeInfo;
             ParameterExpression = parameterExpression;
             CurrentType = currentType;
             FromAliases = fromAliases;
+            Parameters = parameters;
         }
 
         public void Accept(IQueryStageVisitor visitor)

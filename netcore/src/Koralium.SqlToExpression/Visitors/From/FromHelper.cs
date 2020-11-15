@@ -49,7 +49,13 @@ namespace Koralium.SqlToExpression.Visitors.From
                     visitorMetadata.StringOperationsProvider = fromVisitor.Table.StringOperationsProvider;
                 }
 
-                stages.Add(new FromTableStage(fromVisitor.Table.Name, type.ToSqlTypeInfo(), Expression.Parameter(type), type, fromVisitor.FromAliases));
+                stages.Add(new FromTableStage(
+                    fromVisitor.Table.Name,
+                    type.ToSqlTypeInfo(), 
+                    Expression.Parameter(type), 
+                    type, 
+                    fromVisitor.FromAliases,
+                    visitorMetadata.Parameters));
             }
 
             return stages;

@@ -28,7 +28,8 @@ namespace Koralium.SqlToExpression.Executors
                 executeFromTableStage.WhereExpression,
                 executeFromTableStage.Limit,
                 executeFromTableStage.Offset,
-                executeFromTableStage.ContainsFullTextSearch);
+                executeFromTableStage.ContainsFullTextSearch,
+                executeFromTableStage.Parameters);
 
             var queryable = (IQueryable<Entity>)await tableResolver.ResolveTableName(executeFromTableStage.TableName, additionalData, queryOptions);
 

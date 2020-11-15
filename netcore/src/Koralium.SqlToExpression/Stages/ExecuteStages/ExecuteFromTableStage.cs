@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.SqlToExpression.Executors;
+using Koralium.SqlToExpression.Interfaces;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -37,6 +38,8 @@ namespace Koralium.SqlToExpression.Stages.ExecuteStages
 
         public bool ContainsFullTextSearch { get; }
 
+        public IReadSqlParameters Parameters { get; }
+
         public ExecuteFromTableStage(
             string tableName,
             Type entityType,
@@ -45,7 +48,8 @@ namespace Koralium.SqlToExpression.Stages.ExecuteStages
             Expression whereExpression,
             int? limit,
             int? offset,
-            bool containsFullTextSearch)
+            bool containsFullTextSearch,
+            IReadSqlParameters parameters)
         {
             TableName = tableName;
             EntityType = entityType;
@@ -55,6 +59,7 @@ namespace Koralium.SqlToExpression.Stages.ExecuteStages
             Limit = limit;
             Offset = offset;
             ContainsFullTextSearch = containsFullTextSearch;
+            Parameters = parameters;
         }
 
         public ValueTask<IQueryable> Accept(IQueryExecutor queryExecutor)
