@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Koralium.SqlToExpression.Interfaces;
+using System;
 using System.Linq.Expressions;
 
 namespace Koralium.SqlToExpression
@@ -40,6 +41,8 @@ namespace Koralium.SqlToExpression
         IQueryOptions<Entity> CreateGeneric<Entity>();
 
         bool ContainsFullTextSearch { get; }
+
+        IReadSqlParameters Parameters { get; }
     }
 
     public interface IQueryOptions<Entity>
@@ -77,5 +80,7 @@ namespace Koralium.SqlToExpression
         void CancelOffsetExecution();
 
         bool ContainsFullTextSearch { get; }
+
+        IReadSqlParameters Parameters { get; }
     }
 }

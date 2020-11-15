@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Koralium.SqlToExpression.Interfaces;
+using System;
 using System.Linq.Expressions;
 
 namespace Koralium.SqlToExpression
@@ -17,7 +18,8 @@ namespace Koralium.SqlToExpression
             Expression whereExpression,
             int? limit,
             int? offset,
-            bool containsFullTextSearch
+            bool containsFullTextSearch,
+            IReadSqlParameters parameters
             )
         {
             _parameterExpression = parameterExpression;
@@ -26,9 +28,12 @@ namespace Koralium.SqlToExpression
             _limit = limit;
             _offset = offset;
             ContainsFullTextSearch = containsFullTextSearch;
+            Parameters = parameters;
         }
 
         public bool ContainsFullTextSearch { get; }
+
+        public IReadSqlParameters Parameters { get; }
 
         public void CancelLimitExecution()
         {
@@ -52,7 +57,7 @@ namespace Koralium.SqlToExpression
 
         public IQueryOptions<Entity> CreateGeneric<Entity>()
         {
-            return new QueryOptions<Entity>(_parameterExpression, _selectExpression, _whereExpression, _limit, _offset, ContainsFullTextSearch);
+            return new QueryOptions<Entity>(_parameterExpression, _selectExpression, _whereExpression, _limit, _offset, ContainsFullTextSearch, Parameters);
         }
 
         public bool TryGetLimit(out int limit)
@@ -114,9 +119,10 @@ namespace Koralium.SqlToExpression
             Expression whereExpression,
             int? limit,
             int? offset,
-            bool containsFullTextSearch
+            bool containsFullTextSearch,
+            IReadSqlParameters parameters
             )
-            : base(parameterExpression, selectExpression, whereExpression, limit, offset, containsFullTextSearch)
+            : base(parameterExpression, selectExpression, whereExpression, limit, offset, containsFullTextSearch, parameters)
         {
         }
 
