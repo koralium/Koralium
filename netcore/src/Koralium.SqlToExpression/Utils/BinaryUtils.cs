@@ -64,48 +64,5 @@ namespace Koralium.SqlToExpression.Utils
 
             return expression;
         }
-
-        public static Expression CreateBinaryExpression_old(Expression leftExpression, Expression rightExpression, Microsoft.SqlServer.TransactSql.ScriptDom.BinaryExpressionType binaryExpressionType)
-        {
-            PredicateUtils.ConvertExpressionTypes(ref leftExpression, ref rightExpression);
-
-            Expression expression = null;
-            switch (binaryExpressionType)
-            {
-                case Microsoft.SqlServer.TransactSql.ScriptDom.BinaryExpressionType.Add:
-                    if (leftExpression.Type.Equals(typeof(string)))
-                    {
-                        expression = Expression.Add(leftExpression, rightExpression, stringConcat);
-                    }
-                    else
-                    {
-                        expression = Expression.Add(leftExpression, rightExpression);
-                    }
-                    break;
-                case Microsoft.SqlServer.TransactSql.ScriptDom.BinaryExpressionType.BitwiseAnd:
-                    expression = Expression.And(leftExpression, rightExpression);
-                    break;
-                case Microsoft.SqlServer.TransactSql.ScriptDom.BinaryExpressionType.BitwiseOr:
-                    expression = Expression.Or(leftExpression, rightExpression);
-                    break;
-                case Microsoft.SqlServer.TransactSql.ScriptDom.BinaryExpressionType.BitwiseXor:
-                    expression = Expression.ExclusiveOr(leftExpression, rightExpression);
-                    break;
-                case Microsoft.SqlServer.TransactSql.ScriptDom.BinaryExpressionType.Divide:
-                    expression = Expression.Divide(leftExpression, rightExpression);
-                    break;
-                case Microsoft.SqlServer.TransactSql.ScriptDom.BinaryExpressionType.Modulo:
-                    expression = Expression.Modulo(leftExpression, rightExpression);
-                    break;
-                case Microsoft.SqlServer.TransactSql.ScriptDom.BinaryExpressionType.Multiply:
-                    expression = Expression.Multiply(leftExpression, rightExpression);
-                    break;
-                case Microsoft.SqlServer.TransactSql.ScriptDom.BinaryExpressionType.Subtract:
-                    expression = Expression.Subtract(leftExpression, rightExpression);
-                    break;
-            }
-
-            return expression;
-        }
     }
 }

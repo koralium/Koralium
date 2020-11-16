@@ -21,7 +21,6 @@ using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages;
 using Koralium.SqlToExpression.Utils;
 using Koralium.SqlToExpression.Visitors;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System;
 using System.IO;
 using System.Linq;
