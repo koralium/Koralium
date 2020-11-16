@@ -1,33 +1,22 @@
-﻿/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+﻿using Koralium.SqlParser.Clauses;
+using Koralium.SqlParser.Expressions;
+using Koralium.SqlParser.Literals;
 using Koralium.SqlToExpression.Exceptions;
 using Koralium.SqlToExpression.Providers;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Koralium.SqlToExpression.Utils;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 
 namespace Koralium.SqlToExpression.Visitors.Where
 {
     internal class WhereVisitor : BaseVisitor
     {
-
         private readonly IQueryStage _previousStage;
         private readonly VisitorMetadata _visitorMetadata;
         private readonly Stack<Expression> expressions = new Stack<Expression>();
@@ -51,40 +40,31 @@ namespace Koralium.SqlToExpression.Visitors.Where
             _visitorMetadata = visitorMetadata;
         }
 
-        public override void ExplicitVisit(WhereClause node)
+        public override void VisitWhereClause(WhereClause whereClause)
         {
-            node.SearchCondition.Accept(this);
+            whereClause.Expression.Accept(this);
         }
 
-        public override void ExplicitVisit(FullTextPredicate node)
+        public override void VisitSearchExpression(SearchExpression searchExpression)
         {
             ContainsFullTextSearch = true;
-            bool allFields = false;
+            bool allFields = searchExpression.AllColumns;
             List<Expression> columns = new List<Expression>();
-            foreach (var column in node.Columns)
+            foreach (var column in searchExpression.Columns)
             {
-                //Check if it is a wildcard
-                if (column is ColumnReferenceExpression columnReferenceExpression &&
-                    columnReferenceExpression.ColumnType == ColumnType.Wildcard)
-                {
-                    allFields = true;
-                }
-                else
-                {
-                    column.Accept(this);
-                    var columnExpression = PopStack();
-                    columns.Add(columnExpression);
-                }
+                column.Accept(this);
+                var columnExpression = PopStack();
+                columns.Add(columnExpression);
             }
-            if(node.Value is VariableReference variableReference)
+            if (searchExpression.Value is VariableReference variableReference)
             {
-                if(_visitorMetadata.Parameters.TryGetParameter(variableReference.Name, out var parameter))
+                if (_visitorMetadata.Parameters.TryGetParameter(variableReference.Name, out var parameter))
                 {
-                    if(parameter.TryGetValue<string>(out var searchString))
+                    if (parameter.TryGetValue<string>(out var searchString))
                     {
                         var searchParameters = new SearchParameters(allFields, columns, searchString, _previousStage.ParameterExpression);
-                        var searchExpression = _visitorMetadata.SearchExpressionProvider.GetSearchExpression(searchParameters);
-                        AddExpressionToStack(searchExpression);
+                        var customSearchExpression = _visitorMetadata.SearchExpressionProvider.GetSearchExpression(searchParameters);
+                        AddExpressionToStack(customSearchExpression);
                     }
                     else
                     {
@@ -96,11 +76,11 @@ namespace Koralium.SqlToExpression.Visitors.Where
                     throw new SqlErrorException($"No parameter could be found with name {variableReference.Name}");
                 }
             }
-            else if(node.Value is StringLiteral stringLiteral)
+            else if (searchExpression.Value is StringLiteral stringLiteral)
             {
                 var searchParameters = new SearchParameters(allFields, columns, stringLiteral.Value, _previousStage.ParameterExpression);
-                var searchExpression = _visitorMetadata.SearchExpressionProvider.GetSearchExpression(searchParameters);
-                AddExpressionToStack(searchExpression);
+                var customSearchExpression = _visitorMetadata.SearchExpressionProvider.GetSearchExpression(searchParameters);
+                AddExpressionToStack(customSearchExpression);
             }
             else
             {
@@ -108,13 +88,13 @@ namespace Koralium.SqlToExpression.Visitors.Where
             }
         }
 
-        public override void ExplicitVisit(LikePredicate node)
+        public override void VisitLikeExpression(LikeExpression likeExpression)
         {
             LikeVisitor likeVisitor = new LikeVisitor(_previousStage, _visitorMetadata);
-            node.Accept(likeVisitor);
+            likeExpression.Accept(likeVisitor);
 
             //Add the properties that was found in the like visitor
-            foreach(var usedProperty in likeVisitor.UsedProperties)
+            foreach (var usedProperty in likeVisitor.UsedProperties)
             {
                 AddUsedProperty(usedProperty);
             }
@@ -122,19 +102,19 @@ namespace Koralium.SqlToExpression.Visitors.Where
             expressions.Push(likeVisitor.Expression);
         }
 
-        public override void ExplicitVisit(InPredicate node)
+        public override void VisitInExpression(InExpression inExpression)
         {
-            if (node.Values == null)
+            if (inExpression.Values == null)
             {
                 throw new SqlErrorException("IN predicate only supports a list of values right now");
             }
 
             Expression memberExpression;
-            if (node.Expression is ColumnReferenceExpression columnReferenceExpression)
+            if (inExpression.Expression is ColumnReference columnReferenceExpression)
             {
                 //Check here if any index can be used aswell
 
-                var identifiers = columnReferenceExpression.MultiPartIdentifier.Identifiers.Select(x => x.Value).ToList();
+                var identifiers = columnReferenceExpression.Identifiers;
 
                 identifiers = MemberUtils.RemoveAlias(_previousStage, identifiers);
                 memberExpression = MemberUtils.GetMember(_previousStage, identifiers, out var property);
@@ -147,11 +127,11 @@ namespace Koralium.SqlToExpression.Visitors.Where
             }
 
             IList list = ListUtils.GetNewListFunction(memberExpression.Type)();
-            foreach (var value in node.Values)
+            foreach (var value in inExpression.Values)
             {
                 if (value is Literal literal)
                 {
-                    list.Add(Convert.ChangeType(literal.Value, memberExpression.Type));
+                    list.Add(Convert.ChangeType(literal.GetValue(), memberExpression.Type));
                 }
                 else
                 {

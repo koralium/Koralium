@@ -320,7 +320,7 @@ namespace Koralium.SqlToExpression.Tests
 
             var expected = TpchData.Customers
                 .Select(x =>
-                    new { Constant = 1 }
+                    new { Constant = 1L }
                 ).AsQueryable();
 
             AssertAreEqual(expected, result.Result);
@@ -401,26 +401,12 @@ namespace Koralium.SqlToExpression.Tests
         [Test]
         public async Task TestOffsetAndFetch()
         {
-            var result = await SqlExecutor.Execute($"SELECT name FROM customer ORDER BY (SELECT NULL) OFFSET 100 ROWS FETCH NEXT 100 ROWS ONLY");
+            var result = await SqlExecutor.Execute($"SELECT name FROM customer ORDER BY (SELECT NULL) LIMIT 100 OFFSET 100");
             var expected = TpchData.Customers
                 .Select(x =>
                     new { x.Name }
                 )
                 .Skip(100)
-                .Take(100)
-                .AsQueryable();
-
-            AssertAreEqual(expected, result.Result);
-        }
-
-        [Test]
-        public async Task TestTop()
-        {
-            var result = await SqlExecutor.Execute($"SELECT TOP 100 name FROM customer");
-            var expected = TpchData.Customers
-                .Select(x =>
-                    new { x.Name }
-                )
                 .Take(100)
                 .AsQueryable();
 
@@ -568,24 +554,6 @@ namespace Koralium.SqlToExpression.Tests
         }
 
         [Test]
-        public async Task TestTopWithParameter()
-        {
-            var parameters = new SqlParameters()
-                .Add(SqlParameter.Create("@top", 10));
-
-            var result = await SqlExecutor.Execute($"SELECT TOP (@top) name FROM customer", parameters);
-
-            var expected = TpchData.Customers
-                .Select(x =>
-                    new { x.Name }
-                )
-                .Take(10)
-                .AsQueryable();
-
-            AssertAreEqual(expected, result.Result);
-        }
-
-        [Test]
         public async Task TestCount()
         {
             var result = await SqlExecutor.Execute($"SELECT count(*) FROM customer");
@@ -593,6 +561,19 @@ namespace Koralium.SqlToExpression.Tests
             var expected = TpchData.Customers
                 .GroupBy(x => 1)
                 .Select(x => new { count = x.LongCount() })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestCountWithGroup()
+        {
+            var result = await SqlExecutor.Execute($"SELECT count(*), name FROM customer group by name");
+
+            var expected = TpchData.Customers
+                .GroupBy(x => x.Name)
+                .Select(x => new { count = x.Count(), name = x.Key })
                 .AsQueryable();
 
             AssertAreEqual(expected, result.Result);
@@ -637,7 +618,7 @@ namespace Koralium.SqlToExpression.Tests
         [Test]
         public async Task TestMultiStatement()
         {
-            var result = await SqlExecutor.Execute("SELECT name FROM customer where name IS NOT NULL; SELECT TOP (10) name from customer");
+            var result = await SqlExecutor.Execute("SELECT name FROM customer where name IS NOT NULL; SELECT name from customer limit 10");
 
             var expected = TpchData.Customers
                 .Where(x => x.Name != null)

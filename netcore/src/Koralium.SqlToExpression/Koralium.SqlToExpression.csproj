@@ -27,6 +27,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Koralium.Shared\Koralium.Shared.csproj" />
+    <ProjectReference Include="..\Koralium.SqlParser.ANTLR\Koralium.SqlParser.ANTLR.csproj" />
+    <ProjectReference Include="..\Koralium.SqlParser\Koralium.SqlParser.csproj" />
   </ItemGroup>
 
 </Project>

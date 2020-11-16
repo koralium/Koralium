@@ -1,23 +1,12 @@
-﻿/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+﻿using Koralium.SqlParser;
+using Koralium.SqlParser.Expressions;
 using Koralium.SqlToExpression.Stages.CompileStages;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
 
 namespace Koralium.SqlToExpression.Visitors.Select
 {
@@ -36,22 +25,22 @@ namespace Koralium.SqlToExpression.Visitors.Select
             _previousStage = previousStage;
         }
 
-        public override void ExplicitVisit(SelectScalarExpression node)
+        public override void VisitSelectScalarExpression(SelectScalarExpression selectScalarExpression)
         {
-            node.Expression.Accept(this);
+            selectScalarExpression.Expression.Accept(this);
             var expression = expressionStack.Pop();
-            string columnName = node.ColumnName?.Value ?? nameStack.Pop();
+            string columnName = selectScalarExpression.Alias ?? nameStack.Pop();
 
             selectExpressions.Add(new SelectExpression(expression, columnName));
         }
 
-        public override void ExplicitVisit(SelectStarExpression node)
+        public override void VisitSelectStarExpression(SelectStarExpression selectStarExpression)
         {
             if (expressionStack.Count == 0)
             {
                 foreach (var property in _previousStage.TypeInfo.GetProperties().OrderBy(x => x.Key))
                 {
-                    if(property.Value.GetCustomAttribute<KoraliumIgnoreAttribute>() != null)
+                    if (property.Value.GetCustomAttribute<KoraliumIgnoreAttribute>() != null)
                     {
                         continue;
                     }
@@ -89,9 +78,9 @@ namespace Koralium.SqlToExpression.Visitors.Select
             return nameStack.Pop();
         }
 
-        public void VisitSelect(TSqlFragment sqlFragment)
+        public void VisitSelect(SqlNode sqlNode)
         {
-            sqlFragment.Accept(this);
+            sqlNode.Accept(this);
         }
     }
 }

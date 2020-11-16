@@ -1,22 +1,12 @@
-﻿/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+﻿using Koralium.SqlParser.Expressions;
+using Koralium.SqlToExpression.Exceptions;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Koralium.SqlToExpression.Utils;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 
 namespace Koralium.SqlToExpression.Visitors
 {
@@ -29,27 +19,27 @@ namespace Koralium.SqlToExpression.Visitors
             _previousStage = previousStage;
         }
 
-        public override void ExplicitVisit(FunctionCall node)
+        public override void VisitFunctionCall(FunctionCall functionCall)
         {
-            var functionName = node.FunctionName.Value.ToLower();
+            var functionName = functionCall.FunctionName.ToLower();
             switch (functionName)
             {
                 case "sum":
-                    HandleSum(node);
+                    HandleSum(functionCall);
                     break;
                 case "avg":
                     break;
                 case "count":
-                    HandleCount(node);
+                    HandleCount(functionCall);
                     break;
                 default:
-                    throw new NotSupportedException(node.FunctionName.Value);
+                    throw new NotSupportedException(functionCall.FunctionName);
             }
         }
 
-        public override void ExplicitVisit(ColumnReferenceExpression node)
+        public override void VisitColumnReference(ColumnReference columnReference)
         {
-            var identifiers = node.MultiPartIdentifier.Identifiers.Select(x => x.Value).ToList();
+            var identifiers = columnReference.Identifiers;
             identifiers = MemberUtils.RemoveAlias(_previousStage, identifiers);
 
             Expression expression;
@@ -71,17 +61,15 @@ namespace Koralium.SqlToExpression.Visitors
         private void HandleCount(FunctionCall functionCall)
         {
             var parameters = functionCall.Parameters;
-            if (parameters.Count != 1)
-            {
-                throw new NotSupportedException("Count can only take a single parameter");
-            }
 
-            var parameter = parameters[0];
-            //check if it is a wildcard count
-            if (parameter is ColumnReferenceExpression reference && reference.ColumnType == ColumnType.Wildcard)
+            if (functionCall.Wildcard)
             {
                 AddExpressionToStack(AggregationUtils.CallCount(_previousStage));
                 AddNameToStack($"count(*)");
+            }
+            else
+            {
+                throw new SqlErrorException("Count only works with '*' right now.");
             }
         }
 
@@ -108,8 +96,5 @@ namespace Koralium.SqlToExpression.Visitors
             var lastName = PopNameStack();
             AddNameToStack($"sum({lastName})");
         }
-
-        
-
     }
 }

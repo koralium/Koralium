@@ -1,27 +1,18 @@
-﻿/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+﻿using Koralium.SqlParser.Clauses;
+using Koralium.SqlParser.From;
+using Koralium.SqlParser.Visitor;
 using Koralium.SqlToExpression.Exceptions;
 using Koralium.SqlToExpression.Metadata;
 using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages.CompileStages;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text;
 
 namespace Koralium.SqlToExpression.Visitors.From
 {
-    internal class FromVisitor : TSqlFragmentVisitor
+    internal class FromVisitor : KoraliumSqlVisitor
     {
         private readonly VisitorMetadata _visitorMetadata;
         private TableMetadata _table;
@@ -36,43 +27,40 @@ namespace Koralium.SqlToExpression.Visitors.From
             _visitorMetadata = visitorMetadata;
         }
 
-        public override void ExplicitVisit(FromClause node)
+        public override void VisitFromClause(FromClause fromClause)
         {
-            foreach (var tableReference in node.TableReferences)
+            var tableReference = fromClause.TableReference;
+            if (tableReference is FromTableReference namedTableReference)
             {
-                //At this point no sub queries or joins are allowed
-                if (tableReference is NamedTableReference namedTableReference)
-                {
-                    var tableName = namedTableReference.SchemaObject.BaseIdentifier.Value;
-                    Debug.Assert(tableName != null);
+                var tableName = namedTableReference.TableName;
+                Debug.Assert(tableName != null);
 
-                    if (!_visitorMetadata.TablesMetadata.TryGetTable(tableName, out _table))
-                    {
-                        throw new SqlErrorException($"The table '{tableName}' was not found");
-                    }
-
-                    var alias = namedTableReference?.Alias?.Value;
-                    if (alias != null)
-                    {
-                        FromAliases.AddAlias(alias);
-                    }
-                }
-                else if (tableReference is QueryDerivedTable queryDerivedTable)
+                if (!_visitorMetadata.TablesMetadata.TryGetTable(tableName, out _table))
                 {
-                    MainVisitor mainVisitor = new MainVisitor(_visitorMetadata);
-                    queryDerivedTable.Accept(mainVisitor);
-                    Stages = mainVisitor.Stages;
+                    throw new SqlErrorException($"The table '{tableName}' was not found");
+                }
 
-                    var alias = queryDerivedTable?.Alias?.Value;
-                    if (alias != null)
-                    {
-                        FromAliases.AddAlias(alias);
-                    }
-                }
-                else
+                var alias = namedTableReference?.Alias;
+                if (alias != null)
                 {
-                    throw new SqlErrorException("Subqueries or joins are not supported at this time");
+                    FromAliases.AddAlias(alias);
                 }
+            }
+            else if (tableReference is Subquery queryDerivedTable)
+            {
+                MainVisitor mainVisitor = new MainVisitor(_visitorMetadata);
+                queryDerivedTable.Accept(mainVisitor);
+                Stages = mainVisitor.Stages;
+
+                var alias = queryDerivedTable?.Alias;
+                if (alias != null)
+                {
+                    FromAliases.AddAlias(alias);
+                }
+            }
+            else
+            {
+                throw new SqlErrorException("Subqueries or joins are not supported at this time");
             }
         }
     }

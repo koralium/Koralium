@@ -13,6 +13,7 @@
  */
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
+using Koralium.SqlParser.ANTLR;
 using Koralium.SqlToExpression.Executors;
 using Koralium.SqlToExpression.Executors.AggregateFunction;
 using Koralium.SqlToExpression.Executors.Offset;
@@ -46,6 +47,7 @@ namespace Koralium.SqlToExpression.Benchmark
                 new DefaultAggregateFunctionFactory());
 
             sqlExecutor = new SqlExecutor(
+                new AntlrSqlParser(),
                 tablesMetadata, 
                 queryExecutor, 
                 new DefaultSearchExpressionProvider(),

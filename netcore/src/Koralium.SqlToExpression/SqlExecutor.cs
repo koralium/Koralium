@@ -11,6 +11,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.SqlParser;
+using Koralium.SqlParser.ANTLR;
 using Koralium.SqlToExpression.Exceptions;
 using Koralium.SqlToExpression.Executors;
 using Koralium.SqlToExpression.Interfaces;
@@ -35,13 +37,15 @@ namespace Koralium.SqlToExpression
         private readonly ISearchExpressionProvider _searchExpressionProvider;
         private readonly IStringOperationsProvider _stringOperationsProvider;
 
-        private readonly TSql150Parser parser = new TSql150Parser(true);
+        private readonly ISqlParser _sqlParser;
         public SqlExecutor(
+            ISqlParser sqlParser,
             TablesMetadata tablesMetadata,
             IQueryExecutor queryExecutor,
             ISearchExpressionProvider searchExpressionProvider,
             IStringOperationsProvider stringOperationsProvider)
         {
+            _sqlParser = sqlParser;
             _tablesMetadata = tablesMetadata;
             _queryExecutor = queryExecutor;
             _stageConverter = new StageConverter();
@@ -52,7 +56,7 @@ namespace Koralium.SqlToExpression
         public async ValueTask<object> ExecuteScalar(string sql, SqlParameters parameters = null, object data = null)
         {
             sql = OffsetLimitUtils.TransformQuery(sql);
-            var tree = parser.Parse(new StringReader(sql), out var errors);
+            var tree = _sqlParser.Parse(sql);
             var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata, _searchExpressionProvider, _stringOperationsProvider));
             tree.Accept(mainVisitor);
 
@@ -87,14 +91,7 @@ namespace Koralium.SqlToExpression
                 throw new SqlErrorException("Empty query string");
             }
 
-            sql = OffsetLimitUtils.TransformQuery(sql);
-            var tree = parser.Parse(new StringReader(sql), out var errors);
-
-            if(errors.Count > 0)
-            {
-                var error = errors.FirstOrDefault();
-                throw new SqlErrorException(error.Message);
-            }
+            var tree = _sqlParser.Parse(sql);
 
             var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata, _searchExpressionProvider, _stringOperationsProvider));
             tree.Accept(mainVisitor);
