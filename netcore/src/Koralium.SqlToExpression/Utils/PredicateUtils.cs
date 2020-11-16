@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.SqlParser.Expressions;
 using Koralium.SqlToExpression.Interfaces;
 using System;
 using System.Collections;
@@ -134,7 +135,7 @@ namespace Koralium.SqlToExpression.Utils
             return stringOperationsProvider.GetEndsWithExpression(left, value);
         }
 
-        public static Expression CreateComparisonExpression(
+        public static Expression CreateComparisonExpression_old(
             Expression leftExpression, 
             Expression rightExpression, 
             Microsoft.SqlServer.TransactSql.ScriptDom.BooleanComparisonType comparisonType,
@@ -203,6 +204,74 @@ namespace Koralium.SqlToExpression.Utils
                     break;
                 case Microsoft.SqlServer.TransactSql.ScriptDom.BooleanComparisonType.NotLessThan:
                     expression = Expression.Not(Expression.LessThan(leftExpression, rightExpression));
+                    break;
+            }
+            return expression;
+        }
+
+
+        public static Expression CreateComparisonExpression(
+            Expression leftExpression,
+            Expression rightExpression,
+            BooleanComparisonType comparisonType,
+            IStringOperationsProvider stringOperationsProvider)
+        {
+            ConvertExpressionTypes(ref leftExpression, ref rightExpression);
+
+            Expression expression = null;
+            switch (comparisonType)
+            {
+                case BooleanComparisonType.Equals:
+                    //Null equal primitive cant be done, automatic false
+                    if ((IsConstantNull(leftExpression) && rightExpression.Type.IsPrimitive) || (IsConstantNull(rightExpression) && leftExpression.Type.IsPrimitive))
+                    {
+                        return Expression.Constant(false);
+                    }
+                    //String is a special case since one might want to do case insensitive comparisions
+                    if (leftExpression.Type.Equals(typeof(string)))
+                    {
+                        expression = stringOperationsProvider.GetEqualsExpressions(leftExpression, rightExpression);
+                    }
+                    else
+                    {
+                        expression = Expression.Equal(leftExpression, rightExpression);
+                    }
+
+                    break;
+                case BooleanComparisonType.GreaterThan:
+                    if (leftExpression.Type.Equals(typeof(string)))
+                    {
+                        StringComparision(ref leftExpression, ref rightExpression);
+                    }
+                    expression = Expression.GreaterThan(leftExpression, rightExpression);
+                    break;
+                case BooleanComparisonType.GreaterThanOrEqualTo:
+                    if (leftExpression.Type.Equals(typeof(string)))
+                    {
+                        StringComparision(ref leftExpression, ref rightExpression);
+                    }
+                    expression = Expression.GreaterThanOrEqual(leftExpression, rightExpression);
+                    break;
+                case BooleanComparisonType.LessThan:
+                    if (leftExpression.Type.Equals(typeof(string)))
+                    {
+                        StringComparision(ref leftExpression, ref rightExpression);
+                    }
+                    expression = Expression.LessThan(leftExpression, rightExpression);
+                    break;
+                case BooleanComparisonType.LessThanOrEqualTo:
+                    if (leftExpression.Type.Equals(typeof(string)))
+                    {
+                        StringComparision(ref leftExpression, ref rightExpression);
+                    }
+                    expression = Expression.LessThanOrEqual(leftExpression, rightExpression);
+                    break;
+                case BooleanComparisonType.NotEqualTo:
+                    if ((IsConstantNull(leftExpression) && rightExpression.Type.IsPrimitive) || (IsConstantNull(rightExpression) && leftExpression.Type.IsPrimitive))
+                    {
+                        return Expression.Constant(true);
+                    }
+                    expression = Expression.NotEqual(leftExpression, rightExpression);
                     break;
             }
             return expression;

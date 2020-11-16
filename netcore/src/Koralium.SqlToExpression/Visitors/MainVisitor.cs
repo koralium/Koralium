@@ -1,16 +1,8 @@
-﻿/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+﻿using Koralium.SqlParser;
+using Koralium.SqlParser.Expressions;
+using Koralium.SqlParser.Literals;
+using Koralium.SqlParser.Statements;
+using Koralium.SqlParser.Visitor;
 using Koralium.SqlToExpression.Exceptions;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Koralium.SqlToExpression.Utils;
@@ -23,16 +15,15 @@ using Koralium.SqlToExpression.Visitors.Offset;
 using Koralium.SqlToExpression.Visitors.OrderBy;
 using Koralium.SqlToExpression.Visitors.Select;
 using Koralium.SqlToExpression.Visitors.Where;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace Koralium.SqlToExpression.Visitors
 {
-    internal class MainVisitor : TSqlFragmentVisitor
+    internal class MainVisitor : KoraliumSqlVisitor
     {
         private readonly List<IQueryStage> _stages = new List<IQueryStage>();
         private readonly VisitorMetadata _visitorMetadata;
@@ -48,11 +39,11 @@ namespace Koralium.SqlToExpression.Visitors
             _visitorMetadata = visitorMetadata;
         }
 
-        private void HandleFromClause(QuerySpecification node)
+        private void HandleFromClause(SelectStatement selectStatement)
         {
-            if (node.FromClause != null)
+            if (selectStatement.FromClause != null)
             {
-                var fromStages = FromHelper.GetFromTableStage(node.FromClause, _visitorMetadata);
+                var fromStages = FromHelper.GetFromTableStage(selectStatement.FromClause, _visitorMetadata);
 
                 //Check if it is only a from table stage, this is used to add used properties into
                 if (fromStages.Count == 1 && fromStages[0] is FromTableStage fromTableStage)
@@ -68,11 +59,11 @@ namespace Koralium.SqlToExpression.Visitors
             }
         }
 
-        private void HandleWhereClause(QuerySpecification node)
+        private void HandleWhereClause(SelectStatement selectStatement)
         {
-            if (node.WhereClause != null)
+            if (selectStatement.WhereClause != null)
             {
-                var whereStage = WhereHelper.GetWhereStage(LastStage, node.WhereClause, _visitorMetadata, _usedProperties);
+                var whereStage = WhereHelper.GetWhereStage(LastStage, selectStatement.WhereClause, _visitorMetadata, _usedProperties);
 
                 if (LastStage is FromTableStage fromTableStage)
                 {
@@ -88,26 +79,26 @@ namespace Koralium.SqlToExpression.Visitors
             }
         }
 
-        private void HandleGroupByClause(QuerySpecification node, bool containsAggregates)
+        private void HandleGroupByClause(SelectStatement selectStatement, bool containsAggregates)
         {
-            if (node.GroupByClause != null)
+            if (selectStatement.GroupByClause != null)
             {
-                _stages.Add(GroupByHelper.GetGroupByStage(LastStage, node.GroupByClause, _usedProperties));
+                _stages.Add(GroupByHelper.GetGroupByStage(LastStage, selectStatement.GroupByClause, _usedProperties));
             }
-            else if (containsAggregates && !IsSimpleAggregate(node))
+            else if (containsAggregates && !IsSimpleAggregate(selectStatement))
             {
                 _stages.Add(GroupByUtils.CreateStaticGroupBy(LastStage));
             }
         }
 
-        private static bool IsSimpleAggregate(QuerySpecification node)
+        private static bool IsSimpleAggregate(SelectStatement selectStatement)
         {
-            if(node.SelectElements.Count > 1 || node.HavingClause != null || node.GroupByClause != null)
+            if (selectStatement.SelectElements.Count > 1 || selectStatement.HavingClause != null || selectStatement.GroupByClause != null)
             {
                 return false;
             }
-            if(node.SelectElements.Count == 1 &&
-                node.SelectElements[0] is SelectScalarExpression selectScalarExpression &&
+            if (selectStatement.SelectElements.Count == 1 &&
+                selectStatement.SelectElements[0] is SelectScalarExpression selectScalarExpression &&
                 selectScalarExpression.Expression is FunctionCall)
             {
                 return true;
@@ -115,47 +106,47 @@ namespace Koralium.SqlToExpression.Visitors
             return false;
         }
 
-        private void HandleHavingClause(QuerySpecification node)
+        private void HandleHavingClause(SelectStatement selectStatement)
         {
-            if (node.HavingClause != null)
+            if (selectStatement.HavingClause != null)
             {
-                _stages.Add(HavingHelper.GetHavingStage(LastStage, node.HavingClause, _visitorMetadata, _usedProperties));
+                _stages.Add(HavingHelper.GetHavingStage(LastStage, selectStatement.HavingClause, _visitorMetadata, _usedProperties));
             }
         }
 
-        private void HandleOrderByClause(QuerySpecification node)
+        private void HandleOrderByClause(SelectStatement selectStatement)
         {
-            if (node.OrderByClause != null)
+            if (selectStatement.OrderByClause != null)
             {
-                _stages.Add(OrderByHelper.GetOrderByStage(LastStage, node.OrderByClause, _visitorMetadata, _usedProperties));
+                _stages.Add(OrderByHelper.GetOrderByStage(LastStage, selectStatement.OrderByClause, _visitorMetadata, _usedProperties));
             }
         }
 
-        private void HandleSelect(QuerySpecification node, bool containsAggregates)
+        private void HandleSelect(SelectStatement selectStatement, bool containsAggregates)
         {
-            if (containsAggregates && IsSimpleAggregate(node))
+            if (containsAggregates && IsSimpleAggregate(selectStatement))
             {
-                _stages.Add(SelectHelper.GetSelectAggregateFunctionStage(LastStage, node.SelectElements, _visitorMetadata, _usedProperties));
+                _stages.Add(SelectHelper.GetSelectAggregateFunctionStage(LastStage, selectStatement.SelectElements, _visitorMetadata, _usedProperties));
             }
             else
             {
-                _stages.Add(SelectHelper.GetSelectStage(LastStage, node.SelectElements, _visitorMetadata, _usedProperties));
-            }   
+                _stages.Add(SelectHelper.GetSelectStage(LastStage, selectStatement.SelectElements, _visitorMetadata, _usedProperties));
+            }
         }
 
-        private void HandleDistinct(QuerySpecification node)
+        private void HandleDistinct(SelectStatement selectStatement)
         {
-            if (node.UniqueRowFilter == UniqueRowFilter.Distinct)
+            if (selectStatement.Distinct)
             {
                 _stages.Add(DistinctHelper.GetDistinctStage(LastStage));
             }
         }
 
-        private void HandleOffsetClause(QuerySpecification node)
+        private void HandleOffsetClause(SelectStatement selectStatement)
         {
-            if (node.OffsetClause != null)
+            if (selectStatement.OffsetLimitClause != null)
             {
-                var offsetStage = OffsetHelper.GetOffsetStage(LastStage, node.OffsetClause, _visitorMetadata);
+                var offsetStage = OffsetHelper.GetOffsetStage(LastStage, selectStatement.OffsetLimitClause, _visitorMetadata);
 
                 //Check if we can push the values into the table scan
                 if (LastStage is FromTableStage fromTableStage)
@@ -165,73 +156,44 @@ namespace Koralium.SqlToExpression.Visitors
                 }
                 else
                 {
-                    _stages.Add(OffsetHelper.GetOffsetStage(LastStage, node.OffsetClause, _visitorMetadata));
+                    _stages.Add(OffsetHelper.GetOffsetStage(LastStage, selectStatement.OffsetLimitClause, _visitorMetadata));
                 }
             }
         }
 
-        private void HandleTop(QuerySpecification node)
+        public override void VisitSetVariableStatement(SetVariableStatement setVariableStatement)
         {
-            if (node.TopRowFilter != null)
+            if (setVariableStatement.ScalarExpression is StringLiteral stringLiteral)
             {
-                var offsetStage = OffsetHelper.GetOffsetStage(LastStage, node.TopRowFilter, _visitorMetadata);
-
-                if (LastStage is FromTableStage fromTableStage)
-                {
-                    fromTableStage.Limit = offsetStage.Take;
-                    fromTableStage.Offset = offsetStage.Skip;
-                }
-                else
-                {
-                    _stages.Add(OffsetHelper.GetOffsetStage(LastStage, node.TopRowFilter, _visitorMetadata));
-                }
+                _visitorMetadata.Parameters.Add(SqlParameter.Create(setVariableStatement.VariableReference.Name, stringLiteral.Value));
             }
-        }
-
-        public override void ExplicitVisit(SetVariableStatement node)
-        {
-            if(node.Expression is StringLiteral stringLiteral)
+            else if (setVariableStatement.ScalarExpression is IntegerLiteral integerLiteral)
             {
-                _visitorMetadata.Parameters.Add(SqlParameter.Create(node.Variable.Name, stringLiteral.Value));
+                _visitorMetadata.Parameters.Add(SqlParameter.Create(setVariableStatement.VariableReference.Name, integerLiteral.Value));
             }
-            else if(node.Expression is IntegerLiteral integerLiteral)
+            else if (setVariableStatement.ScalarExpression is NumericLiteral numericLiteral)
             {
-                if(int.TryParse(integerLiteral.Value, out var value))
-                {
-                    _visitorMetadata.Parameters.Add(SqlParameter.Create(node.Variable.Name, value));
-                }
-                else
-                {
-                    throw new SqlErrorException($"Could not parse '{integerLiteral.Value}' as an integer");
-                }
-            }
-            else if(node.Expression is NumericLiteral numericLiteral)
-            {
-                var value = double.Parse(numericLiteral.Value, CultureInfo.InvariantCulture);
-                _visitorMetadata.Parameters.Add(SqlParameter.Create(node.Variable.Name, value));
+                _visitorMetadata.Parameters.Add(SqlParameter.Create(setVariableStatement.VariableReference.Name, numericLiteral.Value));
             }
             else
             {
-                throw new NotImplementedException($"The parameter type: {node.Expression.GetType().Name} is not implemented");
+                throw new NotImplementedException($"The parameter type: {setVariableStatement.ScalarExpression.GetType().Name} is not implemented");
             }
-            
-            //node.Expression
         }
 
-        public override void ExplicitVisit(QuerySpecification node)
+        public override void VisitSelectStatement(SelectStatement selectStatement)
         {
-            HandleFromClause(node);
-            HandleWhereClause(node);
+            HandleFromClause(selectStatement);
+            HandleWhereClause(selectStatement);
 
-            var containsAggregates = ContainsAggregateHelper.ContainsAggregate(node.SelectElements);
+            var containsAggregates = ContainsAggregateHelper.ContainsAggregate(selectStatement.SelectElements);
 
-            HandleGroupByClause(node, containsAggregates);
-            HandleHavingClause(node);
-            HandleOrderByClause(node);
-            HandleSelect(node, containsAggregates);
-            HandleDistinct(node);
-            HandleOffsetClause(node);
-            HandleTop(node);
+            HandleGroupByClause(selectStatement, containsAggregates);
+            HandleHavingClause(selectStatement);
+            HandleOrderByClause(selectStatement);
+            HandleSelect(selectStatement, containsAggregates);
+            HandleDistinct(selectStatement);
+            HandleOffsetClause(selectStatement);
 
             //Add a select stage that selects all the properties required
             //This should be added to be done directly after the 'from table' stage

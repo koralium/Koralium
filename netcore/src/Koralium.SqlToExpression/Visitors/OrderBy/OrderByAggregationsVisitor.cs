@@ -1,28 +1,18 @@
-﻿/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+﻿using Koralium.SqlParser.Clauses;
+using Koralium.SqlParser.OrderBy;
 using Koralium.SqlToExpression.Extensions;
 using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Koralium.SqlToExpression.Visitors.Select;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Expressions;
+using System.Text;
 
 namespace Koralium.SqlToExpression.Visitors.OrderBy
 {
-    class OrderByAggregationsVisitor : SelectAggregationVisitor
+    internal class OrderByAggregationsVisitor : SelectAggregationVisitor
     {
         private readonly List<SortItem> sortItems = new List<SortItem>();
 
@@ -32,29 +22,25 @@ namespace Koralium.SqlToExpression.Visitors.OrderBy
         {
         }
 
-        public override void ExplicitVisit(OrderByClause node)
+        public override void VisitOrderByClause(OrderByClause orderByClause)
         {
-            foreach (var element in node.OrderByElements)
+            foreach (var element in orderByClause.OrderExpressions)
             {
                 element.Accept(this);
             }
         }
 
-        public override void ExplicitVisit(ExpressionWithSortOrder node)
+        public override void VisitOrderExpression(OrderExpression orderExpression)
         {
-            node.Expression.Accept(this);
+            orderExpression.Expression.Accept(this);
 
             //Ignore empty stacks, since you can sort by SELECT NULL
-            if(expressionStack.Count > 0)
+            if (expressionStack.Count > 0)
             {
                 Debug.Assert(expressionStack.Count == 1);
 
-                bool descending = false;
+                bool descending = !orderExpression.Ascending;
 
-                if (node.SortOrder == SortOrder.Descending)
-                {
-                    descending = true;
-                }
                 var expression = expressionStack.Pop();
                 if (!expression.IsNull())
                 {

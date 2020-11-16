@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.SqlParser.ANTLR;
 using Koralium.SqlToExpression.Executors;
 using Koralium.SqlToExpression.Executors.AggregateFunction;
 using Koralium.SqlToExpression.Executors.Offset;
@@ -60,6 +61,7 @@ namespace Koralium.SqlToExpression.Tests
                 new DefaultAggregateFunctionFactory());
 
             sqlExecutor = new SqlExecutor(
+                new AntlrSqlParser(),
                 tablesMetadata, 
                 queryExecutor, 
                 new DefaultSearchExpressionProvider(),

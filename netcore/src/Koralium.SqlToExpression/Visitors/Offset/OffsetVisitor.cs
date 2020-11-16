@@ -1,22 +1,15 @@
-﻿/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+﻿using Koralium.SqlParser.Clauses;
+using Koralium.SqlParser.Expressions;
+using Koralium.SqlParser.Literals;
+using Koralium.SqlParser.Visitor;
 using Koralium.SqlToExpression.Exceptions;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Koralium.SqlToExpression.Visitors.Offset
 {
-    internal class OffsetVisitor : TSqlFragmentVisitor
+    internal class OffsetVisitor : KoraliumSqlVisitor
     {
         private readonly VisitorMetadata _visitorMetadata;
 
@@ -33,9 +26,9 @@ namespace Koralium.SqlToExpression.Visitors.Offset
 
         private void VisitOffsetExpression(ScalarExpression offsetExpression)
         {
-            if (offsetExpression is IntegerLiteral integerLiteral && int.TryParse(integerLiteral.Value, out var value))
+            if (offsetExpression is IntegerLiteral integerLiteral)
             {
-                offsetCount = value;
+                offsetCount = (int)integerLiteral.Value;
             }
             else if (offsetExpression is VariableReference variableReference)
             {
@@ -60,9 +53,9 @@ namespace Koralium.SqlToExpression.Visitors.Offset
 
         private void VisitFetchExpression(ScalarExpression fetchExpression)
         {
-            if (fetchExpression is IntegerLiteral integerLiteral && int.TryParse(integerLiteral.Value, out var value))
+            if (fetchExpression is IntegerLiteral integerLiteral)
             {
-                takeCount = value;
+                takeCount = (int)integerLiteral.Value;
             }
             else if (fetchExpression is VariableReference variableReference)
             {
@@ -85,15 +78,15 @@ namespace Koralium.SqlToExpression.Visitors.Offset
             }
         }
 
-        public override void ExplicitVisit(OffsetClause node)
+        public override void VisitOffsetLimitClause(OffsetLimitClause offsetLimitClause)
         {
-            if (node.OffsetExpression != null)
+            if (offsetLimitClause.Offset != null)
             {
-                VisitOffsetExpression(node.OffsetExpression);
+                VisitOffsetExpression(offsetLimitClause.Offset);
             }
-            if (node.FetchExpression != null)
+            if (offsetLimitClause.Limit != null)
             {
-                VisitFetchExpression(node.FetchExpression);
+                VisitFetchExpression(offsetLimitClause.Limit);
             }
         }
     }

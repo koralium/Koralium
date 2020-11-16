@@ -1,32 +1,16 @@
-﻿/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+﻿using Koralium.SqlParser.Expressions;
+using Koralium.SqlParser.Literals;
 using Koralium.SqlToExpression.Exceptions;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Koralium.SqlToExpression.Utils;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 
 namespace Koralium.SqlToExpression.Visitors.Where
 {
-    /// <summary>
-    /// This visitor covers reading like conditions.
-    /// 
-    /// A like cannot be converted directly into expressions which makes it a bit more complicated.
-    /// 
-    /// </summary>
     internal class LikeVisitor : BaseVisitor
     {
         private readonly IQueryStage _previousStage;
@@ -64,9 +48,9 @@ namespace Koralium.SqlToExpression.Visitors.Where
             public Expression Expression { get; set; }
         }
 
-        private VisitResult VisitBinaryExpression_Internal(Microsoft.SqlServer.TransactSql.ScriptDom.BinaryExpression binaryExpression)
+        private VisitResult VisitBinaryExpression_Internal(SqlParser.Expressions.BinaryExpression binaryExpression)
         {
-            var leftResult = VisitInternal(binaryExpression.FirstExpression);
+            var leftResult = VisitInternal(binaryExpression.Left);
 
             //Left result should only contain: '%text' or 'text'
             if (leftResult.StartsWith && !leftResult.WildcardOnly)
@@ -74,7 +58,7 @@ namespace Koralium.SqlToExpression.Visitors.Where
                 throw new SqlErrorException("Like expression can only support starts with ('text%'), ends with ('%text') and contains ('%text%') at this time");
             }
 
-            var rightResult = VisitInternal(binaryExpression.SecondExpression);
+            var rightResult = VisitInternal(binaryExpression.Right);
 
             //Right result should only contain 'text%' or 'text'
             if (rightResult.EndsWith && !rightResult.WildcardOnly)
@@ -82,7 +66,7 @@ namespace Koralium.SqlToExpression.Visitors.Where
                 throw new SqlErrorException("Like expression can only support starts with ('text%'), ends with ('%text') and contains ('%text%') at this time");
             }
 
-            if (binaryExpression.BinaryExpressionType != BinaryExpressionType.Add)
+            if (binaryExpression.Type != BinaryType.Add)
             {
                 throw new SqlErrorException("Like expression can only do string concatination at this time");
             }
@@ -124,7 +108,7 @@ namespace Koralium.SqlToExpression.Visitors.Where
                 };
             }
 
-            var expression = BinaryUtils.CreateBinaryExpression(leftResult.Expression, rightResult.Expression, BinaryExpressionType.Add);
+            var expression = BinaryUtils.CreateBinaryExpression(leftResult.Expression, rightResult.Expression, BinaryType.Add);
 
             return new VisitResult()
             {
@@ -133,7 +117,7 @@ namespace Koralium.SqlToExpression.Visitors.Where
                 Expression = expression
             };
         }
-        
+
         private VisitResult VisitStringLiteral_Internal(StringLiteral stringLiteral)
         {
             var value = stringLiteral.Value;
@@ -183,9 +167,9 @@ namespace Koralium.SqlToExpression.Visitors.Where
             };
         }
 
-        private VisitResult VisitColumnReferenceExpression_Internal(ColumnReferenceExpression columnReferenceExpression)
+        private VisitResult VisitColumnReferenceExpression_Internal(ColumnReference columnReference)
         {
-            var identifiers = columnReferenceExpression.MultiPartIdentifier.Identifiers.Select(x => x.Value).ToList();
+            var identifiers = columnReference.Identifiers;
 
             identifiers = MemberUtils.RemoveAlias(_previousStage, identifiers);
             var memberAccess = MemberUtils.GetMember(_previousStage, identifiers, out var property);
@@ -198,11 +182,11 @@ namespace Koralium.SqlToExpression.Visitors.Where
 
         private VisitResult VisitInternal(ScalarExpression scalarExpression)
         {
-            if(scalarExpression is Microsoft.SqlServer.TransactSql.ScriptDom.BinaryExpression binaryExpression)
+            if (scalarExpression is SqlParser.Expressions.BinaryExpression binaryExpression)
             {
                 return VisitBinaryExpression_Internal(binaryExpression);
             }
-            else if(scalarExpression is StringLiteral stringLiteral)
+            else if (scalarExpression is StringLiteral stringLiteral)
             {
                 return VisitStringLiteral_Internal(stringLiteral);
             }
@@ -210,7 +194,7 @@ namespace Koralium.SqlToExpression.Visitors.Where
             {
                 return VisitVariableReference_Internal(variableReference);
             }
-            else if (scalarExpression is ColumnReferenceExpression columnReferenceExpression)
+            else if (scalarExpression is ColumnReference columnReferenceExpression)
             {
                 return VisitColumnReferenceExpression_Internal(columnReferenceExpression);
             }
@@ -220,18 +204,18 @@ namespace Koralium.SqlToExpression.Visitors.Where
             }
         }
 
-        public override void ExplicitVisit(LikePredicate node)
+        public override void VisitLikeExpression(LikeExpression likeExpression)
         {
-            node.FirstExpression.Accept(this);
+            likeExpression.Left.Accept(this);
 
             var leftExpression = PopStack();
 
-            var visitResult = VisitInternal(node.SecondExpression);
+            var visitResult = VisitInternal(likeExpression.Right);
 
             if (visitResult.StartsWith && visitResult.EndsWith)
             {
                 var containsExpression = PredicateUtils.CallContains(
-                    leftExpression, 
+                    leftExpression,
                     visitResult.Expression,
                     _visitorMetadata.StringOperationsProvider);
                 AddExpressionToStack(containsExpression);
@@ -240,7 +224,7 @@ namespace Koralium.SqlToExpression.Visitors.Where
             else if (visitResult.StartsWith)
             {
                 var startsWithExpression = PredicateUtils.CallStartsWith(
-                    leftExpression, 
+                    leftExpression,
                     visitResult.Expression,
                     _visitorMetadata.StringOperationsProvider);
                 AddExpressionToStack(startsWithExpression);
@@ -249,7 +233,7 @@ namespace Koralium.SqlToExpression.Visitors.Where
             else if (visitResult.EndsWith)
             {
                 var endsWithExpression = PredicateUtils.CallEndsWith(
-                    leftExpression, 
+                    leftExpression,
                     visitResult.Expression,
                     _visitorMetadata.StringOperationsProvider);
                 AddExpressionToStack(endsWithExpression);
@@ -257,8 +241,8 @@ namespace Koralium.SqlToExpression.Visitors.Where
             else
             {
                 var equalsExpression = PredicateUtils.CreateComparisonExpression(
-                    leftExpression, 
-                    visitResult.Expression, 
+                    leftExpression,
+                    visitResult.Expression,
                     BooleanComparisonType.Equals,
                     _visitorMetadata.StringOperationsProvider);
                 AddExpressionToStack(equalsExpression);

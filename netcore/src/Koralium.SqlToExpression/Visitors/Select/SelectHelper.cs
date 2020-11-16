@@ -1,26 +1,14 @@
-﻿/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+﻿using Koralium.SqlParser.Expressions;
 using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Koralium.SqlToExpression.Utils;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
 
 namespace Koralium.SqlToExpression.Visitors.Select
 {
@@ -28,7 +16,7 @@ namespace Koralium.SqlToExpression.Visitors.Select
     {
         public static SelectAggregateFunctionStage GetSelectAggregateFunctionStage(
             IQueryStage previousStage,
-            IList<SelectElement> selectElements,
+            IList<SqlParser.Expressions.SelectExpression> selectElements,
             VisitorMetadata visitorMetadata,
             HashSet<PropertyInfo> usedProperties
             )
@@ -68,8 +56,8 @@ namespace Koralium.SqlToExpression.Visitors.Select
         }
 
         public static SelectStage GetSelectStage(
-            IQueryStage previousStage, 
-            IList<SelectElement> selectElements,
+            IQueryStage previousStage,
+            IList<SqlParser.Expressions.SelectExpression> selectElements,
             VisitorMetadata visitorMetadata,
             HashSet<PropertyInfo> usedProperties)
         {
@@ -83,7 +71,7 @@ namespace Koralium.SqlToExpression.Visitors.Select
                 selectVisitor = new SelectPlainVisitor(previousStage, visitorMetadata);
             }
 
-            foreach(var selectElement in selectElements)
+            foreach (var selectElement in selectElements)
             {
                 selectVisitor.VisitSelect(selectElement);
             }
@@ -102,7 +90,7 @@ namespace Koralium.SqlToExpression.Visitors.Select
 
             Type[] propertyTypes = new Type[selects.Count];
 
-            for(int i = 0; i < selects.Count; i++)
+            for (int i = 0; i < selects.Count; i++)
             {
                 propertyTypes[i] = selects[i].Expression.Type;
             }
@@ -118,7 +106,6 @@ namespace Koralium.SqlToExpression.Visitors.Select
             for (int i = 0; i < selects.Count; i++)
             {
                 columnsBuilder.Add(new ColumnMetadata(selects[i].Alias, selects[i].Expression.Type, getDelegates[i]));
-                //var convertedSelect = Expression.Convert(selects[i].Expression, typeof(object));
                 var propertyInfo = anonType.GetProperty($"P{i}");
                 var assignment = Expression.Bind(propertyInfo, selects[i].Expression);
                 assignments.Add(assignment);

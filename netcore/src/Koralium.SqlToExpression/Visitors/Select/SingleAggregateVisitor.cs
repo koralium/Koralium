@@ -1,6 +1,6 @@
-﻿using Koralium.SqlToExpression.Exceptions;
+﻿using Koralium.SqlParser.Expressions;
+using Koralium.SqlToExpression.Exceptions;
 using Koralium.SqlToExpression.Stages.CompileStages;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -15,7 +15,7 @@ namespace Koralium.SqlToExpression.Visitors.Select
         private Stack<Expression> expressionStack = new Stack<Expression>();
         private Stack<string> nameStack = new Stack<string>();
 
-        public SingleAggregateVisitor(IQueryStage previousStage, VisitorMetadata visitorMetadata) 
+        public SingleAggregateVisitor(IQueryStage previousStage, VisitorMetadata visitorMetadata)
             : base(previousStage, visitorMetadata)
         {
         }
@@ -38,28 +38,34 @@ namespace Koralium.SqlToExpression.Visitors.Select
             nameStack.Push(name);
         }
 
-        public override void ExplicitVisit(SelectScalarExpression selectScalarExpression)
+        public override string PopNameStack()
         {
-            selectScalarExpression.Expression.Accept(this);
-            ColumnName = selectScalarExpression.ColumnName?.Value ?? nameStack.Pop();
+            return nameStack.Pop();
         }
 
-        public override void ExplicitVisit(FunctionCall node)
+        public override Expression PopStack()
         {
+            return expressionStack.Pop();
+        }
+
+        public override void VisitSelectScalarExpression(SelectScalarExpression selectScalarExpression)
+        {
+            selectScalarExpression.Expression.Accept(this);
+            ColumnName = selectScalarExpression.Alias ?? nameStack.Pop();
+        }
+
+        public override void VisitFunctionCall(FunctionCall functionCall)
+        {
+            //throw new Exception("FIX FUNCTION CALL WILDCARD PARAMETER");
             var parameterListBuilder = ImmutableList.CreateBuilder<Expression>();
-            foreach(var p in node.Parameters)
+            foreach (var p in functionCall.Parameters)
             {
-                if(p is ColumnReferenceExpression columnReferenceExpression &&
-                    columnReferenceExpression.ColumnType == ColumnType.Wildcard)
-                {
-                    continue;
-                }
                 p.Accept(this);
                 var parameterExpression = PopStack();
                 parameterListBuilder.Add(parameterExpression);
             }
             Parameters = parameterListBuilder.ToImmutable();
-            var functionName = node.FunctionName.Value.ToLower();
+            var functionName = functionCall.FunctionName.ToLower();
             switch (functionName)
             {
                 case "count":
@@ -71,7 +77,7 @@ namespace Koralium.SqlToExpression.Visitors.Select
                     FunctionName = functionName;
                     var lastName = PopNameStack();
 
-                    if(Parameters.Count != 1)
+                    if (Parameters.Count != 1)
                     {
                         throw new SqlErrorException($"Sum can only be called with a single parameter");
                     }
@@ -81,18 +87,8 @@ namespace Koralium.SqlToExpression.Visitors.Select
                     AddNameToStack($"sum({lastName})");
                     break;
                 default:
-                    throw new NotSupportedException(node.FunctionName.Value);
+                    throw new NotSupportedException(functionCall.FunctionName);
             }
-        }
-
-        public override string PopNameStack()
-        {
-            return nameStack.Pop();
-        }
-
-        public override Expression PopStack()
-        {
-            return expressionStack.Pop();
         }
     }
 }
