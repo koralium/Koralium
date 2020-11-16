@@ -87,4 +87,23 @@ jobs:
         NUGET_KEY: ${{ secrets.NUGET_KEY }}
         TAG_COMMIT: false
         VERSION_STATIC: ${{ steps.tag.outputs.VERSION }}
+    - name: publish sqlparser
+      id: publish_nuget_sqlparser
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: netcore/src/Koralium.SqlParser/Koralium.SqlParser.csproj
+        PACKAGE_NAME: Koralium.SqlParser
+        NUGET_KEY: ${{ secrets.NUGET_KEY }}
+        TAG_COMMIT: false
+        VERSION_STATIC: ${{ steps.tag.outputs.VERSION }}
+    - name: publish sqlparser ANTLR
+      id: publish_nuget_sqlparser_antlr
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: netcore/src/Koralium.SqlParser.ANTLR/Koralium.SqlParser.ANTLR.csproj
+        PACKAGE_NAME: Koralium.SqlParser.ANTLR
+        NUGET_KEY: ${{ secrets.NUGET_KEY }}
+        TAG_COMMIT: false
+        VERSION_STATIC: ${{ steps.tag.outputs.VERSION }}
+
 
