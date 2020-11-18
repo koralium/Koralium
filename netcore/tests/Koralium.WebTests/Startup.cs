@@ -16,6 +16,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using EFCore.BulkExtensions;
 using Koralium.Json.Extensions;
+using Koralium.Transport.LegacyGrpc.Extensions;
 using Koralium.WebTests.Database;
 using Koralium.WebTests.Entities;
 using Koralium.WebTests.Entities.specific;
@@ -61,6 +62,8 @@ namespace Koralium.WebTests
                 opt.UseSqlite(connection);
             });
             services.AddSingleton(connection);
+
+            services.AddKoraliumLegacyGrpcTransport();
 
             services.AddKoralium(opt =>
             {
@@ -177,7 +180,7 @@ namespace Koralium.WebTests
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.AddKoraliumGrpcEndpoint();
+                endpoints.AddKoraliumLegacyGrpcEndpoint();
                 endpoints.MapControllers();
             });
         }

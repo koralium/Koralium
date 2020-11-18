@@ -45,6 +45,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Koralium.SqlParser.ANTLR.Te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Koralium.SqlParser.ANTLR.Benchmarks", "tests\Koralium.SqlParser.ANTLR.Benchmarks\Koralium.SqlParser.ANTLR.Benchmarks.csproj", "{DC090062-E4DD-42B8-8903-9CF962F03FBB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Koralium.Transport.LegacyGrpc", "Koralium.Transport.LegacyGrpc\Koralium.Transport.LegacyGrpc.csproj", "{2AD791B5-D580-4AA3-A79D-FE51789F1397}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -127,6 +129,10 @@ Global
 		{DC090062-E4DD-42B8-8903-9CF962F03FBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC090062-E4DD-42B8-8903-9CF962F03FBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC090062-E4DD-42B8-8903-9CF962F03FBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AD791B5-D580-4AA3-A79D-FE51789F1397}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AD791B5-D580-4AA3-A79D-FE51789F1397}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AD791B5-D580-4AA3-A79D-FE51789F1397}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AD791B5-D580-4AA3-A79D-FE51789F1397}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -151,6 +157,7 @@ Global
 		{7C1C8258-413A-4671-8678-00EE849E72F0} = {F7D6319E-DD32-4366-9FE5-D9FFA602CD72}
 		{565CCD12-B259-4971-BF0D-97D29AB8297F} = {F7D6319E-DD32-4366-9FE5-D9FFA602CD72}
 		{DC090062-E4DD-42B8-8903-9CF962F03FBB} = {F7D6319E-DD32-4366-9FE5-D9FFA602CD72}
+		{2AD791B5-D580-4AA3-A79D-FE51789F1397} = {6612ACD6-8BB1-41DF-8457-066993C5156C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {370182A4-5D02-471D-9AC0-8A745D2E3299}

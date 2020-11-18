@@ -52,6 +52,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddScoped<KoraliumExecutor>();
             services.AddScoped<GrpcExecutor>();
+            services.AddScoped<IKoraliumExecutor, NewKoraliumExecutor>();
             services.AddScoped<Koralium.SqlToExpression.ISqlTableResolver, SqlTableResolver>();
 
             return services;
