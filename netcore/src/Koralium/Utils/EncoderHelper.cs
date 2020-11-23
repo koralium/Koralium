@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Koralium.Encoders;
+
 using Koralium.Interfaces;
 using Koralium.Metadata;
 using Koralium.Grpc;
@@ -26,69 +26,6 @@ namespace Koralium.Utils
 {
     public static class EncoderHelper
     {
-        public static IEncoder GetEncoder(Type type, ColumnMetadata columnMetadata, IReadOnlyList<TableColumn> children)
-        {
-            if (Nullable.GetUnderlyingType(type) != null)
-            {
-                return GetEncoder(Nullable.GetUnderlyingType(type), columnMetadata, children);
-            }
-            if (type.Equals(typeof(int)))
-            {
-                return new Int32Encoder();
-            }
-            if (type.Equals(typeof(long)))
-            {
-                return new Int64Encoder();
-            }
-            if (type.Equals(typeof(string)))
-            {
-                return new StringEncoder((uint)columnMetadata.ColumnId);
-            }
-            if (type.Equals(typeof(bool)))
-            {
-                return new BoolEncoder();
-            }
-            if (type.Equals(typeof(float)))
-            {
-                return new FloatEncoder();
-            }
-            if (type.Equals(typeof(double)))
-            {
-                return new DoubleEncoder();
-            }
-            if (type.Equals(typeof(DateTime)))
-            {
-                return new TimestampEncoder();
-            }
-            if (IsArray(type))
-            {
-                return new ArrayEncoder(children, columnMetadata);
-            }
-            if (!IsBaseType(type))
-            {
-                return new ObjectEncoder(children, columnMetadata);
-            }
-            throw new NotSupportedException();
-        }
-
-        private static bool IsArray(Type type)
-        {
-            return type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(List<>));
-        }
-
-        private static bool IsBaseType(Type type)
-        {
-            if (Nullable.GetUnderlyingType(type) != null)
-            {
-                return IsBaseType(Nullable.GetUnderlyingType(type));
-            }
-            if (type.IsPrimitive ||
-                type.Equals(typeof(string)) ||
-                type.Equals(typeof(DateTime)))
-                return true;
-            return false;
-        }
-
         internal static Columns CreateBlocks(Page page, IEncoder[] encoders)
         {
             Columns columns = new Columns();

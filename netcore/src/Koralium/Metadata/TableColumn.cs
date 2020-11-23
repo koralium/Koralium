@@ -39,9 +39,6 @@ namespace Koralium.Metadata
 
         public IEncoder Encoder { get; }
 
-        public IDecoder Decoder { get; }
-
-
         public TableColumn(
             ColumnMetadata metadata,
             string name,
@@ -49,9 +46,7 @@ namespace Koralium.Metadata
             Func<object, object> propertyAccessor,
             MemberInfo member,
             Type columnType,
-            IReadOnlyList<TableColumn> children,
-            IEncoder encoder,
-            IDecoder decoder)
+            IReadOnlyList<TableColumn> children)
         {
             Metadata = metadata;
             Name = name;
@@ -60,8 +55,6 @@ namespace Koralium.Metadata
             Member = member;
             ColumnType = columnType;
             Children = children;
-            Encoder = encoder;
-            Decoder = decoder;
         }
 
         public ColumnMetadata ToColumnMetadata(ref int globalIndex)

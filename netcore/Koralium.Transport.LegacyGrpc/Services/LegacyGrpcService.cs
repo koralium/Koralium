@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using Koralium.Grpc;
 using Koralium.SqlToExpression.Exceptions;
 using Koralium.Transport.LegacyGrpc.Encoders;
@@ -22,6 +23,11 @@ namespace Koralium.Transport.LegacyGrpc.Services
         {
             var result = await _executor.ExecuteScalar(request, context);
             return ScalarEncoder.EncodeScalarResult(result);
+        }
+
+        public override Task<TableMetadataResponse> GetTables(Empty request, ServerCallContext context)
+        {
+            return base.GetTables(request, context);
         }
 
         public override async Task Query(QueryRequest request, IServerStreamWriter<Page> responseStream, ServerCallContext context)

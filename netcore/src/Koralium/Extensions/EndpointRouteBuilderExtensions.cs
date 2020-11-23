@@ -11,8 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 using Microsoft.AspNetCore.Routing;
-using Koralium.Services;
+using System;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -20,7 +21,7 @@ namespace Microsoft.AspNetCore.Builder
     {
         public static GrpcServiceEndpointConventionBuilder AddKoraliumGrpcEndpoint(this IEndpointRouteBuilder endpointRouteBuilder)
         {
-            return endpointRouteBuilder.MapGrpcService<KoraliumGrpcService>();
+            throw new NotImplementedException();
         }
     }
 }

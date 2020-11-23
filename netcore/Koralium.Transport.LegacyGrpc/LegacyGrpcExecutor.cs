@@ -1,8 +1,7 @@
 ﻿using Grpc.Core;
-using Koralium.Decoders;
 using Koralium.Grpc;
-using Koralium.Services;
 using Koralium.SqlToExpression;
+using Koralium.Transport.LegacyGrpc.Decoders;
 using Koralium.Transport.LegacyGrpc.Encoders;
 using Koralium.Transport.LegacyGrpc.Interfaces;
 using Koralium.Transport.LegacyGrpc.Utils;

@@ -54,7 +54,7 @@ namespace Koralium
 
                 var columnMetadata = column.ToColumnMetadata(ref columnIndex);
 
-                encoders[i] = EncoderHelper.GetEncoder(column.ColumnType, columnMetadata, column.Children);
+                encoders[i] = null; //EncoderHelper.GetEncoder(column.ColumnType, columnMetadata, column.Children);
                 propertyGetters[i] = column.PropertyAccessor;
                 page.Metadata.Columns.Add(columnMetadata);
             }
@@ -80,7 +80,7 @@ namespace Koralium
             Expression<Func<Entity, Entity>> selectExpression)
         {
             var column = index.Columns.FirstOrDefault();
-            var decoder = column.Decoder.Create(column.Metadata.ColumnId, column);
+            IDecoder decoder = null;
 
             Key1[] array = new Key1[records.RowCount];
 
@@ -121,7 +121,7 @@ namespace Koralium
             TableIndex index,
             Expression<Func<Entity, Entity>> selectExpression)
         {
-            var decoders = index.Columns.Select(x => x.Decoder.Create(x.Metadata.ColumnId, x)).ToList();
+            IDecoder[] decoders = null; //index.Columns.Select(x => x.Decoder.Create(x.Metadata.ColumnId, x)).ToList();
 
             (Key1, Key2)[] array = new (Key1, Key2)[records.RowCount];
 
@@ -132,7 +132,7 @@ namespace Koralium
                 //throw new ColumnCountMissmatchException(2, records.Columns.Blocks.Count);
             }
 
-            decoders.ForEach(x => x.NewPage(records));
+            //decoders.ForEach(x => x.NewPage(records));
 
             decoders[0].Decode(records.Columns.Blocks[0], (index, val) =>
             {
