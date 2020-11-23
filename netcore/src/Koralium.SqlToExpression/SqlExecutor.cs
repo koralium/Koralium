@@ -90,7 +90,13 @@ namespace Koralium.SqlToExpression
                 throw new SqlErrorException("Empty query string");
             }
 
-            var tree = _sqlParser.Parse(sql);
+            var tree = _sqlParser.Parse(sql, out var errors);
+
+            if(errors.Count > 0)
+            {
+                var firstError = errors.FirstOrDefault();
+                throw new SqlErrorException(firstError.Message);
+            }
 
             var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata, _searchExpressionProvider, _stringOperationsProvider));
             tree.Accept(mainVisitor);
