@@ -1,14 +1,17 @@
 ﻿using Antlr4.Runtime;
+using Antlr4.Runtime.Tree;
+using Koralium.SqlParser.Errors;
 using Koralium.SqlParser.Statements;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace Koralium.SqlParser.ANTLR
 {
     public class AntlrSqlParser : ISqlParser
     {
-        public StatementList Parse(string sql)
+        public StatementList Parse(string sql, out IReadOnlyList<SqlParserError> errors)
         {
             ICharStream stream = CharStreams.fromstring(sql);
             stream = new CaseChangingCharStream(stream);
@@ -17,10 +20,20 @@ namespace Koralium.SqlParser.ANTLR
             ITokenStream tokens = new CommonTokenStream(lexer);
             KoraliumParser parser = new KoraliumParser(tokens)
             {
-                BuildParseTree = true,
+                BuildParseTree = true
             };
 
+            var errorsListener = new AntlrErrorListener();
+            parser.AddErrorListener(errorsListener);
+
             var stmnt = parser.statements_list();
+
+            errors = errorsListener.Errors;
+
+            if(errors.Count > 0)
+            {
+                return new StatementList();
+            }
 
             var visitor = new AntlrVisitor();
 
@@ -30,6 +43,11 @@ namespace Koralium.SqlParser.ANTLR
             {
                 Statements = statements
             };
+        }
+
+        public StatementList Parse(string text)
+        {
+            return Parse(text, out _);
         }
     }
 }

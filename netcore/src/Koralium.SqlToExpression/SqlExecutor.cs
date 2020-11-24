@@ -19,9 +19,12 @@ using Koralium.SqlToExpression.Interfaces;
 using Koralium.SqlToExpression.Metadata;
 using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages;
+using Koralium.SqlToExpression.Stages.CompileStages;
 using Koralium.SqlToExpression.Utils;
 using Koralium.SqlToExpression.Visitors;
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -76,6 +79,35 @@ namespace Koralium.SqlToExpression
             }
         }
 
+        private IReadOnlyList<IQueryStage> GetStages(string sql, SqlParameters parameters)
+        {
+            if (string.IsNullOrEmpty(sql))
+            {
+                throw new SqlErrorException("Empty query string");
+            }
+
+            var tree = _sqlParser.Parse(sql, out var errors);
+
+            if (errors.Count > 0)
+            {
+                var firstError = errors.FirstOrDefault();
+                throw new SqlErrorException(firstError.Message);
+            }
+
+            var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata, _searchExpressionProvider, _stringOperationsProvider));
+            tree.Accept(mainVisitor);
+
+            return mainVisitor.Stages;
+        }
+
+        public IImmutableList<ColumnMetadata> GetSchema(string sql, SqlParameters parameters = null)
+        {
+            var stages = GetStages(sql, parameters);
+
+            var schemaCreator = new SchemaCreatorVisitor();
+            return schemaCreator.GetColumns(stages);
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -85,18 +117,10 @@ namespace Koralium.SqlToExpression
         /// <returns></returns>
         public ValueTask<QueryResult> Execute(string sql, SqlParameters parameters = null, object data = null)
         {
-            if (string.IsNullOrEmpty(sql))
-            {
-                throw new SqlErrorException("Empty query string");
-            }
-
-            var tree = _sqlParser.Parse(sql);
-
-            var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata, _searchExpressionProvider, _stringOperationsProvider));
-            tree.Accept(mainVisitor);
+            var stages = GetStages(sql, parameters);
 
             //Convert into execute stages
-            var executeStages = _stageConverter.Convert(mainVisitor.Stages);
+            var executeStages = _stageConverter.Convert(stages);
 
             return _queryExecutor.Execute(executeStages, data);
         }
