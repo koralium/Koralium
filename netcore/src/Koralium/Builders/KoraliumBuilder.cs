@@ -14,7 +14,6 @@
 using Koralium.Interfaces;
 using Koralium.Metadata;
 using Koralium.Utils;
-using Koralium.Grpc;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -60,26 +59,7 @@ namespace Koralium.Builders
 
             Services.AddScoped<Resolver>();
 
-            var tableMetadata = new TableMetadata()
-            {
-                Name = opt.TableName,
-                TableId = tableIdCounter++
-            };
-
-            foreach (var index in opt.Indicies)
-            {
-                tableMetadata.Indicies.Add(index.IndexMetadata);
-                Services.AddScoped(index.Resolver);
-            }
-
-            foreach (var column in columns)
-            {
-                tableMetadata.Columns.Add(column.Metadata);
-            }
-
             tables.Add(new KoraliumTable(
-                tableMetadata, 
-                tableMetadata.TableId,
                 opt.TableName, 
                 typeof(Resolver), 
                 typeof(T), 

@@ -11,7 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Koralium.Grpc;
 using System;
 using System.Collections.Generic;
 
@@ -27,15 +26,12 @@ namespace Koralium.Metadata
 
         public string Name { get; }
 
-        public IndexMetadata IndexMetadata { get; }
-
-        public TableIndex(Type resolver, int indexId, List<TableColumn> columns, string name, IndexMetadata indexMetadata)
+        public TableIndex(Type resolver, int indexId, List<TableColumn> columns, string name)
         {
             Resolver = resolver;
             IndexId = indexId;
             Columns = columns;
             Name = name;
-            IndexMetadata = indexMetadata;
         }
     }
 }

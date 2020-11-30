@@ -8,13 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grpc.AspNetCore" Version="2.31.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="3.1.7" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.7" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Koralium.Transport\Koralium.Transport.csproj" />
     <ProjectReference Include="..\Koralium.Shared\Koralium.Shared.csproj" />
     <ProjectReference Include="..\Koralium.SqlToExpression\Koralium.SqlToExpression.csproj" />
   </ItemGroup>

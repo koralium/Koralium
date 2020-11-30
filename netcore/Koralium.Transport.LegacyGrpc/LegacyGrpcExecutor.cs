@@ -1,6 +1,7 @@
 ﻿using Grpc.Core;
 using Koralium.Grpc;
-using Koralium.SqlToExpression;
+using Koralium.Shared;
+using Koralium.Transport.Extensions;
 using Koralium.Transport.LegacyGrpc.Decoders;
 using Koralium.Transport.LegacyGrpc.Encoders;
 using Koralium.Transport.LegacyGrpc.Interfaces;
@@ -17,8 +18,8 @@ namespace Koralium.Transport.LegacyGrpc
     public class LegacyGrpcExecutor
     {
         private readonly ILogger<LegacyGrpcExecutor> _logger;
-        private readonly IKoraliumExecutor _koraliumExecutor;
-        public LegacyGrpcExecutor(ILogger<LegacyGrpcExecutor> logger, IKoraliumExecutor koraliumExecutor)
+        private readonly IKoraliumTransportService _koraliumExecutor;
+        public LegacyGrpcExecutor(ILogger<LegacyGrpcExecutor> logger, IKoraliumTransportService koraliumExecutor)
         {
             _logger = logger;
             _koraliumExecutor = koraliumExecutor;
@@ -37,6 +38,36 @@ namespace Koralium.Transport.LegacyGrpc
                 columnMetadata.SubColumns.Add(ToMetadata(ref index, child));
             }
             return columnMetadata;
+        }
+
+        public TableMetadataResponse GetTables(ServerCallContext context)
+        {
+            var tables = _koraliumExecutor.GetTables();
+            var httpContext = context.GetHttpContext();
+
+            TableMetadataResponse tableMetadataResponse = new TableMetadataResponse();
+
+            int tableId = 0;
+            var parameters = new SqlParameters();
+            foreach (var table in tables)
+            {
+                var columns = _koraliumExecutor.GetSchema(table.SelectAllColumnsStatement(), parameters, httpContext);
+
+                var tableMetadata = new TableMetadata()
+                {
+                    Name = table.Name,
+                    TableId = tableId++
+                };
+
+                int columnRef = 0;
+                foreach(var column in columns)
+                {
+                    tableMetadata.Columns.Add(ToMetadata(ref columnRef, column));
+                }
+                tableMetadataResponse.Tables.Add(tableMetadata);
+            }
+
+            return tableMetadataResponse;
         }
 
         public async Task Query(QueryRequest request, ChannelWriter<Page> channelWriter, ServerCallContext context)

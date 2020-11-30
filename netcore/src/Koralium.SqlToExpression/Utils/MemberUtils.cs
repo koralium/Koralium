@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Koralium.SqlToExpression.Exceptions;
+using Koralium.Shared;
 using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using System;

@@ -1,4 +1,4 @@
-﻿using Koralium.SqlToExpression.Exceptions;
+﻿using Koralium.Shared;
 using Koralium.SqlToExpression.Interfaces;
 using System.Linq.Expressions;
 

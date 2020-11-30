@@ -1,7 +1,7 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Koralium.Grpc;
-using Koralium.SqlToExpression.Exceptions;
+using Koralium.Shared;
 using Koralium.Transport.LegacyGrpc.Encoders;
 using System;
 using System.Collections.Generic;
@@ -27,13 +27,18 @@ namespace Koralium.Transport.LegacyGrpc.Services
 
         public override Task<TableMetadataResponse> GetTables(Empty request, ServerCallContext context)
         {
-            return base.GetTables(request, context);
+            return Task.FromResult(_executor.GetTables(context));
         }
 
         public override async Task Query(QueryRequest request, IServerStreamWriter<Page> responseStream, ServerCallContext context)
         {
             try
             {
+                if(request.MaxBatchSize == 0)
+                {
+                    request.MaxBatchSize = 10000000;
+                }
+
                 Channel<Page> channel = System.Threading.Channels.Channel.CreateUnbounded<Page>();
 
                 var getDataTask = Task.Run(async () =>

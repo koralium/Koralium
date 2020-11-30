@@ -1,4 +1,4 @@
-﻿using Koralium.SqlToExpression.Exceptions;
+﻿using Koralium.Shared;
 using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages.ExecuteStages;
 using System;

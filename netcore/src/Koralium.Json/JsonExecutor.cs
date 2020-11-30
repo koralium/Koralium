@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.Metadata;
+using Koralium.Shared;
 using Koralium.SqlToExpression;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;

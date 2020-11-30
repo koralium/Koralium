@@ -11,7 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Koralium.Grpc;
 using Koralium.SqlToExpression.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -20,9 +19,6 @@ namespace Koralium.Metadata
 {
     public class KoraliumTable
     {
-        public TableMetadata TableMetadata { get; }
-
-        public int TableId { get; }
 
         public string Name { get; }
 
@@ -39,8 +35,6 @@ namespace Koralium.Metadata
         public IStringOperationsProvider StringOperationsProvider { get; }
 
         public KoraliumTable(
-            TableMetadata tableMetadata,
-            int tableId,
             string name,
             Type resolver,
             Type entityType,
@@ -49,8 +43,6 @@ namespace Koralium.Metadata
             IReadOnlyList<TableIndex> indices,
             IStringOperationsProvider stringOperationsProvider)
         {
-            TableMetadata = tableMetadata;
-            TableId = tableId;
             Name = name;
             Resolver = resolver;
             EntityType = entityType;

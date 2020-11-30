@@ -72,7 +72,6 @@ namespace Koralium.WebTests
                 //Add a new table resolver
                 opt.AddTableResolver<ProjectResolver, Project>(tableOpt =>
                 {
-                    tableOpt.AddIndexResolver<ProjectIndex, string>(x => x.Name);
                 });
                 opt.AddTableResolver<TestResolver, Test>();
                 opt.AddTableResolver<SecureResolver, Order>(opt =>
@@ -81,12 +80,9 @@ namespace Koralium.WebTests
                 });
                 opt.AddTableResolver<EmployeeResolver, Employee>(opt =>
                 {
-                    opt.AddIndexResolver<EmployeeCompanyIdIndexResolver, string>(x => x.CompanyId);
                 });
                 opt.AddTableResolver<CompanyResolver, Company>(t =>
                 {
-                    t.AddIndexResolver<CompanyIdIndexResolver, string>(x => x.CompanyId);
-                    t.AddIndexResolver<CompanyIdNameIndexResolver, string, string>(x => x.CompanyId, x => x.Name, "CompanyIdName");
                 });
 
                 //TPC-H

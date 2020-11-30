@@ -5,8 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore" Version="2.33.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Koralium.Transport.LegacyGrpc.Abstractions\Koralium.Transport.LegacyGrpc.Abstractions.csproj" />
+    <ProjectReference Include="..\Koralium.Transport\Koralium.Transport.csproj" />
     <ProjectReference Include="..\src\Koralium.Shared\Koralium.Shared.csproj" />
-    <ProjectReference Include="..\src\Koralium\Koralium.csproj" />
   </ItemGroup>
 
 </Project>

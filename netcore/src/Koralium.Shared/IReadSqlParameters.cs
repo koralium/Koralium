@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Koralium.SqlToExpression.Interfaces
+namespace Koralium.Shared
 {
     public interface IReadSqlParameters : IEnumerable<KeyValuePair<string, SqlParameter>>
     {

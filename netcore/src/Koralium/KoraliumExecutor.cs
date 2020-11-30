@@ -13,6 +13,7 @@
  */
 using Koralium.Interfaces;
 using Koralium.Models;
+using Koralium.Shared;
 using Koralium.SqlToExpression;
 using Microsoft.AspNetCore.Http;
 using System;

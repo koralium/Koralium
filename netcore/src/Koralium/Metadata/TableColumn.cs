@@ -12,7 +12,6 @@
  * limitations under the License.
  */
 using Koralium.Interfaces;
-using Koralium.Grpc;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -21,11 +20,7 @@ namespace Koralium.Metadata
 {
     public class TableColumn
     {
-        public ColumnMetadata Metadata { get; }
-
         public string Name { get; }
-
-        public int GlobalIndex { get; }
 
         public Func<object, object> PropertyAccessor { get; }
 
@@ -37,40 +32,18 @@ namespace Koralium.Metadata
 
         public Action<object, object> SetDelegate { get; }
 
-        public IEncoder Encoder { get; }
-
         public TableColumn(
-            ColumnMetadata metadata,
             string name,
-            int globalIndex,
             Func<object, object> propertyAccessor,
             MemberInfo member,
             Type columnType,
             IReadOnlyList<TableColumn> children)
         {
-            Metadata = metadata;
             Name = name;
-            GlobalIndex = globalIndex;
             PropertyAccessor = propertyAccessor;
             Member = member;
             ColumnType = columnType;
             Children = children;
-        }
-
-        public ColumnMetadata ToColumnMetadata(ref int globalIndex)
-        {
-            ColumnMetadata column = new ColumnMetadata()
-            {
-                ColumnId = globalIndex++,
-                Name = Name,
-                Type = Metadata.Type
-            };
-
-            foreach (var child in Children)
-            {
-                column.SubColumns.Add(child.ToColumnMetadata(ref globalIndex));
-            }
-            return column;
         }
     }
 }

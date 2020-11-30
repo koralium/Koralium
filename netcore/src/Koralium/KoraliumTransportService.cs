@@ -1,6 +1,9 @@
 ﻿using Koralium.Metadata;
 using Koralium.Models;
+using Koralium.Shared;
 using Koralium.SqlToExpression;
+using Koralium.Transport;
+using Koralium.Utils;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -11,12 +14,12 @@ using System.Threading.Tasks;
 
 namespace Koralium
 {
-    class NewKoraliumExecutor : IKoraliumExecutor
+    class KoraliumTransportService : IKoraliumTransportService
     {
         private readonly SqlExecutor _sqlExecutor;
         private readonly IServiceProvider _serviceProvider;
         private readonly MetadataStore _metadataStore;
-        public NewKoraliumExecutor(SqlExecutor sqlExecutor, IServiceProvider serviceProvider, MetadataStore metadataStore)
+        public KoraliumTransportService(SqlExecutor sqlExecutor, IServiceProvider serviceProvider, MetadataStore metadataStore)
         {
             _sqlExecutor = sqlExecutor;
             _serviceProvider = serviceProvider;
@@ -33,7 +36,7 @@ namespace Koralium
                     childrenList.Add(GetTransportColumn(child));
                 }
             }
-            return new Transport.Column(tableColumn.Name, tableColumn.ColumnType, tableColumn.PropertyAccessor, childrenList.ToImmutable());
+            return new Transport.Column(tableColumn.Name, tableColumn.ColumnType, tableColumn.PropertyAccessor, childrenList.ToImmutable(), ColumnTypeHelper.GetKoraliumType(tableColumn.ColumnType));
         }
 
         public async ValueTask<Transport.QueryResult> Execute(string sql, SqlParameters sqlParameters, HttpContext httpContext)
@@ -59,7 +62,7 @@ namespace Koralium
                     childrenList.Add(GetTransportColumn(child));
                 }
 
-                columnsBuilder.Add(new Transport.Column(column.Name, column.Type, column.GetFunction, childrenList.ToImmutable()));
+                columnsBuilder.Add(new Transport.Column(column.Name, column.Type, column.GetFunction, childrenList.ToImmutable(), ColumnTypeHelper.GetKoraliumType(column.Type)));
             }
 
             return new Transport.QueryResult(
@@ -78,6 +81,40 @@ namespace Koralium
                 _serviceProvider,
                 new Dictionary<string, object>(),
                 customMetadataStore));
+        }
+
+        public IImmutableList<Transport.Column> GetSchema(string sql, SqlParameters sqlParameters, HttpContext httpContext)
+        {
+            var resultColumns = _sqlExecutor.GetSchema(sql, sqlParameters);
+
+            var columnsBuilder = ImmutableList.CreateBuilder<Transport.Column>();
+            foreach (var column in resultColumns)
+            {
+                if (!_metadataStore.TryGetTypeColumns(column.Type, out var columns))
+                {
+                    columns = new List<TableColumn>();
+                }
+
+                var childrenList = ImmutableList.CreateBuilder<Transport.Column>();
+                foreach (var child in columns)
+                {
+                    childrenList.Add(GetTransportColumn(child));
+                }
+
+                columnsBuilder.Add(new Transport.Column(column.Name, column.Type, column.GetFunction, childrenList.ToImmutable(), ColumnTypeHelper.GetKoraliumType(column.Type)));
+            }
+
+            return columnsBuilder.ToImmutable();
+        }
+
+        public IImmutableList<Table> GetTables()
+        {
+            var builder = ImmutableList.CreateBuilder<Table>();
+            foreach(var table in _metadataStore.Tables)
+            {
+                builder.Add(new Table(table.Name));
+            }
+            return builder.ToImmutable();
         }
     }
 }
