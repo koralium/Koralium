@@ -11,11 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Koralium.Decoders;
-using Koralium.Encoders;
+
 using Koralium.Interfaces;
 using Koralium.Metadata;
-using Koralium.Grpc;
 using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
@@ -91,28 +89,12 @@ namespace Koralium.Utils
                 children = CollectMetadata(propertyType, typeLookup);
             }
 
-            var metadata = new ColumnMetadata()
-            {
-                ColumnId = globalIndex++,
-                Name = name,
-                Type = KoraliumType.Object
-            };
-
-            foreach (var child in children)
-            {
-                metadata.SubColumns.Add(child.Metadata);
-            }
-
             columns.Add(new TableColumn(
-                metadata,
                 name,
-                metadata.ColumnId,
                 getDelegate,
                 memberInfo,
                 propertyType,
-                children,
-                new ObjectEncoder(),
-                null));
+                children));
 
             return columns;
         }
@@ -129,28 +111,12 @@ namespace Koralium.Utils
                 typeLookup.Add(propertyType, children);
             }
 
-            var metadata = new ColumnMetadata()
-            {
-                ColumnId = globalIndex++,
-                Name = name,
-                Type = KoraliumType.Array
-            };
-
-            foreach (var child in children)
-            {
-                metadata.SubColumns.Add(child.Metadata);
-            }
-
             var tableColumn = new TableColumn(
-                metadata,
                 name,
-                metadata.ColumnId,
                 getDelegate,
                 memberInfo,
                 propertyType,
-                children.ToList(),
-                new ArrayEncoder(),
-                null
+                children.ToList()
                 );
             return new List<TableColumn>() { tableColumn };
         }
@@ -170,16 +136,7 @@ namespace Koralium.Utils
                 }
             }
 
-            KoraliumType type = GetKoraliumType(propertyType);
-
-            var columnMetadata = new ColumnMetadata()
-            {
-                Name = name,
-                Type = type,
-                ColumnId = globalIndex++
-            };
-
-            return new List<TableColumn>() { new TableColumn(columnMetadata, name, columnMetadata.ColumnId, getDelegate, memberInfo, propertyType, new List<TableColumn>(), GetEncoder(type), GetDecoder(type)) };
+            return new List<TableColumn>() { new TableColumn(name, getDelegate, memberInfo, propertyType, new List<TableColumn>()) };
         }
 
         private static IEnumerable<TableColumn> CollectColumnMetadata(Type objectType, PropertyInfo propertyInfo, ref int globalIndex, Dictionary<Type, IReadOnlyList<TableColumn>> typeLookup)
@@ -208,110 +165,6 @@ namespace Koralium.Utils
                 return true;
             return false;
         }
-
-        internal static IEncoder GetEncoder(KoraliumType type)
-        {
-            switch (type)
-            {
-                case KoraliumType.Bool:
-                    return new BoolEncoder();
-                case KoraliumType.Double:
-                    return new DoubleEncoder();
-                case KoraliumType.Float:
-                    return new FloatEncoder();
-                case KoraliumType.Int32:
-                    return new Int32Encoder();
-                case KoraliumType.Int64:
-                    return new Int64Encoder();
-                case KoraliumType.String:
-                    return new StringEncoder();
-                case KoraliumType.Timestamp:
-                    return new TimestampEncoder();
-                default:
-                    break;
-            }
-            //TODO
-            throw new Exception();
-            //throw new DecoderNotFoundException(prestoType);
-        }
-
-        public static IDecoder GetDecoder(KoraliumType type)
-        {
-            switch (type)
-            {
-                case KoraliumType.Bool:
-                    return new BoolDecoder();
-                case KoraliumType.Double:
-                    return new DoubleDecoder();
-                case KoraliumType.Float:
-                    return new FloatDecoder();
-                case KoraliumType.Int32:
-                    return new IntDecoder();
-                case KoraliumType.Int64:
-                    return new Int64Decoder();
-                case KoraliumType.String:
-                    return new StringDecoder();
-                case KoraliumType.Timestamp:
-                    return new TimestampDecoder();
-                case KoraliumType.Object:
-                    return new ObjectDecoder();
-                case KoraliumType.Array:
-                    return new ArrayDecoder();
-                default:
-                    break;
-            }
-
-            return null;
-        }
-
-
-
-        public static KoraliumType GetKoraliumType(Type type)
-        {
-            if (Nullable.GetUnderlyingType(type) != null)
-            {
-                return GetKoraliumType(Nullable.GetUnderlyingType(type));
-            }
-            if (type.Equals(typeof(int)))
-            {
-                return KoraliumType.Int32;
-            }
-            if (type.Equals(typeof(long)))
-            {
-                return KoraliumType.Int64;
-            }
-            if (type.Equals(typeof(string)))
-            {
-                return KoraliumType.String;
-            }
-            if (type.Equals(typeof(bool)))
-            {
-                return KoraliumType.Bool;
-            }
-            if (type.Equals(typeof(float)))
-            {
-                return KoraliumType.Float;
-            }
-            if (type.Equals(typeof(double)))
-            {
-                return KoraliumType.Double;
-            }
-            if (type.Equals(typeof(DateTime)))
-            {
-                return KoraliumType.Timestamp;
-            }
-            if (IsArray(type))
-            {
-                return KoraliumType.Array;
-            }
-            if (!IsBaseType(type))
-            {
-                return KoraliumType.Object;
-            }
-
-            throw new Exception("Unsupported type");
-        }
-
 
 
         internal static Func<object> CreateNewObjectDelegate(Type objectType)

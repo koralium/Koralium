@@ -11,9 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.Shared;
 using Koralium.SqlParser;
 using Koralium.SqlParser.ANTLR;
-using Koralium.SqlToExpression.Exceptions;
 using Koralium.SqlToExpression.Executors;
 using Koralium.SqlToExpression.Interfaces;
 using Koralium.SqlToExpression.Metadata;

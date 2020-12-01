@@ -16,8 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Koralium.Transport.Json\Koralium.Transport.Json.csproj" />
+    <ProjectReference Include="..\..\src\Koralium.Transport.LegacyGrpc\Koralium.Transport.LegacyGrpc.csproj" />
     <ProjectReference Include="..\..\src\Koralium\Koralium.csproj" />
-    <ProjectReference Include="..\..\src\Koralium.Json\Koralium.Json.csproj" />
   </ItemGroup>
 
 </Project>

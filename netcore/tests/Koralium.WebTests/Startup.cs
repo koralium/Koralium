@@ -15,7 +15,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using EFCore.BulkExtensions;
-using Koralium.Json.Extensions;
+using Koralium.Transport.LegacyGrpc.Extensions;
 using Koralium.WebTests.Database;
 using Koralium.WebTests.Entities;
 using Koralium.WebTests.Entities.specific;
@@ -48,10 +48,6 @@ namespace Koralium.WebTests
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddControllers()
-                .AddKoraliumJson();
-
             services.AddGrpc();
 
             var connection = new SqliteConnection("Data Source=Sharable;Mode=Memory;Cache=Shared");
@@ -62,6 +58,8 @@ namespace Koralium.WebTests
             });
             services.AddSingleton(connection);
 
+            services.AddKoraliumLegacyGrpcTransport();
+
             services.AddKoralium(opt =>
             {
                 opt.AddSearchProvider<CustomSearchProvider>();
@@ -69,7 +67,6 @@ namespace Koralium.WebTests
                 //Add a new table resolver
                 opt.AddTableResolver<ProjectResolver, Project>(tableOpt =>
                 {
-                    tableOpt.AddIndexResolver<ProjectIndex, string>(x => x.Name);
                 });
                 opt.AddTableResolver<TestResolver, Test>();
                 opt.AddTableResolver<SecureResolver, Order>(opt =>
@@ -78,12 +75,9 @@ namespace Koralium.WebTests
                 });
                 opt.AddTableResolver<EmployeeResolver, Employee>(opt =>
                 {
-                    opt.AddIndexResolver<EmployeeCompanyIdIndexResolver, string>(x => x.CompanyId);
                 });
                 opt.AddTableResolver<CompanyResolver, Company>(t =>
                 {
-                    t.AddIndexResolver<CompanyIdIndexResolver, string>(x => x.CompanyId);
-                    t.AddIndexResolver<CompanyIdNameIndexResolver, string, string>(x => x.CompanyId, x => x.Name, "CompanyIdName");
                 });
 
                 //TPC-H
@@ -177,8 +171,10 @@ namespace Koralium.WebTests
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.AddKoraliumGrpcEndpoint();
-                endpoints.MapControllers();
+                endpoints.MapKoraliumJsonPost("sql");
+                endpoints.MapKoraliumJsonGet("sql");
+
+                endpoints.AddKoraliumLegacyGrpcEndpoint();
             });
         }
     }

@@ -18,6 +18,7 @@ using Koralium.Resolvers;
 using Koralium.SqlToExpression;
 using Koralium.SqlToExpression.Extensions;
 using Koralium.SqlToExpression.Metadata;
+using Koralium.Transport;
 using System;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -51,7 +52,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             services.AddScoped<KoraliumExecutor>();
-            services.AddScoped<GrpcExecutor>();
+            services.AddScoped<IKoraliumTransportService, KoraliumTransportService>();
             services.AddScoped<Koralium.SqlToExpression.ISqlTableResolver, SqlTableResolver>();
 
             return services;

@@ -1,7 +1,7 @@
-﻿using Koralium.SqlParser.Clauses;
+﻿using Koralium.Shared;
+using Koralium.SqlParser.Clauses;
 using Koralium.SqlParser.From;
 using Koralium.SqlParser.Visitor;
-using Koralium.SqlToExpression.Exceptions;
 using Koralium.SqlToExpression.Metadata;
 using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages.CompileStages;

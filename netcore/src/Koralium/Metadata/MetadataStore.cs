@@ -11,7 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Koralium.Grpc;
 using System;
 using System.Collections.Generic;
 
@@ -22,7 +21,6 @@ namespace Koralium.Metadata
         public IReadOnlyList<KoraliumTable> Tables { get; }
         private readonly Dictionary<Type, IReadOnlyList<TableColumn>> _typeLookup;
         private readonly Dictionary<string, KoraliumTable> _nameToTable = new Dictionary<string, KoraliumTable>();
-        private readonly TableMetadataResponse _metadataResponse;
 
         public MetadataStore(IReadOnlyList<KoraliumTable> tables, Dictionary<Type, IReadOnlyList<TableColumn>> typeLookup)
         {
@@ -32,13 +30,6 @@ namespace Koralium.Metadata
             foreach(var table in tables)
             {
                 _nameToTable.Add(table.Name.ToLower(), table);
-            }
-
-            _metadataResponse = new TableMetadataResponse();
-
-            foreach (var table in tables)
-            {
-                _metadataResponse.Tables.Add(table.TableMetadata);
             }
         }
 
@@ -55,11 +46,6 @@ namespace Koralium.Metadata
         public KoraliumTable GetTable(int id)
         {
             return Tables[id];
-        }
-
-        public TableMetadataResponse GetMetadataResponse()
-        {
-            return _metadataResponse;
         }
     }
 }

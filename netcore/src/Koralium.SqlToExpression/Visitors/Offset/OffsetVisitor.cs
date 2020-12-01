@@ -1,8 +1,8 @@
-﻿using Koralium.SqlParser.Clauses;
+﻿using Koralium.Shared;
+using Koralium.SqlParser.Clauses;
 using Koralium.SqlParser.Expressions;
 using Koralium.SqlParser.Literals;
 using Koralium.SqlParser.Visitor;
-using Koralium.SqlToExpression.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Text;

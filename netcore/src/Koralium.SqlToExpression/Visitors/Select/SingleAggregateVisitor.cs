@@ -1,5 +1,5 @@
-﻿using Koralium.SqlParser.Expressions;
-using Koralium.SqlToExpression.Exceptions;
+﻿using Koralium.Shared;
+using Koralium.SqlParser.Expressions;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using System;
 using System.Collections.Generic;

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore" Version="2.33.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Koralium.Transport.LegacyGrpc.Abstractions\Koralium.Transport.LegacyGrpc.Abstractions.csproj" />
+    <ProjectReference Include="..\Koralium.Transport\Koralium.Transport.csproj" />
+    <ProjectReference Include="..\Koralium.Shared\Koralium.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

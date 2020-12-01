@@ -14,7 +14,6 @@
 using Koralium.Interfaces;
 using Koralium.Metadata;
 using Koralium.Utils;
-using Koralium.Grpc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,73 +56,6 @@ namespace Koralium.Builders
         {
             _stringOperationsProvider = stringOperationsProvider;
             return this;
-        }
-
-        public ITableResolverBuilder<Entity> AddIndexResolver<Resolver, Key1>(Expression<Func<Entity, Key1>> property, string indexName = null)
-            where Resolver : IndexResolver<Entity, Key1>
-        {
-            var existingColumn = GetIndexColumn(property);
-
-            if (indexName == null)
-            {
-                indexName = MetadataHelper.GenerateIndexName(existingColumn.Name);
-            }
-
-            IndexMetadata indexMetadata = new IndexMetadata
-            {
-                IndexId = indicies.Count,
-                Name = indexName
-            };
-
-            indexMetadata.Columns.Add(existingColumn.Metadata);
-
-            indicies.Add(new TableIndex(typeof(Resolver), indicies.Count, new List<TableColumn>() { existingColumn }, indexName, indexMetadata));
-
-            return this;
-        }
-
-        private TableColumn GetIndexColumn<Key>(Expression<Func<Entity, Key>> property)
-        {
-            if (property.Body.NodeType != ExpressionType.MemberAccess)
-            {
-                throw new ArgumentException("Only properties can be used for index", nameof(property));
-            }
-
-            var memberExpression = property.Body as MemberExpression;
-
-            if (!(memberExpression.Member is PropertyInfo propertyInfo))
-            {
-                throw new ArgumentException("Only properties can be used for index", nameof(property));
-            }
-
-            var existingColumn = _columns.FirstOrDefault(x => x.Name == propertyInfo.Name);
-
-            return existingColumn;
-        }
-
-        public ITableResolverBuilder<Entity> AddIndexResolver<Resolver, Key1, Key2>(Expression<Func<Entity, Key1>> property1, Expression<Func<Entity, Key2>> property2, string indexName = null) where Resolver : IndexResolver<Entity, Key1, Key2>
-        {
-            var existingColumn1 = GetIndexColumn(property1);
-            var existingColumn2 = GetIndexColumn(property2);
-
-            if (indexName == null)
-            {
-                indexName = MetadataHelper.GenerateIndexName(existingColumn1.Metadata.Name, existingColumn2.Metadata.Name);
-            }
-
-            IndexMetadata indexMetadata = new IndexMetadata
-            {
-                IndexId = indicies.Count,
-                Name = indexName
-            };
-
-            indexMetadata.Columns.Add(existingColumn1.Metadata);
-            indexMetadata.Columns.Add(existingColumn2.Metadata);
-
-            indicies.Add(new TableIndex(typeof(Resolver), indicies.Count, new List<TableColumn>() { existingColumn1, existingColumn2 }, indexName, indexMetadata));
-
-            return this;
-            throw new NotImplementedException();
         }
     }
 }
