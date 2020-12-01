@@ -36,7 +36,7 @@ namespace Koralium.Transport.LegacyGrpc.Services
             {
                 if(request.MaxBatchSize == 0)
                 {
-                    request.MaxBatchSize = 10000000;
+                    request.MaxBatchSize = 1000000;
                 }
 
                 Channel<Page> channel = System.Threading.Channels.Channel.CreateUnbounded<Page>();

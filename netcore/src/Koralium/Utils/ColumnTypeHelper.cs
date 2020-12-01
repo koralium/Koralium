@@ -26,47 +26,47 @@ namespace Koralium.Utils
             return false;
         }
 
-        public static ColumnType GetKoraliumType(Type type)
+        public static (ColumnType columnType, bool nullable) GetKoraliumType(Type type)
         {
             if (Nullable.GetUnderlyingType(type) != null)
             {
-                return GetKoraliumType(Nullable.GetUnderlyingType(type));
+                return (GetKoraliumType(Nullable.GetUnderlyingType(type)).columnType, true);
             }
             if (type.Equals(typeof(int)))
             {
-                return ColumnType.Int32;
+                return (ColumnType.Int32, false);
             }
             if (type.Equals(typeof(long)))
             {
-                return ColumnType.Int64;
+                return (ColumnType.Int64, false);
             }
             if (type.Equals(typeof(string)))
             {
-                return ColumnType.String;
+                return (ColumnType.String, false);
             }
             if (type.Equals(typeof(bool)))
             {
-                return ColumnType.Bool;
+                return (ColumnType.Bool, false);
             }
             if (type.Equals(typeof(float)))
             {
-                return ColumnType.Float;
+                return (ColumnType.Float, false);
             }
             if (type.Equals(typeof(double)))
             {
-                return ColumnType.Double;
+                return (ColumnType.Double, false);
             }
             if (type.Equals(typeof(DateTime)))
             {
-                return ColumnType.Timestamp;
+                return (ColumnType.DateTime, false);
             }
             if (IsArray(type))
             {
-                return ColumnType.List;
+                return (ColumnType.List, true);
             }
             if (!IsBaseType(type))
             {
-                return ColumnType.Object;
+                return (ColumnType.Object, true);
             }
 
             throw new Exception("Unsupported type");

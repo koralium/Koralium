@@ -27,15 +27,24 @@ namespace Koralium.Transport
         /// </summary>
         public IImmutableList<Column> Children { get; }
 
-        public ColumnType ColumnType { get; set; }
+        public ColumnType ColumnType { get; }
 
-        public Column(string name, Type type, Func<object, object> getFunction, IImmutableList<Column> children, ColumnType columnType)
+        public bool IsNullable { get; }
+
+        public Column(
+            string name, 
+            Type type, 
+            Func<object, object> getFunction, 
+            IImmutableList<Column> children, 
+            ColumnType columnType,
+            bool isNullable)
         {
             Name = name;
             Type = type;
             GetFunction = getFunction;
             Children = children;
             ColumnType = columnType;
+            IsNullable = isNullable;
         }
     }
 }

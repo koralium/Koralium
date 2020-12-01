@@ -14,9 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Koralium.Transport\Koralium.Transport.csproj" />
     <ProjectReference Include="..\Koralium.Shared\Koralium.Shared.csproj" />
     <ProjectReference Include="..\Koralium.SqlToExpression\Koralium.SqlToExpression.csproj" />
+    <ProjectReference Include="..\Koralium.Transport\Koralium.Transport.csproj" />
   </ItemGroup>
 
   <ItemGroup>

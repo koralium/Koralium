@@ -101,8 +101,11 @@ namespace Koralium.Transport.LegacyGrpc
                 propertyGetters[i] = column.GetFunction;
                 page.Metadata.Columns.Add(columnMetadata);
             }
-
+            System.Diagnostics.Stopwatch encodeWatch = new System.Diagnostics.Stopwatch();
+            encodeWatch.Start();
             await EncoderHelper.ReadData(_logger, page, encoders, propertyGetters, enumerator, request.MaxBatchSize, channelWriter);
+            encodeWatch.Stop();
+            _logger.LogTrace($"Encode time: {encodeWatch.ElapsedMilliseconds} ms");
         }
 
         public ValueTask<object> ExecuteScalar(QueryRequest queryRequest, ServerCallContext context)

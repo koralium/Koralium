@@ -36,7 +36,8 @@ namespace Koralium
                     childrenList.Add(GetTransportColumn(child));
                 }
             }
-            return new Transport.Column(tableColumn.Name, tableColumn.ColumnType, tableColumn.PropertyAccessor, childrenList.ToImmutable(), ColumnTypeHelper.GetKoraliumType(tableColumn.ColumnType));
+            var (columnType, nullable) = ColumnTypeHelper.GetKoraliumType(tableColumn.ColumnType);
+            return new Transport.Column(tableColumn.Name, tableColumn.ColumnType, tableColumn.PropertyAccessor, childrenList.ToImmutable(), columnType, nullable);
         }
 
         public async ValueTask<Transport.QueryResult> Execute(string sql, SqlParameters sqlParameters, HttpContext httpContext)
@@ -62,7 +63,8 @@ namespace Koralium
                     childrenList.Add(GetTransportColumn(child));
                 }
 
-                columnsBuilder.Add(new Transport.Column(column.Name, column.Type, column.GetFunction, childrenList.ToImmutable(), ColumnTypeHelper.GetKoraliumType(column.Type)));
+                var (columnType, nullable) = ColumnTypeHelper.GetKoraliumType(column.Type);
+                columnsBuilder.Add(new Transport.Column(column.Name, column.Type, column.GetFunction, childrenList.ToImmutable(), columnType, nullable));
             }
 
             return new Transport.QueryResult(
@@ -101,7 +103,8 @@ namespace Koralium
                     childrenList.Add(GetTransportColumn(child));
                 }
 
-                columnsBuilder.Add(new Transport.Column(column.Name, column.Type, column.GetFunction, childrenList.ToImmutable(), ColumnTypeHelper.GetKoraliumType(column.Type)));
+                var (columnType, nullable) = ColumnTypeHelper.GetKoraliumType(column.Type);
+                columnsBuilder.Add(new Transport.Column(column.Name, column.Type, column.GetFunction, childrenList.ToImmutable(), columnType, nullable));
             }
 
             return columnsBuilder.ToImmutable();

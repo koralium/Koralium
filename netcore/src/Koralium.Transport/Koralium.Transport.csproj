@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Koralium.Shared\Koralium.Shared.csproj" />
+    <ProjectReference Include="..\Koralium.Shared\Koralium.Shared.csproj" />
   </ItemGroup>
 
 </Project>
