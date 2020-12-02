@@ -1,5 +1,4 @@
 ﻿using Koralium.SqlParser.Expressions;
-using System.Text;
 
 namespace Koralium.SqlParser.Literals
 {

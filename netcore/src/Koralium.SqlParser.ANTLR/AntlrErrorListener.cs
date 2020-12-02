@@ -1,5 +1,4 @@
 ﻿using Antlr4.Runtime;
-using Antlr4.Runtime.Tree;
 using Koralium.SqlParser.Errors;
 using System.Collections.Generic;
 using System.IO;

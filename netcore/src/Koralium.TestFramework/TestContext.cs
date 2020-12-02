@@ -1,6 +1,5 @@
 ﻿using EntityFrameworkCore.Koralium.Extensions;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
 
 namespace Koralium.TestFramework
 {

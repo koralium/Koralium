@@ -1,5 +1,4 @@
-﻿using System.Text;
-
+﻿
 namespace Koralium.SqlToExpression.Executors.AggregateFunction
 {
     internal static class ObjectExtensions

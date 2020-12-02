@@ -1,5 +1,4 @@
-﻿using System.Text;
-
+﻿
 namespace Koralium.TestFramework
 {
     public class TestContextSettings

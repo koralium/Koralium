@@ -12,7 +12,6 @@
  * limitations under the License.
  */
 using Koralium.SqlToExpression.Interfaces;
-using System.Linq.Expressions;
 
 namespace Koralium.Interfaces
 {

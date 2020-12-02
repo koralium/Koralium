@@ -14,7 +14,6 @@
 using Koralium.Interfaces;
 using Koralium.Metadata;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using Koralium.SqlToExpression.Interfaces;
 
 namespace Koralium.Builders

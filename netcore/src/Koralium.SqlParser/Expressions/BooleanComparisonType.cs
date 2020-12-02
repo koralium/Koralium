@@ -1,5 +1,4 @@
-﻿using System.Text;
-
+﻿
 namespace Koralium.SqlParser.Expressions
 {
     public enum BooleanComparisonType
