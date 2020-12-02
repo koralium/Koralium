@@ -11,9 +11,9 @@ namespace Koralium.SqlParser.ANTLR
 {
     public class AntlrSqlParser : ISqlParser
     {
-        public StatementList Parse(string sql, out IReadOnlyList<SqlParserError> errors)
+        public StatementList Parse(string text, out IReadOnlyList<SqlParserError> errors)
         {
-            ICharStream stream = CharStreams.fromstring(sql);
+            ICharStream stream = CharStreams.fromstring(text);
             stream = new CaseChangingCharStream(stream);
 
             ITokenSource lexer = new KoraliumLexer(stream);

@@ -136,6 +136,68 @@ namespace Koralium.SqlToExpression.Utils
             return stringOperationsProvider.GetEndsWithExpression(left, value);
         }
 
+        private static Expression HandleEquals(Expression leftExpression, Expression rightExpression, IStringOperationsProvider stringOperationsProvider)
+        {
+            //Null equal primitive cant be done, automatic false
+            if ((IsConstantNull(leftExpression) && rightExpression.Type.IsPrimitive) || (IsConstantNull(rightExpression) && leftExpression.Type.IsPrimitive))
+            {
+                return Expression.Constant(false);
+            }
+            //String is a special case since one might want to do case insensitive comparisions
+            if (leftExpression.Type.Equals(typeof(string)))
+            {
+                return stringOperationsProvider.GetEqualsExpressions(leftExpression, rightExpression);
+            }
+            else
+            {
+                return Expression.Equal(leftExpression, rightExpression);
+            }
+        }
+
+        private static Expression HandleGreaterThan(Expression leftExpression, Expression rightExpression)
+        {
+            if (leftExpression.Type.Equals(typeof(string)))
+            {
+                StringComparision(ref leftExpression, ref rightExpression);
+            }
+            return Expression.GreaterThan(leftExpression, rightExpression);
+        }
+
+        private static Expression HandleGreaterThanOrEqualTo(Expression leftExpression, Expression rightExpression)
+        {
+            if (leftExpression.Type.Equals(typeof(string)))
+            {
+                StringComparision(ref leftExpression, ref rightExpression);
+            }
+            return Expression.GreaterThanOrEqual(leftExpression, rightExpression);
+        }
+
+        private static Expression HandleLessThan(Expression leftExpression, Expression rightExpression)
+        {
+            if (leftExpression.Type.Equals(typeof(string)))
+            {
+                StringComparision(ref leftExpression, ref rightExpression);
+            }
+            return Expression.LessThan(leftExpression, rightExpression);
+        }
+
+        private static Expression HandleLessThanOrEqualTo(Expression leftExpression, Expression rightExpression)
+        {
+            if (leftExpression.Type.Equals(typeof(string)))
+            {
+                StringComparision(ref leftExpression, ref rightExpression);
+            }
+            return Expression.LessThanOrEqual(leftExpression, rightExpression);
+        }
+
+        private static Expression HandleNotEqualTo(Expression leftExpression, Expression rightExpression)
+        {
+            if ((IsConstantNull(leftExpression) && rightExpression.Type.IsPrimitive) || (IsConstantNull(rightExpression) && leftExpression.Type.IsPrimitive))
+            {
+                return Expression.Constant(true);
+            }
+            return Expression.NotEqual(leftExpression, rightExpression);
+        }
 
         public static Expression CreateComparisonExpression(
             Expression leftExpression,
@@ -145,63 +207,23 @@ namespace Koralium.SqlToExpression.Utils
         {
             ConvertExpressionTypes(ref leftExpression, ref rightExpression);
 
-            Expression expression = null;
             switch (comparisonType)
             {
                 case BooleanComparisonType.Equals:
-                    //Null equal primitive cant be done, automatic false
-                    if ((IsConstantNull(leftExpression) && rightExpression.Type.IsPrimitive) || (IsConstantNull(rightExpression) && leftExpression.Type.IsPrimitive))
-                    {
-                        return Expression.Constant(false);
-                    }
-                    //String is a special case since one might want to do case insensitive comparisions
-                    if (leftExpression.Type.Equals(typeof(string)))
-                    {
-                        expression = stringOperationsProvider.GetEqualsExpressions(leftExpression, rightExpression);
-                    }
-                    else
-                    {
-                        expression = Expression.Equal(leftExpression, rightExpression);
-                    }
-
-                    break;
+                    return HandleEquals(leftExpression, rightExpression, stringOperationsProvider);
                 case BooleanComparisonType.GreaterThan:
-                    if (leftExpression.Type.Equals(typeof(string)))
-                    {
-                        StringComparision(ref leftExpression, ref rightExpression);
-                    }
-                    expression = Expression.GreaterThan(leftExpression, rightExpression);
-                    break;
+                    return HandleGreaterThan(leftExpression, rightExpression);
                 case BooleanComparisonType.GreaterThanOrEqualTo:
-                    if (leftExpression.Type.Equals(typeof(string)))
-                    {
-                        StringComparision(ref leftExpression, ref rightExpression);
-                    }
-                    expression = Expression.GreaterThanOrEqual(leftExpression, rightExpression);
-                    break;
+                    return HandleGreaterThanOrEqualTo(leftExpression, rightExpression);
                 case BooleanComparisonType.LessThan:
-                    if (leftExpression.Type.Equals(typeof(string)))
-                    {
-                        StringComparision(ref leftExpression, ref rightExpression);
-                    }
-                    expression = Expression.LessThan(leftExpression, rightExpression);
-                    break;
+                    return HandleLessThan(leftExpression, rightExpression);
                 case BooleanComparisonType.LessThanOrEqualTo:
-                    if (leftExpression.Type.Equals(typeof(string)))
-                    {
-                        StringComparision(ref leftExpression, ref rightExpression);
-                    }
-                    expression = Expression.LessThanOrEqual(leftExpression, rightExpression);
-                    break;
+                    return HandleLessThanOrEqualTo(leftExpression, rightExpression);
                 case BooleanComparisonType.NotEqualTo:
-                    if ((IsConstantNull(leftExpression) && rightExpression.Type.IsPrimitive) || (IsConstantNull(rightExpression) && leftExpression.Type.IsPrimitive))
-                    {
-                        return Expression.Constant(true);
-                    }
-                    expression = Expression.NotEqual(leftExpression, rightExpression);
-                    break;
+                    return HandleNotEqualTo(leftExpression, rightExpression);
+                default:
+                    throw new NotImplementedException();
             }
-            return expression;
         }
     }
 }
