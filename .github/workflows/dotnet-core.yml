@@ -24,7 +24,7 @@ jobs:
       working-directory: netcore
     - name: Start sonarscanner
       working-directory: netcore
-      run: ./dotnet-sonarscanner begin /k:"koralium_netcore" /d:sonar.branch.name="${GITHUB_REF#refs/heads/}" /o:"koralium" /d:sonar.login="$SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+      run: ./dotnet-sonarscanner begin /k:"koralium_netcore" /d:sonar.cpd.exclusions="**/AnonType.cs" /d:sonar.branch.name="${GITHUB_REF#refs/heads/}" /o:"koralium" /d:sonar.login="$SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
       env:
         SONAR_TOKEN: ${{ secrets.NETCORE_SONARCLOUD }}
     - name: Install dependencies
