@@ -1,5 +1,4 @@
 ﻿using Koralium.SqlParser.Visitor;
-using System.Text;
 
 namespace Koralium.SqlParser.GroupBy
 {

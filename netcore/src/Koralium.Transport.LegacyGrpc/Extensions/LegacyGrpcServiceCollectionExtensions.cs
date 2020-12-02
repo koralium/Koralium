@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System.Text;
 
 namespace Koralium.Transport.LegacyGrpc.Extensions
 {

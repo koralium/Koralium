@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System;
-using System.Text;
 
 namespace Koralium.TestFramework
 {

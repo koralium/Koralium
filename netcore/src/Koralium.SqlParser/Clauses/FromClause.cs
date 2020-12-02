@@ -1,6 +1,5 @@
 ﻿using Koralium.SqlParser.From;
 using Koralium.SqlParser.Visitor;
-using System.Text;
 
 namespace Koralium.SqlParser.Clauses
 {

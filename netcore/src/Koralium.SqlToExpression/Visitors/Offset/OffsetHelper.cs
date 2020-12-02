@@ -1,6 +1,5 @@
 ﻿using Koralium.SqlParser.Clauses;
 using Koralium.SqlToExpression.Stages.CompileStages;
-using System.Text;
 
 namespace Koralium.SqlToExpression.Visitors.Offset
 {

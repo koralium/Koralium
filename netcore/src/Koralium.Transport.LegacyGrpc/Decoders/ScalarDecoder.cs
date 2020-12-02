@@ -1,6 +1,5 @@
 ﻿using Koralium.Grpc;
 using System;
-using System.Text;
 
 namespace Koralium.Transport.LegacyGrpc.Decoders
 {

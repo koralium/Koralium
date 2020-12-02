@@ -1,5 +1,4 @@
 ﻿using Koralium.Grpc;
-using System.Text;
 
 namespace Koralium.Transport.LegacyGrpc.Interfaces
 {
