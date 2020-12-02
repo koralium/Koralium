@@ -37,11 +37,8 @@ namespace Koralium.SqlParser.ANTLR
             return statements;
         }
 
-        public override object VisitSelect_statement([NotNull] KoraliumParser.Select_statementContext context)
+        private void HandleSelectStatementSelectExpressions(SelectStatement selectStatement, KoraliumParser.Select_statementContext context)
         {
-            SelectStatement selectStatement = new SelectStatement();
-
-
             var selectExpressions = context.select_expression();
 
             if (selectExpressions != null)
@@ -56,92 +53,92 @@ namespace Koralium.SqlParser.ANTLR
                     selectStatement.SelectElements.Add(selectExpression);
                 }
             }
+        }
 
-            //FROM CLAUSE
+        private void HandleSelectStatementFromClause(SelectStatement selectStatement, KoraliumParser.Select_statementContext context)
+        {
+            var fromClauseNode = context.from_clause();
+
+            if (fromClauseNode != null)
             {
-                var fromClauseNode = context.from_clause();
+                var fromClause = Visit(fromClauseNode) as FromClause;
 
-                if(fromClauseNode != null)
+                if (fromClause == null)
                 {
-                    var fromClause = Visit(fromClauseNode) as FromClause;
-
-                    if (fromClause == null)
-                    {
-                        throw new SqlParserException("Could not parse from clause");
-                    }
-                    selectStatement.FromClause = fromClause;
+                    throw new SqlParserException("Could not parse from clause");
                 }
+                selectStatement.FromClause = fromClause;
             }
-            
+        }
 
+        private void HandleSelectStatementWhereClause(SelectStatement selectStatement, KoraliumParser.Select_statementContext context)
+        {
+            var whereClauseNode = context.where_clause();
 
-            //WHERE CLAUSE
+            if (whereClauseNode != null)
             {
-                var whereClauseNode = context.where_clause();
+                var whereClause = Visit(whereClauseNode) as WhereClause;
 
-                if(whereClauseNode != null)
+                if (whereClause == null)
                 {
-                    var whereClause = Visit(whereClauseNode) as WhereClause;
-
-                    if(whereClause == null)
-                    {
-                        throw new SqlParserException("Could not parse where clause");
-                    }
-
-                    selectStatement.WhereClause = whereClause;
+                    throw new SqlParserException("Could not parse where clause");
                 }
-            }
 
-            //GROUP BY CLAUSE
+                selectStatement.WhereClause = whereClause;
+            }
+        }
+
+        private void HandleSelectStatementGroupByClause(SelectStatement selectStatement, KoraliumParser.Select_statementContext context)
+        {
+            var groupByNode = context.groupby_clause();
+
+            if (groupByNode != null)
             {
-                var groupByNode = context.groupby_clause();
+                var groupByClause = Visit(groupByNode) as GroupByClause;
 
-                if(groupByNode != null)
+                if (groupByClause == null)
                 {
-                    var groupByClause = Visit(groupByNode) as GroupByClause;
-
-                    if(groupByClause == null)
-                    {
-                        throw new SqlParserException("Could not parse group by clause");
-                    }
-                    selectStatement.GroupByClause = groupByClause;
+                    throw new SqlParserException("Could not parse group by clause");
                 }
+                selectStatement.GroupByClause = groupByClause;
             }
+        }
 
-            //HAVING CLAUSE
+        private void HandleSelectStatementHavingClause(SelectStatement selectStatement, KoraliumParser.Select_statementContext context)
+        {
+            var havingNode = context.having_clause();
+
+            if (havingNode != null)
             {
-                var havingNode = context.having_clause();
+                var havingClause = Visit(havingNode) as HavingClause;
 
-                if(havingNode != null)
+                if (havingClause == null)
                 {
-                    var havingClause = Visit(havingNode) as HavingClause;
-
-                    if(havingClause == null)
-                    {
-                        throw new SqlParserException("Could not parse having clause");
-                    }
-                    selectStatement.HavingClause = havingClause;
+                    throw new SqlParserException("Could not parse having clause");
                 }
+                selectStatement.HavingClause = havingClause;
             }
+        }
 
-            //ORDER BY CLAUSE
+        private void HandleSelectStatementOrderByClause(SelectStatement selectStatement, KoraliumParser.Select_statementContext context)
+        {
+            var orderByNode = context.order_by_clause();
+
+            if (orderByNode != null)
             {
-                var orderByNode = context.order_by_clause();
+                var orderByClause = Visit(orderByNode) as OrderByClause;
 
-                if(orderByNode != null)
+                if (orderByClause == null)
                 {
-                    var orderByClause = Visit(orderByNode) as OrderByClause;
-
-                    if(orderByClause == null)
-                    {
-                        throw new SqlParserException("Could not parse order by clause");
-                    }
-                    selectStatement.OrderByClause = orderByClause;
+                    throw new SqlParserException("Could not parse order by clause");
                 }
+                selectStatement.OrderByClause = orderByClause;
             }
+        }
 
-            //OFFSET, LIMIT
-            if(context.limit != null || context.offset != null)
+        private void HandleSelectStatementLimitOffset(SelectStatement selectStatement, KoraliumParser.Select_statementContext context)
+        {
+            if (context.limit != null || context.offset != null)
             {
                 OffsetLimitClause offsetLimitClause = new OffsetLimitClause();
                 if (context.limit != null)
@@ -154,11 +151,11 @@ namespace Koralium.SqlParser.ANTLR
                     }
                     offsetLimitClause.Limit = limit;
                 }
-                if(context.offset != null)
+                if (context.offset != null)
                 {
                     var offset = Visit(context.offset) as ScalarExpression;
 
-                    if(offset == null)
+                    if (offset == null)
                     {
                         throw new SqlParserException("Could not parse offset");
                     }
@@ -166,15 +163,29 @@ namespace Koralium.SqlParser.ANTLR
                 }
                 selectStatement.OffsetLimitClause = offsetLimitClause;
             }
+        }
 
-            //DISTINCT
+        private void HandleSelectStatementDistinct(SelectStatement selectStatement, KoraliumParser.Select_statementContext context)
+        {
+            if (context.DISTINCT() != null)
             {
-                if(context.DISTINCT() != null)
-                {
-                    selectStatement.Distinct = true;
-                }
+                selectStatement.Distinct = true;
             }
+        }
 
+        public override object VisitSelect_statement([NotNull] KoraliumParser.Select_statementContext context)
+        {
+            SelectStatement selectStatement = new SelectStatement();
+
+            HandleSelectStatementSelectExpressions(selectStatement, context);
+            HandleSelectStatementFromClause(selectStatement, context);
+            HandleSelectStatementWhereClause(selectStatement, context);
+            HandleSelectStatementGroupByClause(selectStatement, context);
+            HandleSelectStatementHavingClause(selectStatement, context);
+            HandleSelectStatementOrderByClause(selectStatement, context);
+            HandleSelectStatementLimitOffset(selectStatement, context);
+            HandleSelectStatementDistinct(selectStatement, context);
+            
             return selectStatement;
         }
 
@@ -184,14 +195,11 @@ namespace Koralium.SqlParser.ANTLR
 
             string tableAlias = null;
 
+            var tableAliasNode = context.table_alias();
+            if(tableAliasNode != null)
             {
-                var tableAliasNode = context.table_alias();
-                if(tableAliasNode != null)
-                {
-                    tableAlias = tableAliasNode.GetText().Trim('"');
-                }
+                tableAlias = tableAliasNode.GetText().Trim('"');
             }
-            
 
             if(tableNameNode != null)
             {
@@ -205,18 +213,17 @@ namespace Koralium.SqlParser.ANTLR
                 };
             }
 
+
+            var subqueryNode = context.subquery();
+
+            if(subqueryNode != null)
             {
-                var subqueryNode = context.subquery();
+                var subquery = Visit(subqueryNode) as Subquery;
 
-                if(subqueryNode != null)
+                return new FromClause()
                 {
-                    var subquery = Visit(subqueryNode) as Subquery;
-
-                    return new FromClause()
-                    {
-                        TableReference = subquery
-                    };
-                }
+                    TableReference = subquery
+                };
             }
 
             throw new NotImplementedException();
@@ -260,7 +267,6 @@ namespace Koralium.SqlParser.ANTLR
 
         public override object VisitScalar_expression([NotNull] KoraliumParser.Scalar_expressionContext context)
         {
-            var text = context.GetText();
             var columnReferenceNode = context.column_reference();
 
             if(columnReferenceNode != null)
@@ -324,15 +330,12 @@ namespace Koralium.SqlParser.ANTLR
                 };
             }
 
-            {
-                var variableReferenceNode = context.variable_reference();
+            var variableReferenceNode = context.variable_reference();
 
-                if(variableReferenceNode != null)
-                {
-                    return Visit(variableReferenceNode) as VariableReference;
-                }
+            if(variableReferenceNode != null)
+            {
+                return Visit(variableReferenceNode) as VariableReference;
             }
-            
 
             throw new NotImplementedException();
         }
@@ -555,43 +558,41 @@ namespace Koralium.SqlParser.ANTLR
             return groupByClause;
         }
 
+
         public override object VisitGroupby_element([NotNull] KoraliumParser.Groupby_elementContext context)
         {
             //Scalar expression
+
+            var scalar = context.scalar_expression();
+
+            if (scalar != null)
             {
-                var scalar = context.scalar_expression();
+                var scalarExpression = Visit(context.scalar_expression()) as ScalarExpression;
 
-                if (scalar != null)
+                if (scalarExpression == null)
                 {
-                    var scalarExpression = Visit(context.scalar_expression()) as ScalarExpression;
-
-                    if (scalarExpression == null)
-                    {
-                        throw new SqlParserException("Could not parse scalar expression");
-                    }
-
-                    return new ExpressionGroup()
-                    {
-                        Expression = scalarExpression
-                    };
+                    throw new SqlParserException("Could not parse scalar expression");
                 }
+
+                return new ExpressionGroup()
+                {
+                    Expression = scalarExpression
+                };
             }
 
             //SUB QUERY
+            var subqueryNode = context.group_subquery();
+
+            if(subqueryNode != null)
             {
-                var subqueryNode = context.group_subquery();
+                var subquery = Visit(subqueryNode) as Group;
 
-                if(subqueryNode != null)
+                if(subquery == null)
                 {
-                    var subquery = Visit(subqueryNode) as Group;
-
-                    if(subquery == null)
-                    {
-                        throw new SqlParserException("Could not parse group by sub query");
-                    }
-
-                    return subquery;
+                    throw new SqlParserException("Could not parse group by sub query");
                 }
+
+                return subquery;
             }
 
             throw new NotImplementedException();
@@ -600,13 +601,11 @@ namespace Koralium.SqlParser.ANTLR
         public override object VisitSubquery([NotNull] KoraliumParser.SubqueryContext context)
         {
             string alias = null;
-            {
-                var aliasNode = context.table_alias();
+            var aliasNode = context.table_alias();
 
-                if(aliasNode != null)
-                {
-                    alias = aliasNode.GetText();
-                }
+            if(aliasNode != null)
+            {
+                alias = aliasNode.GetText();
             }
 
             var selectStatement = Visit(context.select_statement()) as SelectStatement;
