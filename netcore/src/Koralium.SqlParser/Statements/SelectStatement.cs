@@ -2,7 +2,6 @@
 using Koralium.SqlParser.Expressions;
 using Koralium.SqlParser.Statements;
 using Koralium.SqlParser.Visitor;
-using System;
 using System.Collections.Generic;
 
 namespace Koralium.SqlParser

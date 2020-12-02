@@ -13,11 +13,9 @@
  */
 using Koralium.Shared;
 using Koralium.SqlParser;
-using Koralium.SqlParser.ANTLR;
 using Koralium.SqlToExpression.Executors;
 using Koralium.SqlToExpression.Interfaces;
 using Koralium.SqlToExpression.Metadata;
-using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Koralium.SqlToExpression.Utils;
@@ -25,7 +23,6 @@ using Koralium.SqlToExpression.Visitors;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 

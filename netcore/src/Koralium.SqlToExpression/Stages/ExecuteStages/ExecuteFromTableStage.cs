@@ -13,7 +13,6 @@
  */
 using Koralium.Shared;
 using Koralium.SqlToExpression.Executors;
-using Koralium.SqlToExpression.Interfaces;
 using System;
 using System.Linq;
 using System.Linq.Expressions;

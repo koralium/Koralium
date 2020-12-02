@@ -4,7 +4,6 @@ using Koralium.SqlParser.Expressions;
 using Koralium.SqlParser.Literals;
 using Koralium.SqlParser.Visitor;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Koralium.SqlToExpression.Visitors.Offset

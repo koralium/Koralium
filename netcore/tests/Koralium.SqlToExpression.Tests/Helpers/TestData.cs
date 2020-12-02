@@ -1,8 +1,6 @@
 ﻿using Koralium.SqlToExpression.Tests.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Koralium.SqlToExpression.Tests.Helpers
 {

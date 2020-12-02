@@ -4,8 +4,6 @@ using Koralium.Grpc;
 using Koralium.Shared;
 using Koralium.Transport.LegacyGrpc.Encoders;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 

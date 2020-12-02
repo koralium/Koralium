@@ -8,7 +8,6 @@ using Koralium.SqlToExpression.Stages.CompileStages;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
 namespace Koralium.SqlToExpression.Visitors.From
 {

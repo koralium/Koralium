@@ -1,5 +1,4 @@
-﻿using EntityFrameworkCore.Koralium.Extensions;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System;

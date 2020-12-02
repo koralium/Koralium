@@ -4,11 +4,9 @@ using Koralium.SqlToExpression.Extensions;
 using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Koralium.SqlToExpression.Visitors.Select;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace Koralium.SqlToExpression.Visitors.OrderBy
 {

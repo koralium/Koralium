@@ -5,9 +5,7 @@ using Koralium.SqlParser.GroupBy;
 using Koralium.SqlParser.Literals;
 using Koralium.SqlParser.OrderBy;
 using Koralium.SqlParser.Statements;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Koralium.SqlParser.Visitor
 {

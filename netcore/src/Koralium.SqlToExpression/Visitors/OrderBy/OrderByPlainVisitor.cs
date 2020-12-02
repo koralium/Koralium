@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace Koralium.SqlToExpression.Visitors.OrderBy
 {

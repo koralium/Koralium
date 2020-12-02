@@ -1,7 +1,6 @@
 ﻿using Koralium.Transport;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Koralium.Utils
 {
