@@ -1,6 +1,7 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Koralium.SqlParser.Clauses;
+using Koralium.SqlParser.Exceptions;
 using Koralium.SqlParser.Expressions;
 using Koralium.SqlParser.From;
 using Koralium.SqlParser.GroupBy;
@@ -28,7 +29,7 @@ namespace Koralium.SqlParser.ANTLR
 
                 if(statement == null)
                 {
-                    throw new Exception("Unexpected statement");
+                    throw new SqlParserException("Unexpected statement");
                 }
                 statements.Add(statement);
             }
@@ -50,8 +51,7 @@ namespace Koralium.SqlParser.ANTLR
                     var selectExpression = Visit(selectExpressionNode) as SelectExpression;
                     if (selectExpression == null)
                     {
-                        throw new Exception();
-                        //TODO: Fix exception
+                        throw new SqlParserException("Could not parse select statement");
                     }
                     selectStatement.SelectElements.Add(selectExpression);
                 }
@@ -67,8 +67,7 @@ namespace Koralium.SqlParser.ANTLR
 
                     if (fromClause == null)
                     {
-                        throw new Exception();
-                        //TODO: Fix exception
+                        throw new SqlParserException("Could not parse from clause");
                     }
                     selectStatement.FromClause = fromClause;
                 }
@@ -86,8 +85,7 @@ namespace Koralium.SqlParser.ANTLR
 
                     if(whereClause == null)
                     {
-                        throw new Exception();
-                        //TODO: Fix exception
+                        throw new SqlParserException("Could not parse where clause");
                     }
 
                     selectStatement.WhereClause = whereClause;
@@ -104,8 +102,7 @@ namespace Koralium.SqlParser.ANTLR
 
                     if(groupByClause == null)
                     {
-                        throw new Exception();
-                        //TODO: Fix exception
+                        throw new SqlParserException("Could not parse group by clause");
                     }
                     selectStatement.GroupByClause = groupByClause;
                 }
@@ -121,8 +118,7 @@ namespace Koralium.SqlParser.ANTLR
 
                     if(havingClause == null)
                     {
-                        throw new Exception();
-                        //TODO: Fix exception
+                        throw new SqlParserException("Could not parse having clause");
                     }
                     selectStatement.HavingClause = havingClause;
                 }
@@ -138,8 +134,7 @@ namespace Koralium.SqlParser.ANTLR
 
                     if(orderByClause == null)
                     {
-                        throw new Exception();
-                        //TODO: Fix exception
+                        throw new SqlParserException("Could not parse order by clause");
                     }
                     selectStatement.OrderByClause = orderByClause;
                 }
@@ -155,8 +150,7 @@ namespace Koralium.SqlParser.ANTLR
 
                     if (limit == null)
                     {
-                        throw new Exception();
-                        //TODO: Fix exception
+                        throw new SqlParserException("Could not parse limit");
                     }
                     offsetLimitClause.Limit = limit;
                 }
@@ -166,8 +160,7 @@ namespace Koralium.SqlParser.ANTLR
 
                     if(offset == null)
                     {
-                        throw new Exception();
-                        //TODO: Fix exception
+                        throw new SqlParserException("Could not parse offset");
                     }
                     offsetLimitClause.Offset = offset;
                 }
@@ -247,8 +240,7 @@ namespace Koralium.SqlParser.ANTLR
 
             if(scalarExpression == null)
             {
-                throw new Exception();
-                //TODO: Fix exception
+                throw new SqlParserException("Could not parse scalar expression");
             }
 
             string alias = null;
@@ -383,7 +375,7 @@ namespace Koralium.SqlParser.ANTLR
                 }
                 else
                 {
-                    //TODO: Throw error
+                    throw new SqlParserException($"Unmatched literal: {value}");
                 }
             }
             return base.VisitLiteral_value(context);
@@ -417,7 +409,7 @@ namespace Koralium.SqlParser.ANTLR
             }
             else
             {
-                throw new Exception();
+                throw new SqlParserException("Could not parse boolean expression");
             }
 
             return whereClause;
@@ -435,8 +427,7 @@ namespace Koralium.SqlParser.ANTLR
                     return BooleanBinaryType.OR;
             }
 
-            throw new Exception();
-            //TODO: Fix exception
+            throw new SqlParserException($"Unexpected boolean binary type '{typeText}'");
         }
 
         public override object VisitBoolean_expression([NotNull] KoraliumParser.Boolean_expressionContext context)
@@ -490,14 +481,12 @@ namespace Koralium.SqlParser.ANTLR
                     }
                     else
                     {
-                        throw new Exception();
-                        //TODO: Throw exception
+                        throw new SqlParserException("Could not parse scalar expression");
                     }
                 }
                 return functionCall;
             }
-            throw new Exception();
-            //TODO: Fix exception
+            throw new SqlParserException("Empty function name");
         }
 
         public override object VisitBoolean_comparison_expression([NotNull] KoraliumParser.Boolean_comparison_expressionContext context)
@@ -506,8 +495,7 @@ namespace Koralium.SqlParser.ANTLR
 
             if(typeNode == null)
             {
-                throw new Exception();
-                //TODO: Fix exception
+                throw new SqlParserException("Boolean comparison without any type");
             }
 
             var comparisionOperation = typeNode.GetText();
@@ -558,8 +546,7 @@ namespace Koralium.SqlParser.ANTLR
 
                 if(groupElement == null)
                 {
-                    throw new Exception();
-                    //TODO: Fix exception
+                    throw new SqlParserException("Could not parse group by group");
                 }
 
                 groupByClause.Groups.Add(groupElement);
@@ -580,8 +567,7 @@ namespace Koralium.SqlParser.ANTLR
 
                     if (scalarExpression == null)
                     {
-                        throw new Exception();
-                        //TODO: Fix exception
+                        throw new SqlParserException("Could not parse scalar expression");
                     }
 
                     return new ExpressionGroup()
@@ -601,8 +587,7 @@ namespace Koralium.SqlParser.ANTLR
 
                     if(subquery == null)
                     {
-                        throw new Exception();
-                        //TODO: Fix exception
+                        throw new SqlParserException("Could not parse group by sub query");
                     }
 
                     return subquery;
@@ -628,8 +613,7 @@ namespace Koralium.SqlParser.ANTLR
             
             if(selectStatement == null)
             {
-                //TODO: FIx exception
-                throw new Exception();
+                throw new SqlParserException("Could not parse select statement");
             }
 
             return new Subquery()
@@ -645,8 +629,7 @@ namespace Koralium.SqlParser.ANTLR
 
             if (selectStatement == null)
             {
-                //TODO: Fix exception
-                throw new Exception();
+                throw new SqlParserException("Could not parse select statement");
             }
 
             return new SelectStatementGroup()
@@ -661,8 +644,7 @@ namespace Koralium.SqlParser.ANTLR
 
             if (selectStatement == null)
             {
-                //TODO: Fix exception
-                throw new Exception();
+                throw new SqlParserException("Could not parse select statement");
             }
 
             return new OrderBySubquery()
@@ -685,7 +667,7 @@ namespace Koralium.SqlParser.ANTLR
                 };
             }
 
-            throw new Exception("Missing expression in having");
+            throw new SqlParserException("Missing expression in having");
         }
 
         public override object VisitIn_expression([NotNull] KoraliumParser.In_expressionContext context)
@@ -696,7 +678,7 @@ namespace Koralium.SqlParser.ANTLR
 
                 if(left == null)
                 {
-                    throw new Exception("Could not find a scalar expression in left side of 'IN'");
+                    throw new SqlParserException("Could not find a scalar expression in left side of 'IN'");
                 }
 
                 InExpression inExpression = new InExpression()
@@ -713,7 +695,7 @@ namespace Koralium.SqlParser.ANTLR
 
                     if(scalarExpression == null)
                     {
-                        throw new Exception("Could not find a scalar expression in 'IN' array");
+                        throw new SqlParserException("Could not find a scalar expression in 'IN' array");
                     }
                     inExpression.Values.Add(scalarExpression);
                 }
@@ -732,14 +714,14 @@ namespace Koralium.SqlParser.ANTLR
 
                 if (left == null)
                 {
-                    throw new Exception("Could not find a scalar expression in left side of 'LIKE'");
+                    throw new SqlParserException("Could not find a scalar expression in left side of 'LIKE'");
                 }
 
                 var right = Visit(context.right) as ScalarExpression;
 
                 if (right == null)
                 {
-                    throw new Exception("Could not find a scalar expression in right side of 'LIKE'");
+                    throw new SqlParserException("Could not find a scalar expression in right side of 'LIKE'");
                 }
 
                 return new LikeExpression()
@@ -758,7 +740,7 @@ namespace Koralium.SqlParser.ANTLR
 
             if(orderByElements == null || orderByElements.Length == 0)
             {
-                throw new Exception("Order by without any elements");
+                throw new SqlParserException("Order by without any elements");
             }
             OrderByClause orderByClause = new OrderByClause();
             foreach(var orderByElementNode in orderByElements)
@@ -780,7 +762,7 @@ namespace Koralium.SqlParser.ANTLR
 
                 if(scalarExpression == null)
                 {
-                    throw new Exception("Could not find a scalar expression in order by element");
+                    throw new SqlParserException("Could not find a scalar expression in order by element");
                 }
                 bool ascending = true;
                 if(context.order != null)
@@ -817,16 +799,14 @@ namespace Koralium.SqlParser.ANTLR
             
             if(variableReference == null)
             {
-                throw new Exception();
-                //TODO: Fix exception
+                throw new SqlParserException("Could not parse variable reference");
             }
             
             var scalarExpression = Visit(context.scalar_expression()) as ScalarExpression;
 
             if(scalarExpression == null)
             {
-                throw new Exception();
-                //TODO: Fix exception
+                throw new SqlParserException("Could not parse scalar expression");
             }
 
             return new SetVariableStatement()
@@ -840,7 +820,7 @@ namespace Koralium.SqlParser.ANTLR
         {
             if (context.variableName == null)
             {
-                throw new Exception("Could not get variable name");
+                throw new SqlParserException("Could not get variable name");
             }
 
             return new VariableReference()
@@ -863,7 +843,7 @@ namespace Koralium.SqlParser.ANTLR
 
                 if (columnNodes == null)
                 {
-                    throw new Exception("Missing columns in CONTAINS");
+                    throw new SqlParserException("Missing columns in CONTAINS");
                 }
 
                 foreach (var columnNode in columnNodes)
@@ -872,7 +852,7 @@ namespace Koralium.SqlParser.ANTLR
 
                     if (columnReference == null)
                     {
-                        throw new Exception("parameter in CONTAINS could not be resolved to a column");
+                        throw new SqlParserException("parameter in CONTAINS could not be resolved to a column");
                     }
 
                     searchExpression.Columns.Add(columnReference);
@@ -884,14 +864,14 @@ namespace Koralium.SqlParser.ANTLR
 
             if(scalarExpressionNode == null)
             {
-                throw new Exception("Could not find any search term in CONTAINS");
+                throw new SqlParserException("Could not find any search term in CONTAINS");
             }
 
             var scalarExpression = Visit(scalarExpressionNode) as ScalarExpression;
 
             if(scalarExpression == null)
             {
-                throw new Exception("Could not parse search term in CONTAINS");
+                throw new SqlParserException("Could not parse search term in CONTAINS");
             }
 
             searchExpression.Value = scalarExpression;
@@ -905,14 +885,14 @@ namespace Koralium.SqlParser.ANTLR
 
             if(scalarExpressionNode == null)
             {
-                throw new Exception("Left side of IS NOT? NULL could not be parsed");
+                throw new SqlParserException("Left side of IS NOT? NULL could not be parsed");
             }
 
             var scalarExpression = Visit(scalarExpressionNode) as ScalarExpression;
 
             if(scalarExpression == null)
             {
-                throw new Exception("Left side of IS NOT? NULL is not a scalar expression");
+                throw new SqlParserException("Left side of IS NOT? NULL is not a scalar expression");
             }
 
             bool isNot = context.NOT() != null;
