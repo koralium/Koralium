@@ -1,12 +1,9 @@
 ﻿using FluentAssertions;
 using Koralium.SqlParser.Expressions;
 using Koralium.SqlParser.From;
-using Koralium.SqlParser.Literals;
 using Koralium.SqlParser.Statements;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Koralium.SqlParser.SmokeTests
 {

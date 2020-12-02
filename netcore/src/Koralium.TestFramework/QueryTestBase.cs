@@ -1,8 +1,6 @@
-﻿using EntityFrameworkCore.Koralium.Extensions;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Koralium.TestFramework

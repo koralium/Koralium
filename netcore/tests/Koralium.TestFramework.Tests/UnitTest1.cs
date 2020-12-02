@@ -3,7 +3,6 @@ using Koralium.WebTests.Entities.tpch;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Koralium.TestFramework.Tests
 {

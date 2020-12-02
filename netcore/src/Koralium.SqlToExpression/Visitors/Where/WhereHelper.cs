@@ -1,9 +1,7 @@
 ﻿using Koralium.SqlParser.Clauses;
 using Koralium.SqlToExpression.Stages.CompileStages;
-using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace Koralium.SqlToExpression.Visitors.Where
 {

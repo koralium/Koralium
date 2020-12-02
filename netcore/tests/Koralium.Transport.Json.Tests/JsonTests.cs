@@ -1,7 +1,6 @@
 using FluentAssertions;
 using Koralium.WebTests;
 using Koralium.WebTests.Entities.tpch;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net;

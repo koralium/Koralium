@@ -1,11 +1,9 @@
 ﻿using Koralium.Grpc;
 using Koralium.Transport.LegacyGrpc.Interfaces;
 using Koralium.Transport.LegacyGrpc.Utils;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Koralium.Transport.LegacyGrpc.Encoders
 {

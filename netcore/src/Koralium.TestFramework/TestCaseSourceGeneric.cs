@@ -7,7 +7,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Security;
-using System.Text;
 
 namespace Koralium.TestFramework
 {

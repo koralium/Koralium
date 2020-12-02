@@ -1,9 +1,7 @@
 ﻿using Koralium.WebTests;
 using Koralium.WebTests.Entities.tpch;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Koralium.TestFramework.Tests
 {

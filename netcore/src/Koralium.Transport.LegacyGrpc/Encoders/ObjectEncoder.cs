@@ -3,7 +3,6 @@ using Koralium.Transport.LegacyGrpc.Interfaces;
 using Koralium.Transport.LegacyGrpc.Utils;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Koralium.Transport.LegacyGrpc.Encoders
 {

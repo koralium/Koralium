@@ -1,8 +1,6 @@
 ﻿using Koralium.Transport.LegacyGrpc.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
-using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Koralium.Transport.LegacyGrpc.Extensions

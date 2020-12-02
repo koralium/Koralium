@@ -1,12 +1,10 @@
 ﻿using Koralium.Shared;
-using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages.ExecuteStages;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Koralium.SqlToExpression.Executors.AggregateFunction

@@ -12,9 +12,7 @@
  * limitations under the License.
  */
 using Koralium.SqlToExpression.Tests.Helpers;
-using Koralium.SqlToExpression.Tests.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 

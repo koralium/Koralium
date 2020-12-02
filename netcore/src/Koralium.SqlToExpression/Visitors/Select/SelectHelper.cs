@@ -8,7 +8,6 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 
 namespace Koralium.SqlToExpression.Visitors.Select
 {

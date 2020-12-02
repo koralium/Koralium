@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
-using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using Koralium.Transport.Json.Encoders;
 using System.Text.Json;
-using Grpc.Core;
 
 namespace Koralium.Transport.Json
 {

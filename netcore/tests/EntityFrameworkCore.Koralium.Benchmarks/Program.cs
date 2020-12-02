@@ -2,9 +2,8 @@
 
 namespace EntityFrameworkCore.Koralium.Benchmarks
 {
-    class Program
+    static class Program
     {
-        public static string ServerUrl;
         static void Main(string[] args)
         {
             var webFactory = new TestWebFactory();

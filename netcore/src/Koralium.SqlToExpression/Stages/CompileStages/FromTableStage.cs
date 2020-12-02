@@ -12,7 +12,6 @@
  * limitations under the License.
  */
 using Koralium.Shared;
-using Koralium.SqlToExpression.Interfaces;
 using Koralium.SqlToExpression.Models;
 using System;
 using System.Diagnostics;

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace Koralium.SqlToExpression.Visitors.Select
 {
