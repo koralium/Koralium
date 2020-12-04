@@ -37,7 +37,7 @@ namespace Koralium.SqlToExpression.Visitors.Select
         {
             if (expressionStack.Count == 0)
             {
-                foreach (var property in _previousStage.TypeInfo.GetProperties().OrderBy(x => x.Key))
+                foreach (var property in _previousStage.TypeInfo.GetProperties())
                 {
                     if (property.Value.GetCustomAttribute<KoraliumIgnoreAttribute>() != null)
                     {

@@ -381,7 +381,24 @@ namespace Koralium.SqlParser.ANTLR
                     throw new SqlParserException($"Unmatched literal: {value}");
                 }
             }
-            return base.VisitLiteral_value(context);
+
+            if (context.TRUE() != null)
+            {
+                return new BooleanLiteral()
+                {
+                    Value = true
+                };
+            }
+
+            if(context.FALSE() != null)
+            {
+                return new BooleanLiteral()
+                {
+                    Value = false
+                };
+            }
+
+            throw new NotImplementedException();
         }
 
         public override object VisitColumn_reference([NotNull] KoraliumParser.Column_referenceContext context)
@@ -435,6 +452,12 @@ namespace Koralium.SqlParser.ANTLR
 
         public override object VisitBoolean_expression([NotNull] KoraliumParser.Boolean_expressionContext context)
         {
+            //Check if there is an expression inside 
+            if(context.inner != null)
+            {
+                return Visit(context.inner);
+            }
+
             var booleanBinaryTypeNode = context.boolean_binary_type();
 
             if(booleanBinaryTypeNode != null)

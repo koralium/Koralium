@@ -41,7 +41,7 @@ namespace Koralium.Utils
             }
             if (type.Equals(typeof(string)))
             {
-                return (ColumnType.String, false);
+                return (ColumnType.String, true);
             }
             if (type.Equals(typeof(bool)))
             {

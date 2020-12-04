@@ -15,6 +15,9 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using EFCore.BulkExtensions;
+using Koralium.Transport.ArrowFlight;
+using Koralium.Transport.ArrowFlight.Extensions;
+using Koralium.Transport.Json.Extensions;
 using Koralium.Transport.LegacyGrpc.Extensions;
 using Koralium.WebTests.Database;
 using Koralium.WebTests.Entities;
@@ -48,7 +51,10 @@ namespace Koralium.WebTests
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddGrpc();
+            services.AddControllers();
+
+            services.AddGrpc()
+                .AddKoraliumFlightServer();
 
             var connection = new SqliteConnection("Data Source=Sharable;Mode=Memory;Cache=Shared");
             connection.Open();
@@ -173,8 +179,11 @@ namespace Koralium.WebTests
             {
                 endpoints.MapKoraliumJsonPost("sql");
                 endpoints.MapKoraliumJsonGet("sql");
+                endpoints.MapKoraliumArrowFlight();
 
                 endpoints.AddKoraliumLegacyGrpcEndpoint();
+
+                endpoints.MapControllers();
             });
         }
     }
