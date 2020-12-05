@@ -39,7 +39,7 @@ namespace Koralium.WebTests
                                  // Note: TLS with HTTP/2 isn't supported in mac
                                  // Wait for next version of macOS
                                  options.Listen(IPEndPoint.Parse("0.0.0.0:5015"), l => l.Protocols = HttpProtocols.Http1);
-                                 options.Listen(IPEndPoint.Parse("0.0.0.0:5017"), l => l.Protocols = HttpProtocols.Http2);
+                                 options.Listen(IPEndPoint.Parse("0.0.0.0:5016"), l => l.Protocols = HttpProtocols.Http2);
                              }
                              else if (context.HostingEnvironment.IsProduction())
                              {

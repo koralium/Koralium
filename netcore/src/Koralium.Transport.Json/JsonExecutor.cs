@@ -70,7 +70,6 @@ namespace Koralium.Transport.Json
             responseStream.WriteEndObject();
 
             encodingWatch.Stop();
-            Console.WriteLine("Encoding time:" + encodingWatch.ElapsedMilliseconds);
 
             await responseStream.FlushAsync();
         }

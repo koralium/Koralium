@@ -226,5 +226,10 @@ namespace Koralium.SqlParser.Visitor
         {
             //NOP
         }
+
+        public virtual void VisitBooleanLiteral(BooleanLiteral booleanLiteral)
+        {
+            //NOP
+        }
     }
 }

@@ -10,14 +10,14 @@ namespace Koralium.SqlToExpression.Tests
         public void TestGetSchema()
         {
             var expected = ImmutableList.Create(
-                new ColumnMetadata("acctbal", typeof(double), null),
-                new ColumnMetadata("address", typeof(string), null),
-                new ColumnMetadata("comment", typeof(string), null),
                 new ColumnMetadata("custkey", typeof(long), null),
-                new ColumnMetadata("mktsegment", typeof(string), null),
                 new ColumnMetadata("name", typeof(string), null),
+                new ColumnMetadata("address", typeof(string), null),
                 new ColumnMetadata("nationkey", typeof(long), null),
-                new ColumnMetadata("phone", typeof(string), null)
+                new ColumnMetadata("phone", typeof(string), null),
+                new ColumnMetadata("acctbal", typeof(double), null),
+                new ColumnMetadata("mktsegment", typeof(string), null),
+                new ColumnMetadata("comment", typeof(string), null)
                 );
 
             var columns = SqlExecutor.GetSchema("select * from customer");

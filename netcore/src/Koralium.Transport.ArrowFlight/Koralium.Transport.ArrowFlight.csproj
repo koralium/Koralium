@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <DefineConstants>$(DefineConstants);UNSAFE_BYTEBUFFER;BYTEBUFFER_NO_BOUNDS_CHECK;ENABLE_SPAN_T</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="library\Protos\Flight.proto" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="library\Arrow\" />
+    <Folder Include="library\Flight\" />
+    <Folder Include="library\Flight.AspNetCore\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.14.0" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.33.1" />
+    <PackageReference Include="Grpc.Tools" Version="2.33.1" PrivateAssets="All" />
+    <PackageReference Include="Grpc.AspNetCore.Server" Version="2.33.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Koralium.Transport\Koralium.Transport.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="library\Protos\Flight.proto" />
+  </ItemGroup>
+
+</Project>

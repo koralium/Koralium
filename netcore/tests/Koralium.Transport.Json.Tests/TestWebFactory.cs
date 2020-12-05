@@ -42,5 +42,16 @@ namespace Koralium.Transport.Json.Tests
         {
             return "http://127.0.0.1:5016";
         }
+
+        public void Stop()
+        {
+            host.StopAsync().Wait();
+            host.Dispose();
+        }
+
+        public void Dispose()
+        {
+            Stop();
+        }
     }
 }

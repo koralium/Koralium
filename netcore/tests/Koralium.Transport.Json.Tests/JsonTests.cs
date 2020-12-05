@@ -29,6 +29,12 @@ namespace Koralium.Transport.Json.Tests
             url = $"{webFactory.GetUrl()}/sql";
         }
 
+        [OneTimeTearDown]
+        public void Teardown()
+        {
+            webFactory.Stop();
+        }
+
         [Test]
         public async Task TestPost()
         {
