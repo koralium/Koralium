@@ -45,5 +45,16 @@ namespace Koralium.Transport.ArrowFlight.Tests
         {
             return GrpcChannel.ForAddress("http://127.0.0.1:5016");
         }
+
+        public void Stop()
+        {
+            host.StopAsync().Wait();
+            host.Dispose();
+        }
+
+        public void Dispose()
+        {
+            Stop();
+        }
     }
 }

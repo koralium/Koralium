@@ -19,6 +19,12 @@ namespace Koralium.Transport.ArrowFlight.Tests
             client = new Apache.Arrow.Flight.Client.FlightClient(testWebFactory.GetChannel());
         }
 
+        [OneTimeTearDown]
+        public void Teardown()
+        {
+            testWebFactory.Stop();
+        }
+
         [Test]
         public async Task Test1()
         {
