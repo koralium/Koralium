@@ -38,7 +38,7 @@ namespace Koralium.SqlToExpression.Tests
             var result = await SqlExecutor.Execute("select * from customer");
             var expected = TpchData.Customers
                 .Select(x =>
-                    new { x.Acctbal, x.Address, x.Comment, x.Custkey, x.Mktsegment, x.Name, x.Nationkey, x.Phone }
+                    new { x.Custkey, x.Name, x.Address, x.Nationkey, x.Phone, x.Acctbal, x.Mktsegment, x.Comment }
                 ).AsQueryable();
 
             AssertAreEqual(expected, result.Result);
@@ -124,7 +124,7 @@ namespace Koralium.SqlToExpression.Tests
             var expected = TpchData.Customers
                 .Where(x => x.Name == firstName)
                 .Select(x =>
-                    new { x.Acctbal, x.Address, x.Comment, x.Custkey, x.Mktsegment, x.Name, x.Nationkey, x.Phone }
+                    new { x.Custkey, x.Name, x.Address, x.Nationkey, x.Phone, x.Acctbal, x.Mktsegment, x.Comment }
                 ).AsQueryable();
 
             AssertAreEqual(expected, result.Result);
@@ -138,7 +138,7 @@ namespace Koralium.SqlToExpression.Tests
             var expected = TpchData.Customers
                 .Where(x => x.Name == firstName && x.Custkey > 10)
                 .Select(x =>
-                    new { x.Acctbal, x.Address, x.Comment, x.Custkey, x.Mktsegment, x.Name, x.Nationkey, x.Phone }
+                    new { x.Custkey, x.Name, x.Address, x.Nationkey, x.Phone, x.Acctbal, x.Mktsegment, x.Comment }
                 ).AsQueryable();
 
             AssertAreEqual(expected, result.Result);
@@ -152,7 +152,7 @@ namespace Koralium.SqlToExpression.Tests
             var expected = TpchData.Customers
                 .Where(x => x.Name == firstName)
                 .Select(x =>
-                    new { x.Acctbal, x.Address, x.Comment, x.Custkey, x.Mktsegment, x.Name, x.Nationkey, x.Phone }
+                    new { x.Custkey, x.Name, x.Address, x.Nationkey, x.Phone, x.Acctbal, x.Mktsegment, x.Comment }
                 ).AsQueryable();
 
             AssertAreEqual(expected, result.Result);
@@ -165,7 +165,7 @@ namespace Koralium.SqlToExpression.Tests
             var expected = TpchData.Customers
                 .Where(x => x.Custkey > 10)
                 .Select(x =>
-                    new { x.Acctbal, x.Address, x.Comment, x.Custkey, x.Mktsegment, x.Name, x.Nationkey, x.Phone }
+                    new { x.Custkey, x.Name, x.Address, x.Nationkey, x.Phone, x.Acctbal, x.Mktsegment, x.Comment }
                 ).AsQueryable();
 
             AssertAreEqual(expected, result.Result);
@@ -177,7 +177,7 @@ namespace Koralium.SqlToExpression.Tests
             var result = await SqlExecutor.Execute($"select * from (select * from customer) c");
             var expected = TpchData.Customers
                 .Select(x =>
-                    new { x.Acctbal, x.Address, x.Comment, x.Custkey, x.Mktsegment, x.Name, x.Nationkey, x.Phone }
+                    new { x.Custkey, x.Name, x.Address, x.Nationkey, x.Phone, x.Acctbal, x.Mktsegment, x.Comment }
                 ).AsQueryable();
 
             AssertAreEqual(expected, result.Result);

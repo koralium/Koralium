@@ -51,7 +51,9 @@ namespace Koralium.Transport.ArrowFlight.Tests
 
             var expectedEndpoints = new List<FlightEndpoint>()
             {
-                new FlightEndpoint(new FlightTicket("select * from orders"), new List<FlightLocation>())
+                new FlightEndpoint(new FlightTicket("select * from orders"), new List<FlightLocation>(){
+                    new FlightLocation("grpc+tcp://127.0.0.1:5016")
+                })
             };
 
             var expectedFlightInfo = new FlightInfo(expectedSchema, expectedDescriptor, expectedEndpoints);
@@ -73,7 +75,9 @@ namespace Koralium.Transport.ArrowFlight.Tests
 
             var expectedEndpoints = new List<FlightEndpoint>()
             {
-                new FlightEndpoint(new FlightTicket("select orderkey from orders"), new List<FlightLocation>())
+                new FlightEndpoint(new FlightTicket("select orderkey from orders"), new List<FlightLocation>(){
+                    new FlightLocation("grpc+tcp://127.0.0.1:5016")
+                })
             };
 
             var expectedFlightInfo = new FlightInfo(expectedSchema, expectedDescriptor, expectedEndpoints);

@@ -47,10 +47,10 @@ namespace Data.Koralium.Tests
 
             var reader = cmd.ExecuteReader();
 
-            var nameOrdinal = reader.GetOrdinal("name");
+            var companyOrdinal = reader.GetOrdinal("company");
             while (reader.Read())
             {
-                var company = reader.GetFieldValue<Company>(0);
+                var company = reader.GetFieldValue<Company>(companyOrdinal);
             }
         }
 
