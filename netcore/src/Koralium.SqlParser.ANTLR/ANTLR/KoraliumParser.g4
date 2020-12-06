@@ -42,7 +42,10 @@ subquery: '(' select_statement ')' ( AS? table_alias)?;
 orderby_subquery: '(' select_statement ')';
 group_subquery: '(' select_statement ')';
 
-variable_reference: variableName=VARIABLE_ID;
+variable_reference
+	: variableName=VARIABLE_ID
+	| identifier=IDENTIFIER
+	;
 
 select_expression
 	: '*'
