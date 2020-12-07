@@ -77,6 +77,28 @@ namespace Koralium.SqlParser.SmokeTests
         }
 
         [Test]
+        public void TestSetVariableNoAt()
+        {
+            var actual = Parser.Parse("SET test = 'a'").Statements;
+            var expected = new List<Statement>()
+            {
+                new SetVariableStatement()
+                {
+                    VariableReference = new VariableReference()
+                    {
+                        Name = "test"
+                    },
+                    ScalarExpression = new StringLiteral()
+                    {
+                        Value = "a"
+                    }
+                }
+            };
+
+            actual.Should().BeEquivalentTo(expected, x => x.RespectingRuntimeTypes());
+        }
+
+        [Test]
         public void TestVaraibleInWhere()
         {
             var actual = Parser.Parse("SELECT * FROM test WHERE c1 = @Param1").Statements;

@@ -840,14 +840,14 @@ namespace Koralium.SqlParser.ANTLR
 
         public override object VisitVariable_reference([NotNull] KoraliumParser.Variable_referenceContext context)
         {
-            if (context.variableName == null)
+            if (context.variableName == null && context.identifier == null)
             {
                 throw new SqlParserException("Could not get variable name");
             }
 
             return new VariableReference()
             {
-                Name = context.variableName.Text
+                Name = context.variableName?.Text ?? context.identifier?.Text
             };
         }
 

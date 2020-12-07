@@ -62,6 +62,10 @@ IDENTIFIER:
 	| '[' ~']'* ']'
 	| [a-zA-Z_] [a-zA-Z_0-9]*;
 
+COMMENT
+  :  '--' ~( '\r' | '\n' )*
+  ;
+
 STRING_LITERAL: '\'' ( ~'\'' | '\'\'')* '\'';
 
 VARIABLE_ID: '@' [a-zA-Z_] [a-zA-Z_0-9]*;
