@@ -14,5 +14,15 @@ namespace Koralium.SqlParser.Expressions
         {
             visitor.VisitBooleanComparisonExpression(this);
         }
+
+        public override SqlNode Clone()
+        {
+            return new BooleanComparisonExpression()
+            {
+                Left = Left.Clone() as ScalarExpression,
+                Right = Right.Clone() as ScalarExpression,
+                Type = Type
+            };
+        }
     }
 }

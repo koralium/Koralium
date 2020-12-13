@@ -1,6 +1,8 @@
-﻿using Koralium.Metadata;
+﻿using Koralium.Interfaces;
 using Koralium.Models;
+using Koralium.Resolvers;
 using Koralium.Shared;
+using Koralium.SqlParser;
 using Koralium.SqlToExpression;
 using Koralium.Transport;
 using Koralium.Utils;
@@ -10,6 +12,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Koralium
 {
@@ -18,11 +21,17 @@ namespace Koralium
         private readonly SqlExecutor _sqlExecutor;
         private readonly IServiceProvider _serviceProvider;
         private readonly MetadataStore _metadataStore;
-        public KoraliumTransportService(SqlExecutor sqlExecutor, IServiceProvider serviceProvider, MetadataStore metadataStore)
+        private readonly ISqlParser _sqlParser;
+        public KoraliumTransportService(
+            SqlExecutor sqlExecutor, 
+            IServiceProvider serviceProvider, 
+            MetadataStore metadataStore,
+            ISqlParser sqlParser)
         {
             _sqlExecutor = sqlExecutor;
             _serviceProvider = serviceProvider;
             _metadataStore = metadataStore;
+            _sqlParser = sqlParser;
         }
 
         private Transport.Column GetTransportColumn(TableColumn tableColumn)
@@ -84,12 +93,48 @@ namespace Koralium
                 customMetadataStore));
         }
 
-        public IImmutableList<Transport.Column> GetSchema(string sql, SqlParameters sqlParameters, HttpContext httpContext)
-        {
-            var resultColumns = _sqlExecutor.GetSchema(sql, sqlParameters);
 
+        public async Task<Transport.TransportPartitionsResult> GetPartitions(bool canHandlePartitions, string sql, SqlParameters sqlParameters, HttpContext httpContext)
+        {
+            var sqlTree = _sqlParser.Parse(sql, out var errors);
+
+            if(errors.Count > 0)
+            {
+                throw new SqlErrorException(errors.First().Message);
+            }
+
+            var schema = _sqlExecutor.GetSchema(sqlTree, sqlParameters);
+
+            //Take table name and get the partition resolver
+            if(!_metadataStore.TryGetTable(schema.TableName, out var table))
+            {
+                throw new SqlErrorException($"The table {schema.TableName} was not found.");
+            }
+
+            //Get the partitions
+            var discoveryService = _serviceProvider.GetService<IDiscoveryService>();
+            var partitionsBuilder = new PartitionsBuilder(sqlTree);
+            var partitions = await table.PartitionResolver.GetPartitions(canHandlePartitions, partitionsBuilder, httpContext, new PartitionOptions(_serviceProvider, discoveryService));
+
+            var partitionListBuilder = ImmutableList.CreateBuilder<Transport.TransportPartition>();
+
+            foreach(var partition in partitions)
+            {
+                List<TransportServiceLocation> locations = new List<TransportServiceLocation>(); 
+                foreach(var location in partition.Locations)
+                {
+                    locations.Add(new TransportServiceLocation(location.Host, location.Tls));
+                }
+                partitionListBuilder.Add(new Transport.TransportPartition(locations, partition.SqlTree.Print()));
+            }
+
+            return new Transport.TransportPartitionsResult(ConvertColumns(schema.Columns), partitionListBuilder.ToImmutable());
+        }
+
+        private IImmutableList<Transport.Column> ConvertColumns(IImmutableList<ColumnMetadata> columnMetadatas)
+        {
             var columnsBuilder = ImmutableList.CreateBuilder<Transport.Column>();
-            foreach (var column in resultColumns)
+            foreach (var column in columnMetadatas)
             {
                 if (!_metadataStore.TryGetTypeColumns(column.Type, out var columns))
                 {
@@ -107,6 +152,13 @@ namespace Koralium
             }
 
             return columnsBuilder.ToImmutable();
+        }
+
+        public IImmutableList<Transport.Column> GetSchema(string sql, SqlParameters sqlParameters, HttpContext httpContext)
+        {
+            var resultColumns = _sqlExecutor.GetSchema(sql, sqlParameters).Columns;
+
+            return ConvertColumns(resultColumns);
         }
 
         public IImmutableList<Table> GetTables()

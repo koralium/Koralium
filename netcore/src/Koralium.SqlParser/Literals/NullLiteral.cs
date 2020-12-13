@@ -9,6 +9,11 @@ namespace Koralium.SqlParser.Literals
             visitor.VisitNullLiteral(this);
         }
 
+        public override SqlNode Clone()
+        {
+            return new NullLiteral();
+        }
+
         public override object GetValue()
         {
             return null;

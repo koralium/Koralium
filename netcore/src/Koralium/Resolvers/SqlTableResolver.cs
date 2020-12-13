@@ -13,7 +13,6 @@
  */
 using Grpc.Core;
 using Koralium.Interfaces;
-using Koralium.Metadata;
 using Koralium.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

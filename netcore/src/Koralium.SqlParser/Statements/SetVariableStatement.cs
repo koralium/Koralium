@@ -13,5 +13,14 @@ namespace Koralium.SqlParser.Statements
         {
             visitor.VisitSetVariableStatement(this);
         }
+
+        public override SqlNode Clone()
+        {
+            return new SetVariableStatement()
+            {
+                ScalarExpression = ScalarExpression.Clone() as ScalarExpression,
+                VariableReference = VariableReference.Clone() as VariableReference
+            };
+        }
     }
 }

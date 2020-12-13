@@ -23,6 +23,7 @@ using Koralium.WebTests.Database;
 using Koralium.WebTests.Entities;
 using Koralium.WebTests.Entities.specific;
 using Koralium.WebTests.Entities.tpch;
+using Koralium.WebTests.PartitionResolvers;
 using Koralium.WebTests.Resolvers;
 using Koralium.WebTests.Resolvers.specific;
 using Koralium.WebTests.Resolvers.tpch;
@@ -94,6 +95,7 @@ namespace Koralium.WebTests
                 {
                     t.TableName = "orders";
                     t.UseInMemoryCaseInsensitiveStringOperations();
+                    t.SetPartitionResolver(new OrdersPartitionResolver());
                 });
                 opt.AddTableResolver<PartResolver, Part>();
                 opt.AddTableResolver<PartsuppResolver, Partsupp>();
@@ -113,7 +115,7 @@ namespace Koralium.WebTests
             
             var tpchDataPath = Path.Join(Configuration.GetValue<string>(WebHostDefaults.ContentRootKey), Configuration.GetValue<string>("TestDataLocation"));
             services.AddSingleton(new TpchData(tpchDataPath));
-
+            
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

@@ -20,9 +20,9 @@ namespace Koralium.SqlToExpression.Tests
                 new ColumnMetadata("comment", typeof(string), null)
                 );
 
-            var columns = SqlExecutor.GetSchema("select * from customer");
+            var schema = SqlExecutor.GetSchema("select * from customer");
 
-            GetColumnsComparer.Compare(expected, columns);
+            GetColumnsComparer.Compare(expected, schema.Columns);
         }
     }
 }

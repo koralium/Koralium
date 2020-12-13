@@ -11,5 +11,13 @@ namespace Koralium.SqlParser.GroupBy
         {
             visitor.VisitExpressionGroup(this);
         }
+
+        public override SqlNode Clone()
+        {
+            return new ExpressionGroup()
+            {
+                Expression = Expression.Clone() as ScalarExpression
+            };
+        }
     }
 }

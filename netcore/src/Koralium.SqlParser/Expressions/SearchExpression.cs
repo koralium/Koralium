@@ -1,5 +1,6 @@
 ﻿using Koralium.SqlParser.Visitor;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Koralium.SqlParser.Expressions
 {
@@ -22,6 +23,16 @@ namespace Koralium.SqlParser.Expressions
         public override void Accept(KoraliumSqlVisitor visitor)
         {
             visitor.VisitSearchExpression(this);
+        }
+
+        public override SqlNode Clone()
+        {
+            return new SearchExpression()
+            {
+                AllColumns = AllColumns,
+                Columns = Columns.Select(x => x.Clone() as ColumnReference).ToList(),
+                Value = Value.Clone() as ScalarExpression
+            };
         }
     }
 }

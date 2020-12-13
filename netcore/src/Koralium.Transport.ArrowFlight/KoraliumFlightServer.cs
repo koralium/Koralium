@@ -80,39 +80,55 @@ namespace Koralium.Transport.ArrowFlight
             foreach(var table in tables)
             {
                 var selectAllSql = table.SelectAllColumnsStatement();
-                await responseStream.WriteAsync(GetFlightInfo(selectAllSql, httpContext));
+                await responseStream.WriteAsync(GetFlightInfo(selectAllSql, context));
             }
         }
 
-        private FlightInfo GetFlightInfo(FlightDescriptor flightDescriptor, HttpContext httpContext)
+        private bool IsPartitionsEnabled(ServerCallContext serverCallContext)
         {
-            return GetFlightInfo(flightDescriptor.Command.ToStringUtf8(), httpContext);
+            var enablePartitionsHeader = serverCallContext.RequestHeaders.Get("enable-partitions");
+            return enablePartitionsHeader != null && bool.TryParse(enablePartitionsHeader.Value, out var result) && result;
         }
 
-        private FlightInfo GetFlightInfo(string sql, HttpContext httpContext)
+        private FlightInfo GetFlightInfo(string sql, ServerCallContext context)
         {
-            var schema = _koraliumTransportService.GetSchema(sql, new Shared.SqlParameters(), httpContext);
+            var partitionsResult = _koraliumTransportService.GetPartitions(IsPartitionsEnabled(context), sql, new Shared.SqlParameters(), context.GetHttpContext()).Result;
 
             var schemaBuilder = new Schema.Builder();
-
-            
-            foreach(var column in schema)
+            foreach(var column in partitionsResult.Columns)
             {
                 schemaBuilder.Field(new Field(column.Name, TypeConverter.Convert(column), column.IsNullable));
             }
             var descriptor = FlightDescriptor.CreateCommandDescriptor(sql);
 
-            var endpoint = new FlightEndpoint(new FlightTicket(sql), new List<FlightLocation>()
+            List<FlightEndpoint> endpoints = new List<FlightEndpoint>();
+            foreach(var partition in partitionsResult.Partitions)
             {
-                new FlightLocation($"grpc+tcp://{httpContext.Request.Host}")
-            });
-            var endpoints = new List<FlightEndpoint>() { endpoint };
+                List<FlightLocation> locations = new List<FlightLocation>();
+
+                foreach(var location in partition.Locations)
+                {
+                    string uri = null;
+
+                    if (location.Tls)
+                    {
+                        uri = $"grpc+tls://{location.Host}";
+                    }
+                    else
+                    {
+                        uri = $"grpc+tcp://{location.Host}";
+                    }
+
+                    locations.Add(new FlightLocation(uri));
+                }
+                endpoints.Add(new FlightEndpoint(new FlightTicket(partition.Sql), locations));
+            }
             return new FlightInfo(schemaBuilder.Build(), descriptor, endpoints);
         }
 
-        private Schema GetSchema(string sql, HttpContext httpContext)
+        private Schema GetSchema(string sql, ServerCallContext context)
         {
-            var schema = _koraliumTransportService.GetSchema(sql, new Shared.SqlParameters(), httpContext);
+            var schema = _koraliumTransportService.GetSchema(sql, new Shared.SqlParameters(), context.GetHttpContext());
 
             return GetSchema(schema);
         }
@@ -131,12 +147,12 @@ namespace Koralium.Transport.ArrowFlight
 
         public override Task<FlightInfo> GetFlightInfo(FlightDescriptor request, ServerCallContext context)
         {
-            return Task.FromResult(GetFlightInfo(request, context.GetHttpContext()));
+            return Task.FromResult(GetFlightInfo(request.Command.ToStringUtf8(), context));
         }
 
         public override Task<Schema> GetSchema(FlightDescriptor request, ServerCallContext context)
         {
-            return Task.FromResult(GetSchema(request.Command.ToStringUtf8(), context.GetHttpContext()));
+            return Task.FromResult(GetSchema(request.Command.ToStringUtf8(), context));
         }
 
         public override Task ListActions(IAsyncStreamWriter<FlightActionType> responseStream, ServerCallContext context)

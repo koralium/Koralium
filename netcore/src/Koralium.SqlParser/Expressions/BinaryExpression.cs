@@ -14,5 +14,15 @@ namespace Koralium.SqlParser.Expressions
         {
             visitor.VisitBinaryExpression(this);
         }
+
+        public override SqlNode Clone()
+        {
+            return new BinaryExpression()
+            {
+                Left = Left.Clone() as ScalarExpression,
+                Right = Right.Clone() as ScalarExpression,
+                Type = Type
+            };
+        }
     }
 }

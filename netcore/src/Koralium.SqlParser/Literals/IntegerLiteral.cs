@@ -11,6 +11,14 @@ namespace Koralium.SqlParser.Literals
             visitor.VisitIntegerLiteral(this);
         }
 
+        public override SqlNode Clone()
+        {
+            return new IntegerLiteral()
+            {
+                Value = Value
+            };
+        }
+
         public override object GetValue()
         {
             return Value;

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Koralium.Metadata
+namespace Koralium
 {
-    public class TableColumn
+    internal class TableColumn
     {
         public string Name { get; }
 

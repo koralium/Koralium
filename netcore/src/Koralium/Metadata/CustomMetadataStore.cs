@@ -1,9 +1,9 @@
 ﻿using Koralium.Interfaces;
 using System.Collections.Generic;
 
-namespace Koralium.Metadata
+namespace Koralium
 {
-    public class CustomMetadataStore : ICustomMetadataStore
+    internal class CustomMetadataStore : ICustomMetadataStore
     {
         private Dictionary<string, object> values = new Dictionary<string, object>();
         public void AddMetadata<T>(string name, T value)

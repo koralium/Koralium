@@ -3,6 +3,7 @@ using Koralium.SqlParser.Expressions;
 using Koralium.SqlParser.Statements;
 using Koralium.SqlParser.Visitor;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Koralium.SqlParser
 {
@@ -32,6 +33,21 @@ namespace Koralium.SqlParser
         public override void Accept(KoraliumSqlVisitor visitor)
         {
             visitor.VisitSelectStatement(this);
+        }
+
+        public override SqlNode Clone()
+        {
+            return new SelectStatement()
+            {
+                Distinct = Distinct,
+                FromClause = FromClause?.Clone() as FromClause,
+                GroupByClause = GroupByClause?.Clone() as GroupByClause,
+                HavingClause = HavingClause?.Clone() as HavingClause,
+                OffsetLimitClause = OffsetLimitClause?.Clone() as OffsetLimitClause,
+                OrderByClause = OrderByClause?.Clone() as OrderByClause,
+                SelectElements = SelectElements?.Select(x => x.Clone() as SelectExpression).ToList(),
+                WhereClause = WhereClause?.Clone() as WhereClause
+            };
         }
     }
 }
