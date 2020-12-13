@@ -10,5 +10,14 @@ namespace Koralium.SqlParser.Expressions
         {
             visitor.VisitSelectScalarExpression(this);
         }
+
+        public override SqlNode Clone()
+        {
+            return new SelectScalarExpression()
+            {
+                Alias = Alias,
+                Expression = Expression.Clone() as ScalarExpression
+            };
+        }
     }
 }

@@ -15,6 +15,7 @@ using Koralium;
 using Koralium.Builders;
 using Koralium.Interfaces;
 using Koralium.Resolvers;
+using Koralium.Services;
 using Koralium.SqlToExpression;
 using Koralium.SqlToExpression.Extensions;
 using Koralium.SqlToExpression.Metadata;
@@ -27,7 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddKoralium(this IServiceCollection services, Action<IKoraliumBuilder> builder)
         {
-            
+            services.AddScoped<IDiscoveryService, DefaultDiscoveryService>();
 
             KoraliumBuilder koraliumBuilder = new KoraliumBuilder(services);
             builder?.Invoke(koraliumBuilder);
@@ -51,6 +52,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingleton(typeof(ISearchExpressionProvider), koraliumBuilder.SearchProviderType);
             }
 
+            services.AddScoped<DefaultPartitionResolver>();
+
+            services.AddHostedService<PartitionHostedService>();
             services.AddScoped<KoraliumExecutor>();
             services.AddScoped<IKoraliumTransportService, KoraliumTransportService>();
             services.AddScoped<Koralium.SqlToExpression.ISqlTableResolver, SqlTableResolver>();

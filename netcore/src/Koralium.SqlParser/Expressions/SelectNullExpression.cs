@@ -8,5 +8,13 @@ namespace Koralium.SqlParser.Expressions
         {
             visitor.VisitSelectNullExpression(this);
         }
+
+        public override SqlNode Clone()
+        {
+            return new SelectNullExpression()
+            {
+                Alias = Alias
+            };
+        }
     }
 }

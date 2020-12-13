@@ -14,9 +14,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Koralium.Metadata
+namespace Koralium
 {
-    public class MetadataStore
+    internal class MetadataStore
     {
         public IReadOnlyList<KoraliumTable> Tables { get; }
         private readonly Dictionary<Type, IReadOnlyList<TableColumn>> _typeLookup;

@@ -12,13 +12,13 @@
  * limitations under the License.
  */
 using Koralium.Interfaces;
-using Koralium.Metadata;
 using Koralium.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Koralium.SqlToExpression;
+using Koralium.Resolvers;
 
 namespace Koralium.Builders
 {
@@ -59,6 +59,16 @@ namespace Koralium.Builders
 
             Services.AddScoped<Resolver>();
 
+            PartitionResolver partitionResolver = null;
+            if(opt.PartitionResolver != null)
+            {
+                partitionResolver = opt.PartitionResolver;
+            }
+            else
+            {
+                partitionResolver = new DefaultPartitionResolver();
+            }
+
             tables.Add(new KoraliumTable(
                 opt.TableName, 
                 typeof(Resolver), 
@@ -66,7 +76,8 @@ namespace Koralium.Builders
                 columns, 
                 securityPolicy, 
                 opt.Indicies,
-                opt.StringOperationsProvider));
+                opt.StringOperationsProvider,
+                partitionResolver));
 
             return this;
         }

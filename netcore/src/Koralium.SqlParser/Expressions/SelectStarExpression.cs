@@ -8,5 +8,13 @@ namespace Koralium.SqlParser.Expressions
         {
             visitor.VisitSelectStarExpression(this);
         }
+
+        public override SqlNode Clone()
+        {
+            return new SelectStarExpression()
+            {
+                Alias = Alias
+            };
+        }
     }
 }

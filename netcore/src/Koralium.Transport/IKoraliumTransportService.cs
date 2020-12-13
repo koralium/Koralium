@@ -26,5 +26,7 @@ namespace Koralium.Transport
             HttpContext httpContext);
 
         IImmutableList<Table> GetTables();
+
+        Task<TransportPartitionsResult> GetPartitions(bool canHandlePartitions, string sql, SqlParameters sqlParameters, HttpContext httpContext);
     }
 }

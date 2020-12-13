@@ -11,5 +11,13 @@ namespace Koralium.SqlParser.Clauses
         {
             visitor.VisitFromClause(this);
         }
+
+        public override SqlNode Clone()
+        {
+            return new FromClause()
+            {
+                TableReference = TableReference.Clone() as TableReference
+            };
+        }
     }
 }

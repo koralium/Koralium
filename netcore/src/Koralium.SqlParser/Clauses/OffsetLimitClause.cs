@@ -13,5 +13,14 @@ namespace Koralium.SqlParser.Clauses
         {
             visitor.VisitOffsetLimitClause(this);
         }
+
+        public override SqlNode Clone()
+        {
+            return new OffsetLimitClause()
+            {
+                Limit = Limit.Clone() as ScalarExpression,
+                Offset = Offset.Clone() as ScalarExpression
+            };
+        }
     }
 }

@@ -10,5 +10,13 @@ namespace Koralium.SqlParser.Expressions
         {
             visitor.VisitVariableReference(this);
         }
+
+        public override SqlNode Clone()
+        {
+            return new VariableReference()
+            {
+                Name = Name
+            };
+        }
     }
 }

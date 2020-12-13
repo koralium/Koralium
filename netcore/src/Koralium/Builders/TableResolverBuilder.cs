@@ -12,9 +12,9 @@
  * limitations under the License.
  */
 using Koralium.Interfaces;
-using Koralium.Metadata;
 using System.Collections.Generic;
 using Koralium.SqlToExpression.Interfaces;
+using System;
 
 namespace Koralium.Builders
 {
@@ -25,6 +25,7 @@ namespace Koralium.Builders
         private IStringOperationsProvider _stringOperationsProvider;
         public string TableName { get; set; }
         
+        internal PartitionResolver PartitionResolver { get; private set; }
 
         internal IReadOnlyList<TableIndex> Indicies
         {
@@ -42,7 +43,7 @@ namespace Koralium.Builders
             }
         }
 
-        public TableResolverBuilder(List<TableColumn> columns)
+        internal TableResolverBuilder(List<TableColumn> columns)
         {
             _columns = columns;
         }
@@ -50,6 +51,12 @@ namespace Koralium.Builders
         public ITableResolverBuilder<Entity> SetStringOperationsProvider(IStringOperationsProvider stringOperationsProvider)
         {
             _stringOperationsProvider = stringOperationsProvider;
+            return this;
+        }
+
+        public ITableResolverBuilder<Entity> SetPartitionResolver(PartitionResolver partitionResolver)
+        {
+            PartitionResolver = partitionResolver;
             return this;
         }
     }

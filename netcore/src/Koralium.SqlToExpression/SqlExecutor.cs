@@ -13,9 +13,11 @@
  */
 using Koralium.Shared;
 using Koralium.SqlParser;
+using Koralium.SqlParser.Statements;
 using Koralium.SqlToExpression.Executors;
 using Koralium.SqlToExpression.Interfaces;
 using Koralium.SqlToExpression.Metadata;
+using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Koralium.SqlToExpression.Utils;
@@ -97,12 +99,27 @@ namespace Koralium.SqlToExpression
             return mainVisitor.Stages;
         }
 
-        public IImmutableList<ColumnMetadata> GetSchema(string sql, SqlParameters parameters = null)
+        private IReadOnlyList<IQueryStage> GetStages(StatementList tree, SqlParameters parameters)
+        {
+            var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata, _searchExpressionProvider, _stringOperationsProvider));
+            tree.Accept(mainVisitor);
+
+            return mainVisitor.Stages;
+        }
+
+        public SchemaResult GetSchema(string sql, SqlParameters parameters = null)
         {
             var stages = GetStages(sql, parameters);
 
             var schemaCreator = new SchemaCreatorVisitor();
-            return schemaCreator.GetColumns(stages);
+            return schemaCreator.GetSchema(stages);
+        }
+
+        public SchemaResult GetSchema(StatementList tree, SqlParameters parameters = null)
+        {
+            var stages = GetStages(tree, parameters);
+            var schemaCreator = new SchemaCreatorVisitor();
+            return schemaCreator.GetSchema(stages);
         }
 
         /// <summary>

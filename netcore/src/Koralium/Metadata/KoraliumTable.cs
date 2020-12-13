@@ -11,13 +11,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.Interfaces;
 using Koralium.SqlToExpression.Interfaces;
 using System;
 using System.Collections.Generic;
 
-namespace Koralium.Metadata
+namespace Koralium
 {
-    public class KoraliumTable
+    internal class KoraliumTable
     {
 
         public string Name { get; }
@@ -34,6 +35,8 @@ namespace Koralium.Metadata
 
         public IStringOperationsProvider StringOperationsProvider { get; }
 
+        public PartitionResolver PartitionResolver { get; }
+
         public KoraliumTable(
             string name,
             Type resolver,
@@ -41,7 +44,8 @@ namespace Koralium.Metadata
             IReadOnlyList<TableColumn> columns,
             string securityPolicy,
             IReadOnlyList<TableIndex> indices,
-            IStringOperationsProvider stringOperationsProvider)
+            IStringOperationsProvider stringOperationsProvider,
+            PartitionResolver partitionResolver)
         {
             Name = name;
             Resolver = resolver;
@@ -50,6 +54,7 @@ namespace Koralium.Metadata
             SecurityPolicy = securityPolicy;
             Indices = indices;
             StringOperationsProvider = stringOperationsProvider;
+            PartitionResolver = partitionResolver;
         }
     }
 }

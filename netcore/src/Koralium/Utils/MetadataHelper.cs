@@ -1,5 +1,4 @@
-﻿using Koralium.Metadata;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +6,7 @@ using System.Reflection;
 
 namespace Koralium.Utils
 {
-    public static class MetadataHelper
+    internal static class MetadataHelper
     {
         /// <summary>
         /// Index must be static, since all tables and their columns must have their unique columnId

@@ -10,5 +10,14 @@ namespace Koralium.SqlParser.From
         {
             visitor.VisitFromTableReference(this);
         }
+
+        public override SqlNode Clone()
+        {
+            return new FromTableReference()
+            {
+                Alias = Alias,
+                TableName = TableName
+            };
+        }
     }
 }

@@ -12,5 +12,14 @@ namespace Koralium.SqlParser.Expressions
         {
             visitor.VisitBooleanIsNullExpression(this);
         }
+
+        public override SqlNode Clone()
+        {
+            return new BooleanIsNullExpression()
+            {
+                IsNot = IsNot,
+                ScalarExpression = ScalarExpression.Clone() as ScalarExpression
+            };
+        }
     }
 }

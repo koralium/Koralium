@@ -10,5 +10,13 @@ namespace Koralium.SqlParser.GroupBy
         {
             visitor.VisitSelectStatementGroup(this);
         }
+
+        public override SqlNode Clone()
+        {
+            return new SelectStatementGroup()
+            {
+                SelectStatement = SelectStatement.Clone() as SelectStatement
+            };
+        }
     }
 }

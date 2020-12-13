@@ -11,5 +11,13 @@ namespace Koralium.SqlParser.Clauses
         {
             visitor.VisitHavingClause(this);
         }
+
+        public override SqlNode Clone()
+        {
+            return new HavingClause()
+            {
+                Expression = Expression.Clone() as BooleanExpression
+            };
+        }
     }
 }

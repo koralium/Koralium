@@ -10,5 +10,14 @@ namespace Koralium.SqlParser.From
         {
             visitor.VisitSubquery(this);
         }
+
+        public override SqlNode Clone()
+        {
+            return new Subquery()
+            {
+                Alias = Alias,
+                SelectStatement = SelectStatement.Clone() as SelectStatement
+            };
+        }
     }
 }

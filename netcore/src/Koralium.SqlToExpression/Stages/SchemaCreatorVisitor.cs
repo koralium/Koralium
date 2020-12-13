@@ -1,4 +1,5 @@
-﻿using Koralium.SqlToExpression.Stages.CompileStages;
+﻿using Koralium.SqlToExpression.Models;
+using Koralium.SqlToExpression.Stages.CompileStages;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
@@ -6,20 +7,24 @@ namespace Koralium.SqlToExpression.Stages
 {
     class SchemaCreatorVisitor : IQueryStageVisitor
     {
+        private string _fromTableName = null;
         private IImmutableList<ColumnMetadata> _columns;
 
-        public IImmutableList<ColumnMetadata> GetColumns(IReadOnlyList<IQueryStage> stages)
+        public SchemaResult GetSchema(IReadOnlyList<IQueryStage> stages)
         {
-            foreach(var stage in stages)
+            foreach (var stage in stages)
             {
                 stage.Accept(this);
             }
-            return _columns;
+            return new SchemaResult(_fromTableName, _columns);
         }
 
         public void Visit(FromTableStage fromTableStage)
         {
-            //NOP
+            if(_fromTableName == null)
+            {
+                _fromTableName = fromTableStage.TableName;
+            }
         }
 
         public void Visit(GroupByStage groupByStage)

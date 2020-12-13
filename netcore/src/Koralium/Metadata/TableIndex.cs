@@ -14,9 +14,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Koralium.Metadata
+namespace Koralium
 {
-    public class TableIndex
+    internal class TableIndex
     {
         public Type Resolver { get; }
 

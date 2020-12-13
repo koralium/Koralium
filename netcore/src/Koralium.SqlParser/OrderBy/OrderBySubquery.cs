@@ -10,5 +10,14 @@ namespace Koralium.SqlParser.OrderBy
         {
             visitor.VisitOrderBySubquery(this);
         }
+
+        public override SqlNode Clone()
+        {
+            return new OrderBySubquery()
+            {
+                Ascending = Ascending,
+                SelectStatement = SelectStatement.Clone() as SelectStatement
+            };
+        }
     }
 }
