@@ -52,7 +52,7 @@ namespace Koralium.Services
                 var discoveryService = scope.ServiceProvider.GetService<IDiscoveryService>();
                 await partitionResolver.GeneratPartitionMetadata(new Models.PartitionOptions(scope.ServiceProvider, discoveryService));
 
-                await Task.Delay(partitionResolver.GenerateMetadataTimespan.Value);
+                await Task.Delay(partitionResolver.GenerateMetadataTimespan.Value, _cancellationTokenSource.Token);
 
             } while (!_cancellationTokenSource.Token.IsCancellationRequested);
         }
