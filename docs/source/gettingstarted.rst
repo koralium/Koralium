@@ -3,10 +3,14 @@ Getting started
 
 To set up Koralium in a .Net Core project, the project must be running netcoreapp3.1.
 
-Installation (gRPC)
+Installation - Apache Arrow Flight
 *******************
 
 To install Koralium, download the nuget package "Koralium".
+
+To add support for Apache Arrow Flight, download also:
+
+* Koralium.Transport.ArrowFlight
 
 In your startup.cs file, add the following in *ConfigureServices*.
 
@@ -14,6 +18,8 @@ In your startup.cs file, add the following in *ConfigureServices*.
 
   public void ConfigureServices(IServiceCollection services) 
   {
+    services.AddGrpc()
+      .AddKoraliumFlightServer();
   ...
     services.AddKoralium(opt =>
     {
@@ -32,24 +38,23 @@ Again in startup.cs, but in the *Configure* method:
     app.UseEndpoints(endpoints =>
     {
         ...
-        endpoints.AddKoraliumGrpcEndpoint();
+        endpoints.MapKoraliumArrowFlight();
         ...
     });
   ...
   }
 
-This will set up the required services and endpoints required to use Koralium over gRPC, which is the recomended endpoint.
+This will set up the required services and endpoints required to use Koralium with Apache Arrow Flight, which is the recomended endpoint.
 
-Installation (http/json)
+Installation - http/json
 *************************
 
 If you also want to support queries over normal http and return json that is possible.
-This is not recommended for production, but can be useful when developing the API.
 
 Install the following nuget packages:
 
 * Koralium
-* Koralium.Json
+* Koralium.Transport.Json
 
 In startup.cs, in the *ConfigureServices* method:
 
@@ -57,9 +62,6 @@ In startup.cs, in the *ConfigureServices* method:
 
   public void ConfigureServices(IServiceCollection services) 
   {
-    services
-      .AddControllers() //Can also be AddMvc
-      .AddKoraliumJson();
   ...
     services.AddKoralium(opt =>
     {
@@ -68,7 +70,7 @@ In startup.cs, in the *ConfigureServices* method:
   ...
   }
 
-If the application is already set up as an API with the following in *Configure*:
+In *Configure* add the following in UseEndpoints:
 
 .. code-block:: csharp
 
@@ -78,13 +80,14 @@ If the application is already set up as an API with the following in *Configure*
     app.UseEndpoints(endpoints =>
     {
         ...
-        endpoints.MapControllers();
+        endpoints.MapKoraliumJsonPost("sql"); //Map post 
+        endpoints.MapKoraliumJsonGet("sql"); //Map get
         ...
     });
   ...
   }
 
-It should already work to send in requests using http on the following URL:
+This should then allow the following GET call:
 
 .. code-block::
 
