@@ -2,23 +2,23 @@ package io.prestosql.plugin.koralium.decoders;
 
 import io.prestosql.spi.block.BlockBuilder;
 import io.prestosql.spi.connector.ConnectorSession;
+import io.prestosql.spi.type.Type;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.types.pojo.Field;
 
-import static io.prestosql.spi.type.RealType.REAL;
-
-public abstract class PrimitiveEncoder<T extends FieldVector>
+public abstract class PrimitiveDecoder<T extends FieldVector>
         implements KoraliumDecoder
 {
     private boolean isNullable;
 
     @Override
-    public KoraliumDecoder create(Field field, ConnectorSession connectorSession) {
-        isNullable = field.isNullable();
-        return createDecoder(field, connectorSession);
+    public KoraliumDecoder create(Field field, ConnectorSession connectorSession, Type prestoType) {
+        PrimitiveDecoder<T> decoder = createDecoder(field, connectorSession, prestoType);
+        decoder.isNullable = field.isNullable();
+        return decoder;
     }
 
-    protected abstract KoraliumDecoder createDecoder(Field field, ConnectorSession connectorSession);
+    protected abstract PrimitiveDecoder<T> createDecoder(Field field, ConnectorSession connectorSession, Type prestoType);
 
     @Override
     public void decode(FieldVector vector, BlockBuilder builder, int start, int end) {
@@ -28,6 +28,7 @@ public abstract class PrimitiveEncoder<T extends FieldVector>
             for (int i = start; i < end; i++) {
                 if (values.isNull(i)) {
                     builder.appendNull();
+                    continue;
                 }
                 writeValue(values, builder, i);
             }

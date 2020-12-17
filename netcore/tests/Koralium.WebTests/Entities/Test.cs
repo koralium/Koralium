@@ -34,6 +34,8 @@ namespace Koralium.WebTests.Entities
 
         public bool BoolValue { get; set; }
 
+        public int? IntValue { get; set; }
+
         public override bool Equals(object obj)
         {
             if (obj is Test t)

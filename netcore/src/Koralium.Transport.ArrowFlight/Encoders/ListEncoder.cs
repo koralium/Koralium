@@ -27,13 +27,18 @@ namespace Koralium.Transport.ArrowFlight.Encoders
             _getFunc = column.GetFunction;
             _nullable = column.IsNullable;
             var child = column.Children.First();
-            _childEncoder = EncoderHelper.GetEncoder(child);
-            _valueType = TypeConverter.Convert(child);
+            offsetBuilder = new ArrowBuffer.Builder<int>();
+
+            var listChildColumn = new Column(child.Name, child.Type, x => x, child.Children, child.ColumnType, child.IsNullable);
+
+            _childEncoder = EncoderHelper.GetEncoder(listChildColumn);
+            _valueType = TypeConverter.Convert(column);
             nullBitmap = new ArrowBuffer.BitmapBuilder();
         }
 
         public IArrowArray BuildArray()
         {
+            offsetBuilder.Append(currentOffset);
             return new ListArray(_valueType, count, offsetBuilder.Build(), _childEncoder.BuildArray(), nullBitmap.Build(), nullCount);
         }
 

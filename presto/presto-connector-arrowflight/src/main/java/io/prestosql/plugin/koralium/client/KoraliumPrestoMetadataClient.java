@@ -19,6 +19,7 @@ import io.prestosql.plugin.koralium.*;
 import io.prestosql.plugin.koralium.utils.ArrowPrestoTypeConverter;
 import io.prestosql.plugin.koralium.utils.SqlFromTableVisitor;
 import io.prestosql.plugin.koralium.utils.SqlUtils;
+import io.prestosql.plugin.koralium.utils.TypeConvertResult;
 import io.prestosql.spi.connector.ColumnHandle;
 import io.prestosql.spi.connector.ConnectorTableMetadata;
 import io.prestosql.spi.connector.SchemaTableName;
@@ -42,7 +43,7 @@ import java.util.stream.Collectors;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static java.util.Locale.ENGLISH;
 
-public class KoraliumClient
+public class KoraliumPrestoMetadataClient
         implements KoraliumMetadataClient
 {
     private static final String schemaName = "default";
@@ -54,7 +55,7 @@ public class KoraliumClient
     private Map<String, List<SchemaTableName>> schemaNameToSchemaTableNames;
 
     @Inject
-    public KoraliumClient(KoraliumConfig config)
+    public KoraliumPrestoMetadataClient(KoraliumConfig config)
     {
         allocator = new RootAllocator(Long.MAX_VALUE);
 
@@ -86,8 +87,8 @@ public class KoraliumClient
 
             ImmutableList.Builder<KoraliumPrestoColumn> builder = new ImmutableList.Builder<>();
             for (Field field : fields) {
-                Type prestoType = ArrowPrestoTypeConverter.Convert(field);
-                KoraliumPrestoColumn column = new KoraliumPrestoColumn(field.getName(), prestoType);
+                TypeConvertResult convertResult = ArrowPrestoTypeConverter.Convert(field);
+                KoraliumPrestoColumn column = new KoraliumPrestoColumn(field.getName(), convertResult.getPrestoType(), convertResult.getKoraliumType());
                 builder.add(column);
             }
             List<KoraliumPrestoColumn> columns = builder.build();
