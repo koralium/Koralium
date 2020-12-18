@@ -18,8 +18,8 @@ namespace Koralium.SqlParser.Clauses
         {
             return new OffsetLimitClause()
             {
-                Limit = Limit.Clone() as ScalarExpression,
-                Offset = Offset.Clone() as ScalarExpression
+                Limit = Limit?.Clone() as ScalarExpression,
+                Offset = Offset?.Clone() as ScalarExpression
             };
         }
     }

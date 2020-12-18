@@ -33,6 +33,7 @@ namespace Apache.Arrow.Flight.Internal
     /// </summary>
     internal class FlightDataStream : ArrowStreamWriter
     {
+        private static readonly ByteString EmptyByteString = ByteString.CopyFrom(0);
         private readonly FlightDescriptor _flightDescriptor;
         private readonly IAsyncStreamWriter<FlightData> _clientStreamWriter;
         private Protocol.FlightData _currentFlightData;
@@ -86,6 +87,14 @@ namespace Apache.Arrow.Flight.Internal
             //Reset stream position
             this.BaseStream.Position = 0;
             var bodyData = await ByteString.FromStreamAsync(this.BaseStream).ConfigureAwait(false);
+
+            //This is required since java client looks for body tag, which grpc excludes normally.
+            //Because it is a non standard solution, we need to send something in the body tag for it to work correctly.
+            //https://github.com/apache/arrow/blob/master/java/flight/flight-core/src/main/java/org/apache/arrow/flight/ArrowMessage.java
+            if (bodyData.Length == 0)
+            {
+                bodyData = EmptyByteString;
+            }
 
             _currentFlightData.DataBody = bodyData;
             await _clientStreamWriter.WriteAsync(_currentFlightData).ConfigureAwait(false);

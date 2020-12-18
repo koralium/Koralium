@@ -59,7 +59,9 @@ namespace Koralium.WebTests
                         }
                     },
                     BoolValue = true,
-                    FloatValue = 3.0f
+                    FloatValue = 3.0f,
+                    IntValue = 1,
+                    
                 },
                 new Test()
                 {
@@ -97,7 +99,8 @@ namespace Koralium.WebTests
                         }
                     },
                     BoolValue = false,
-                    FloatValue = 7.0f
+                    FloatValue = 7.0f,
+                    IntValue = 2
                 }
             }.AsQueryable();
 

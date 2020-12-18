@@ -7,9 +7,10 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["tests/Koralium.WebTests/Koralium.WebTests.csproj", "tests/Koralium.WebTests/"]
-COPY ["src/Koralium.Transport.LegacyGrpc/Koralium.Transport.LegacyGrpc.csproj", "src/Koralium.Transport.LegacyGrpc/"]
+COPY ["src/Koralium.Transport.ArrowFlight/Koralium.Transport.ArrowFlight.csproj", "src/Koralium.Transport.ArrowFlight/"]
 COPY ["src/Koralium.Transport/Koralium.Transport.csproj", "src/Koralium.Transport/"]
 COPY ["src/Koralium.Shared/Koralium.Shared.csproj", "src/Koralium.Shared/"]
+COPY ["src/Koralium.Transport.LegacyGrpc/Koralium.Transport.LegacyGrpc.csproj", "src/Koralium.Transport.LegacyGrpc/"]
 COPY ["src/Koralium.Transport.LegacyGrpc.Abstractions/Koralium.Transport.LegacyGrpc.Abstractions.csproj", "src/Koralium.Transport.LegacyGrpc.Abstractions/"]
 COPY ["src/Koralium.Transport.Json/Koralium.Transport.Json.csproj", "src/Koralium.Transport.Json/"]
 COPY ["src/Koralium/Koralium.csproj", "src/Koralium/"]

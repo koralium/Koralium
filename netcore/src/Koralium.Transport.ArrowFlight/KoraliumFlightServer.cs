@@ -1,6 +1,7 @@
 ﻿using Apache.Arrow;
 using Apache.Arrow.Flight;
 using Apache.Arrow.Flight.Server;
+using Google.Protobuf;
 using Grpc.Core;
 using Koralium.Shared;
 using Koralium.Transport.ArrowFlight.Encoders;
@@ -59,6 +60,7 @@ namespace Koralium.Transport.ArrowFlight
                         {
                             encoder.NewBatch();
                         }
+                        count = 0;
                     }
                 }
                 stopwatch.Stop();

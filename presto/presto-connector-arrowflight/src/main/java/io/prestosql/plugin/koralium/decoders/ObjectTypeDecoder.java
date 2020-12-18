@@ -1,0 +1,88 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.prestosql.plugin.koralium.decoders;
+
+import com.google.common.collect.ImmutableList;
+import io.prestosql.plugin.koralium.utils.ArrowPrestoTypeConverter;
+import io.prestosql.plugin.koralium.utils.TypeConvertResult;
+import io.prestosql.spi.block.BlockBuilder;
+import io.prestosql.spi.connector.ConnectorSession;
+import io.prestosql.spi.type.Type;
+import org.apache.arrow.vector.FieldVector;
+import org.apache.arrow.vector.complex.StructVector;
+import org.apache.arrow.vector.types.pojo.Field;
+
+import java.util.List;
+
+public class ObjectTypeDecoder
+        implements KoraliumDecoder
+{
+    private final List<KoraliumDecoder> decoders;
+
+    public ObjectTypeDecoder()
+    {
+        decoders = null;
+    }
+
+    public ObjectTypeDecoder(List<KoraliumDecoder> decoders)
+    {
+        this.decoders = decoders;
+    }
+
+    @Override
+    public KoraliumDecoder create(Field field, ConnectorSession connectorSession, Type prestoType)
+    {
+        List<Field> children = field.getChildren();
+
+        ImmutableList.Builder<KoraliumDecoder> decodersBuilder = new ImmutableList.Builder<>();
+        for (Field child : children) {
+            TypeConvertResult convertResult = ArrowPrestoTypeConverter.Convert(child);
+            decodersBuilder.add(convertResult.getKoraliumType().getDecoder().create(child, connectorSession, convertResult.getPrestoType()));
+        }
+
+        return new ObjectTypeDecoder(decodersBuilder.build());
+    }
+
+    @Override
+    public void decode(FieldVector vector, BlockBuilder builder, int start, int end)
+    {
+        StructVector structVector = (StructVector) vector;
+
+        List<FieldVector> childVectors = structVector.getChildrenFromFields();
+
+        for (int i = start; i < end; i++) {
+            if (vector.isNull(i)) {
+                builder.appendNull();
+            }
+            else {
+                BlockBuilder objectBuilder = builder.beginBlockEntry();
+
+                //Copy data
+                for (int d = 0; d < decoders.size(); d++) {
+                    decoders.get(d).decode(childVectors.get(d), objectBuilder, i, i + 1);
+                }
+
+                builder.closeEntry();
+            }
+        }
+    }
+
+    @Override
+    public void Clear()
+    {
+        for (int blockId = 0; blockId < decoders.size(); blockId++) {
+            decoders.get(blockId).Clear();
+        }
+    }
+}

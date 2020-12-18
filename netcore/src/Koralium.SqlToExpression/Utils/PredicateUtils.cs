@@ -44,6 +44,20 @@ namespace Koralium.SqlToExpression.Utils
             return Expression.Call(null, method, arguments: new[] { Expression.Constant(values), parameter });
         }
 
+        private static Expression ChangeTypeWithNullable(object value, Type toType)
+        {
+            Type nullableType = Nullable.GetUnderlyingType(toType);
+
+            if(nullableType != null)
+            {
+                object safeValue = (value == null) ? null : Convert.ChangeType(value, nullableType);
+                return Expression.Convert(Expression.Constant(safeValue), toType);
+            }
+            else
+            {
+                return Expression.Constant(Convert.ChangeType(value, toType));
+            }
+        }
 
         internal static void ConvertExpressionTypes(ref Expression leftExpression, ref Expression rightExpression)
         {
@@ -52,16 +66,16 @@ namespace Koralium.SqlToExpression.Utils
                 {
                     if(constantExpressionLeft.Value != null)
                     {
-                        var changedTypeValue = Convert.ChangeType(constantExpressionLeft.Value, rightExpression.Type);
-                        leftExpression = Expression.Constant(changedTypeValue);
+                        var changedTypeValue = ChangeTypeWithNullable(constantExpressionLeft.Value, rightExpression.Type);
+                        leftExpression = changedTypeValue;
                     }
                 }
                 else if (rightExpression is ConstantExpression constantExpressionRight && !constantExpressionRight.Type.Equals(leftExpression.Type))
                 {
                     if(constantExpressionRight.Value != null)
                     {
-                        var changedTypeValue = Convert.ChangeType(constantExpressionRight.Value, leftExpression.Type);
-                        rightExpression = Expression.Constant(changedTypeValue);
+                        var changedTypeValue = ChangeTypeWithNullable(constantExpressionRight.Value, leftExpression.Type);
+                        rightExpression = changedTypeValue;
                     }
                 }
                 //Check if variable references
