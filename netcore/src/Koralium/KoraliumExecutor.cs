@@ -31,25 +31,5 @@ namespace Koralium
             _sqlExecutor = sqlExecutor;
             _serviceProvider = serviceProvider;
         }
-
-        public ValueTask<QueryResult> Execute(
-            string sql, 
-            SqlParameters sqlParameters, 
-            HttpContext httpContext, 
-            IReadOnlyDictionary<string, object> extraData,
-            ICustomMetadataStore customMetadata)
-        {
-            return _sqlExecutor.Execute(sql, sqlParameters, new TableResolverData(httpContext, _serviceProvider, extraData, customMetadata));
-        }
-
-        public ValueTask<object> ExecuteScalar(
-            string sql, 
-            SqlParameters sqlParameters, 
-            HttpContext httpContext, 
-            IReadOnlyDictionary<string, object> extraData,
-            ICustomMetadataStore customMetadata)
-        {
-            return _sqlExecutor.ExecuteScalar(sql, sqlParameters, new TableResolverData(httpContext, _serviceProvider, extraData, customMetadata));
-        }
     }
 }

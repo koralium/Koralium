@@ -27,19 +27,15 @@ namespace Koralium.Models
 
         public IServiceProvider ServiceProvider { get; }
 
-        public IReadOnlyDictionary<string, object> ExtraData { get; }
-
         public ICustomMetadataStore CustomMetadataStore { get; }
 
         public TableResolverData(
             HttpContext httpContext, 
-            IServiceProvider serviceProvider, 
-            IReadOnlyDictionary<string, object> extraData,
+            IServiceProvider serviceProvider,
             ICustomMetadataStore customMetadataStore)
         {
             HttpContext = httpContext;
             ServiceProvider = serviceProvider;
-            ExtraData = extraData;
             CustomMetadataStore = customMetadataStore;
         }
     }

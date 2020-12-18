@@ -28,8 +28,6 @@ namespace Koralium
 
         protected IQueryOptions<T> QueryOptions { get; private set; }
 
-        protected IReadOnlyDictionary<string, object> ExtraData { get; private set; }
-
         /// <summary>
         /// Add custom metadata that will be returned to the caller
         /// 
@@ -45,14 +43,12 @@ namespace Koralium
 
         public async Task<IQueryable> GetQueryable(
             HttpContext httpContext, 
-            IQueryOptions queryOptions, 
-            IReadOnlyDictionary<string, object> extraData,
+            IQueryOptions queryOptions,
             ICustomMetadataStore customMetadataStore)
         {
             var genericQueryOptions = queryOptions.CreateGeneric<T>();
             HttpContext = httpContext;
             QueryOptions = genericQueryOptions;
-            ExtraData = extraData;
             _customMetadataStore = customMetadataStore;
             return await GetQueryableData();
         }

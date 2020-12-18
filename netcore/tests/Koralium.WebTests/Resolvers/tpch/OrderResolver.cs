@@ -21,12 +21,6 @@ namespace Koralium.WebTests.Resolvers.tpch
                     return Task.FromResult(_tpchData.Orders.AsQueryable().Where(x => x.Custkey == 1));
                 }
             }
-            //This just exists to be able to see that extra data is being sent correctly
-            if (ExtraData.TryGetValue("test", out var extraDataValue))
-            {
-                AddCustomMetadata("test", "extrametadata");
-                return Task.FromResult(_tpchData.Orders.AsQueryable().Where(x => x.Custkey == 1));
-            }
             AddCustomMetadata("test", "hello");
             return Task.FromResult(_tpchData.Orders.AsQueryable());
         }
