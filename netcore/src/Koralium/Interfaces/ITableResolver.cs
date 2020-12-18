@@ -23,8 +23,7 @@ namespace Koralium.Interfaces
     {
         Task<IQueryable> GetQueryable(
             HttpContext httpContext, 
-            IQueryOptions queryOptions, 
-            IReadOnlyDictionary<string, object> extraData,
+            IQueryOptions queryOptions,
             ICustomMetadataStore customMetadataStore);
     }
 }

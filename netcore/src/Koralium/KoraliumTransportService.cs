@@ -54,7 +54,6 @@ namespace Koralium
             var result = await _sqlExecutor.Execute(sql, sqlParameters, new TableResolverData(
                 httpContext, 
                 _serviceProvider, 
-                new Dictionary<string, object>(), 
                 customMetadataStore)).ConfigureAwait(false);
 
             var columnsBuilder = ImmutableList.CreateBuilder<Transport.Column>();
@@ -89,7 +88,6 @@ namespace Koralium
             return _sqlExecutor.ExecuteScalar(sql, sqlParameters, new TableResolverData(
                 httpContext,
                 _serviceProvider,
-                new Dictionary<string, object>(),
                 customMetadataStore));
         }
 
