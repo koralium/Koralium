@@ -16,19 +16,26 @@ package io.prestosql.plugin.koralium;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.prestosql.Session;
-import io.prestosql.spi.type.*;
+import io.prestosql.spi.type.ArrayType;
+import io.prestosql.spi.type.BigintType;
+import io.prestosql.spi.type.BooleanType;
+import io.prestosql.spi.type.IntegerType;
+import io.prestosql.spi.type.RealType;
+import io.prestosql.spi.type.RowType;
+import io.prestosql.spi.type.Type;
+import io.prestosql.spi.type.VarcharType;
 import io.prestosql.sql.analyzer.FeaturesConfig;
-import io.prestosql.testing.*;
+import io.prestosql.testing.AbstractTestIntegrationSmokeTest;
+import io.prestosql.testing.DistributedQueryRunner;
+import io.prestosql.testing.MaterializedResult;
+import io.prestosql.testing.MaterializedRow;
+import io.prestosql.testing.QueryRunner;
+import io.prestosql.testing.ResultWithQueryId;
 import io.prestosql.testing.assertions.Assert;
 import io.prestosql.tpch.TpchTable;
-import org.apache.arrow.flight.*;
-import org.apache.arrow.memory.RootAllocator;
-import org.apache.arrow.vector.BigIntVector;
 import org.assertj.core.api.Assertions;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
-
-import java.nio.charset.StandardCharsets;
 
 import static io.prestosql.SystemSessionProperties.JOIN_DISTRIBUTION_TYPE;
 
@@ -48,7 +55,7 @@ public class TestKoraliumSmokeTest
     @AfterClass(alwaysRun = true)
     public void tearDown()
     {
-        if(server != null) {
+        if (server != null) {
             server.close();
         }
     }
@@ -87,8 +94,8 @@ public class TestKoraliumSmokeTest
     {
         MaterializedResult expectedResult = MaterializedResult.resultBuilder(this.getQueryRunner().getDefaultSession(),
                 new ArrayType(IntegerType.INTEGER))
-                .row(ImmutableList.of(1,5))
-                .row(ImmutableList.of(2,6))
+                .row(ImmutableList.of(1, 5))
+                .row(ImmutableList.of(2, 6))
                 .build();
 
         MaterializedResult result = computeActual("select testlist from test");

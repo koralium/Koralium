@@ -16,15 +16,12 @@ package io.prestosql.plugin.koralium.client;
 import com.google.common.base.Joiner;
 import com.google.common.base.VerifyException;
 import com.google.common.collect.ImmutableList;
-import io.prestosql.plugin.koralium.KoraliumColumnHandle;
 import io.prestosql.plugin.koralium.KoraliumPrestoColumn;
 import io.prestosql.plugin.koralium.KoraliumType;
-import io.prestosql.plugin.koralium.encoders.IEncoder;
 import io.prestosql.spi.connector.ConnectorSession;
 import io.prestosql.spi.predicate.Domain;
 import io.prestosql.spi.predicate.Range;
 import io.prestosql.spi.predicate.TupleDomain;
-import io.prestosql.spi.type.BooleanType;
 
 import java.util.ArrayList;
 import java.util.List;

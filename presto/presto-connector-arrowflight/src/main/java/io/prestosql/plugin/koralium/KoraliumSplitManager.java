@@ -18,8 +18,13 @@ import com.google.common.collect.ImmutableMap;
 import io.prestosql.plugin.koralium.client.FilterExtractor;
 import io.prestosql.plugin.koralium.client.KoraliumClient;
 import io.prestosql.plugin.koralium.client.QueryBuilder;
-import io.prestosql.spi.HostAddress;
-import io.prestosql.spi.connector.*;
+import io.prestosql.spi.connector.ConnectorSession;
+import io.prestosql.spi.connector.ConnectorSplit;
+import io.prestosql.spi.connector.ConnectorSplitManager;
+import io.prestosql.spi.connector.ConnectorSplitSource;
+import io.prestosql.spi.connector.ConnectorTableHandle;
+import io.prestosql.spi.connector.ConnectorTransactionHandle;
+import io.prestosql.spi.connector.FixedSplitSource;
 import org.apache.arrow.flight.FlightEndpoint;
 import org.apache.arrow.flight.FlightInfo;
 import org.apache.arrow.flight.Location;
@@ -28,7 +33,6 @@ import javax.inject.Inject;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -54,7 +58,7 @@ public class KoraliumSplitManager
     {
         String authToken = session.getIdentity().getExtraCredentials().get("auth_token");
 
-        KoraliumTableHandle tableHandle = (KoraliumTableHandle)connectorTableHandle;
+        KoraliumTableHandle tableHandle = (KoraliumTableHandle) connectorTableHandle;
 
         QueryBuilder queryBuilder = new QueryBuilder();
         String filter = FilterExtractor.getFilter(session, tableHandle.getConstraint().transform(KoraliumPrestoColumn.class::cast));
@@ -93,10 +97,8 @@ public class KoraliumSplitManager
             }
 
             splits.add(new KoraliumSplit(endpoint.getTicket().getBytes(), locationBuilder.build(), isCount));
-
         }
 
-        //Collections.shuffle(splits);
         return new FixedSplitSource(splits);
     }
 }

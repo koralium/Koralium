@@ -1,11 +1,30 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.prestosql.plugin.koralium.client;
 
 import io.prestosql.plugin.koralium.KoraliumConfig;
-import org.apache.arrow.flight.*;
+import org.apache.arrow.flight.FlightClient;
+import org.apache.arrow.flight.FlightDescriptor;
+import org.apache.arrow.flight.FlightInfo;
+import org.apache.arrow.flight.FlightStream;
+import org.apache.arrow.flight.Location;
+import org.apache.arrow.flight.Ticket;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 
 import javax.inject.Inject;
+
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -53,7 +72,9 @@ public class KoraliumClient
         if (headers != null) {
             headerFactory.setHeaders(headers);
         }
-        return flightClient.getInfo(FlightDescriptor.command(command.getBytes(StandardCharsets.UTF_8)));
+        FlightInfo result = flightClient.getInfo(FlightDescriptor.command(command.getBytes(StandardCharsets.UTF_8)));
+        headerFactory.clearHeaders();
+        return result;
     }
 
     public FlightStream GetStream(byte[] ticket, Map<String, String> headers)
@@ -61,6 +82,13 @@ public class KoraliumClient
         if (headers != null) {
             headerFactory.setHeaders(headers);
         }
-         return flightClient.getStream(new Ticket(ticket));
+        FlightStream stream = flightClient.getStream(new Ticket(ticket));
+        headerFactory.clearHeaders();
+        return stream;
+    }
+
+    public void close() throws InterruptedException
+    {
+        flightClient.close();
     }
 }

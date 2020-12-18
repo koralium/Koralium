@@ -21,7 +21,6 @@ import io.prestosql.spi.type.IntegerType;
 import io.prestosql.spi.type.RealType;
 import io.prestosql.spi.type.SmallintType;
 import io.prestosql.spi.type.TimestampType;
-import io.prestosql.spi.type.Type;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 
 import static io.prestosql.spi.type.VarcharType.createUnboundedVarcharType;

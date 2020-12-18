@@ -15,19 +15,21 @@ package io.prestosql.plugin.koralium.client;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import io.prestosql.plugin.koralium.*;
+import io.prestosql.plugin.koralium.KoraliumConfig;
+import io.prestosql.plugin.koralium.KoraliumPrestoColumn;
+import io.prestosql.plugin.koralium.KoraliumPrestoTable;
+import io.prestosql.plugin.koralium.KoraliumTableHandle;
+import io.prestosql.plugin.koralium.KoraliumTableIndex;
 import io.prestosql.plugin.koralium.utils.ArrowPrestoTypeConverter;
-import io.prestosql.plugin.koralium.utils.SqlFromTableVisitor;
 import io.prestosql.plugin.koralium.utils.SqlUtils;
 import io.prestosql.plugin.koralium.utils.TypeConvertResult;
 import io.prestosql.spi.connector.ColumnHandle;
 import io.prestosql.spi.connector.ConnectorTableMetadata;
 import io.prestosql.spi.connector.SchemaTableName;
-import io.prestosql.spi.type.Type;
-import net.sf.jsqlparser.JSQLParserException;
-import net.sf.jsqlparser.parser.CCJSqlParserUtil;
-import net.sf.jsqlparser.statement.select.Select;
-import org.apache.arrow.flight.*;
+import org.apache.arrow.flight.Criteria;
+import org.apache.arrow.flight.FlightClient;
+import org.apache.arrow.flight.FlightInfo;
+import org.apache.arrow.flight.Location;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.types.pojo.Field;
@@ -43,7 +45,7 @@ import java.util.stream.Collectors;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static java.util.Locale.ENGLISH;
 
-public class KoraliumPrestoMetadataClient
+public class KoraliumPrestoMetadataCache
         implements KoraliumMetadataClient
 {
     private static final String schemaName = "default";
@@ -55,7 +57,7 @@ public class KoraliumPrestoMetadataClient
     private Map<String, List<SchemaTableName>> schemaNameToSchemaTableNames;
 
     @Inject
-    public KoraliumPrestoMetadataClient(KoraliumConfig config)
+    public KoraliumPrestoMetadataCache(KoraliumConfig config)
     {
         allocator = new RootAllocator(Long.MAX_VALUE);
 
@@ -88,7 +90,7 @@ public class KoraliumPrestoMetadataClient
             ImmutableList.Builder<KoraliumPrestoColumn> builder = new ImmutableList.Builder<>();
             for (Field field : fields) {
                 TypeConvertResult convertResult = ArrowPrestoTypeConverter.Convert(field);
-                KoraliumPrestoColumn column = new KoraliumPrestoColumn(field.getName(), convertResult.getPrestoType(), convertResult.getKoraliumType());
+                KoraliumPrestoColumn column = new KoraliumPrestoColumn(field.getName(), convertResult.getPrestoType(), convertResult.getKoraliumType(), field.getName());
                 builder.add(column);
             }
             List<KoraliumPrestoColumn> columns = builder.build();

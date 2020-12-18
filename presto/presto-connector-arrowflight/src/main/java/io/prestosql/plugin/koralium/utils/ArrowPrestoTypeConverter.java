@@ -17,7 +17,6 @@ import com.google.common.collect.ImmutableList;
 import io.prestosql.plugin.koralium.KoraliumType;
 import io.prestosql.spi.type.ArrayType;
 import io.prestosql.spi.type.RowType;
-import io.prestosql.spi.type.Type;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
 
@@ -25,7 +24,6 @@ import java.util.List;
 
 public class ArrowPrestoTypeConverter
 {
-
     private ArrowPrestoTypeConverter()
     {
         //NOP

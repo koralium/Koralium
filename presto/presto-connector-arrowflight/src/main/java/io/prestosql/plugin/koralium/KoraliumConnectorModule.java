@@ -19,7 +19,7 @@ import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
 import io.prestosql.plugin.koralium.client.KoraliumClient;
-import io.prestosql.plugin.koralium.client.PrestoKoraliumClient;
+import io.prestosql.plugin.koralium.client.PrestoKoraliumMetadataClient;
 import io.prestosql.spi.type.Type;
 import io.prestosql.spi.type.TypeId;
 import io.prestosql.spi.type.TypeManager;
@@ -49,15 +49,14 @@ public class KoraliumConnectorModule
 
         binder.bind(KoraliumConnector.class).in(Scopes.SINGLETON);
         binder.bind(KoraliumMetadata.class).in(Scopes.SINGLETON);
-        binder.bind(PrestoKoraliumClient.class).in(Scopes.SINGLETON);
+        binder.bind(PrestoKoraliumMetadataClient.class).in(Scopes.SINGLETON);
         binder.bind(KoraliumClient.class).in(Scopes.SINGLETON);
         binder.bind(KoraliumSplitManager.class).in(Scopes.SINGLETON);
         binder.bind(KoraliumPageSourceProvider.class).in(Scopes.SINGLETON);
-        binder.bind(KoraliumIndexProvider.class).in(Scopes.SINGLETON);
         configBinder(binder).bindConfig(KoraliumConfig.class);
 
         jsonBinder(binder).addDeserializerBinding(Type.class).to(TypeDeserializer.class);
-        jsonCodecBinder(binder).bindMapJsonCodec(String.class, listJsonCodec(KoraliumTable.class));
+        jsonCodecBinder(binder).bindMapJsonCodec(String.class, listJsonCodec(KoraliumPrestoTable.class));
     }
 
     private static final class TypeDeserializer

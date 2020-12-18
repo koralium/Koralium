@@ -13,7 +13,6 @@
  */
 package io.prestosql.plugin.koralium.client;
 
-import io.prestosql.plugin.koralium.KoraliumColumnHandle;
 import io.prestosql.plugin.koralium.KoraliumPrestoColumn;
 import io.prestosql.plugin.koralium.KoraliumSortItem;
 
@@ -59,7 +58,6 @@ public class QueryBuilder
         else {
             stringBuilder.append("*");
         }
-
 
         stringBuilder.append(" FROM ");
         stringBuilder.append(tableName);

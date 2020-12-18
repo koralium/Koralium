@@ -13,12 +13,29 @@
  */
 package io.prestosql.plugin.koralium;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import io.prestosql.plugin.koralium.client.PrestoKoraliumClient;
-import io.prestosql.spi.connector.*;
+import io.prestosql.plugin.koralium.client.PrestoKoraliumMetadataClient;
+import io.prestosql.spi.connector.AggregateFunction;
+import io.prestosql.spi.connector.AggregationApplicationResult;
+import io.prestosql.spi.connector.Assignment;
+import io.prestosql.spi.connector.ColumnHandle;
+import io.prestosql.spi.connector.ColumnMetadata;
+import io.prestosql.spi.connector.ConnectorMetadata;
+import io.prestosql.spi.connector.ConnectorSession;
+import io.prestosql.spi.connector.ConnectorTableHandle;
+import io.prestosql.spi.connector.ConnectorTableMetadata;
+import io.prestosql.spi.connector.ConnectorTableProperties;
+import io.prestosql.spi.connector.Constraint;
+import io.prestosql.spi.connector.ConstraintApplicationResult;
+import io.prestosql.spi.connector.LimitApplicationResult;
+import io.prestosql.spi.connector.ProjectionApplicationResult;
+import io.prestosql.spi.connector.SchemaNotFoundException;
+import io.prestosql.spi.connector.SchemaTableName;
+import io.prestosql.spi.connector.SchemaTablePrefix;
+import io.prestosql.spi.connector.SortItem;
+import io.prestosql.spi.connector.TopNApplicationResult;
 import io.prestosql.spi.expression.ConnectorExpression;
 import io.prestosql.spi.predicate.Domain;
 import io.prestosql.spi.predicate.TupleDomain;
@@ -30,7 +47,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalLong;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
@@ -39,10 +55,10 @@ import static java.util.Objects.requireNonNull;
 public class KoraliumMetadata
         implements ConnectorMetadata
 {
-    private final PrestoKoraliumClient koraliumClient;
+    private final PrestoKoraliumMetadataClient koraliumClient;
 
     @Inject
-    public KoraliumMetadata(PrestoKoraliumClient client)
+    public KoraliumMetadata(PrestoKoraliumMetadataClient client)
     {
         this.koraliumClient = requireNonNull(client, "client is null");
     }
@@ -188,7 +204,7 @@ public class KoraliumMetadata
             List<ConnectorExpression> projections,
             Map<String, ColumnHandle> assignments)
     {
-        KoraliumTableHandle tableHandle = (KoraliumTableHandle)handle;
+        KoraliumTableHandle tableHandle = (KoraliumTableHandle) handle;
 
         List<KoraliumPrestoColumn> newColumns = assignments.values().stream()
                 .map(KoraliumPrestoColumn.class::cast)

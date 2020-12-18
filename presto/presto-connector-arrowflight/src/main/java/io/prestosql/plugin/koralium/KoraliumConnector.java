@@ -15,7 +15,6 @@ package io.prestosql.plugin.koralium;
 
 import io.airlift.bootstrap.LifeCycleManager;
 import io.prestosql.spi.connector.Connector;
-import io.prestosql.spi.connector.ConnectorIndexProvider;
 import io.prestosql.spi.connector.ConnectorMetadata;
 import io.prestosql.spi.connector.ConnectorPageSourceProvider;
 import io.prestosql.spi.connector.ConnectorSplitManager;
@@ -33,21 +32,18 @@ public class KoraliumConnector
     private final KoraliumMetadata metadata;
     private final KoraliumSplitManager splitManager;
     private final KoraliumPageSourceProvider pageSourceProvider;
-    private final KoraliumIndexProvider koraliumIndexProvider;
 
     @Inject
     public KoraliumConnector(
             LifeCycleManager lifeCycleManager,
             KoraliumMetadata metadata,
             KoraliumSplitManager splitManager,
-            KoraliumPageSourceProvider pageSourceProvider,
-            KoraliumIndexProvider koraliumIndexProvider)
+            KoraliumPageSourceProvider pageSourceProvider)
     {
         this.lifeCycleManager = requireNonNull(lifeCycleManager, "lifeCycleManager is null");
         this.metadata = requireNonNull(metadata, "metadata is null");
         this.splitManager = requireNonNull(splitManager, "splitManager is null");
         this.pageSourceProvider = requireNonNull(pageSourceProvider, "pageSourceProvider is null");
-        this.koraliumIndexProvider = requireNonNull(koraliumIndexProvider, "grpcIndexProvider is null");
     }
 
     @Override
@@ -72,12 +68,6 @@ public class KoraliumConnector
     public ConnectorPageSourceProvider getPageSourceProvider()
     {
         return pageSourceProvider;
-    }
-
-    @Override
-    public ConnectorIndexProvider getIndexProvider()
-    {
-        return koraliumIndexProvider;
     }
 
     @Override

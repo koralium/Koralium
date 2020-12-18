@@ -14,8 +14,6 @@
 package io.prestosql.plugin.koralium;
 
 import io.airlift.configuration.Config;
-import io.grpc.Channel;
-import io.grpc.ManagedChannelBuilder;
 
 import javax.validation.constraints.NotNull;
 
@@ -27,14 +25,6 @@ public class KoraliumConfig
     public String getUrl()
     {
         return url;
-    }
-
-    @NotNull
-    public Channel getChannel()
-    {
-        return ManagedChannelBuilder.forTarget(getUrl())
-                .usePlaintext()
-                .build();
     }
 
     @Config("koralium.url")

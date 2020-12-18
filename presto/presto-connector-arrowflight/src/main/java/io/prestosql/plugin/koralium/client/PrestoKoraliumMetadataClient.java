@@ -13,8 +13,6 @@
  */
 package io.prestosql.plugin.koralium.client;
 
-import io.grpc.Channel;
-import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
 import io.prestosql.plugin.koralium.KoraliumConfig;
 import io.prestosql.plugin.koralium.KoraliumTableHandle;
 import io.prestosql.plugin.koralium.KoraliumTableIndex;
@@ -27,14 +25,14 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 
-public class PrestoKoraliumClient
+public class PrestoKoraliumMetadataClient
         implements KoraliumMetadataClient
 {
     private final KoraliumConfig config;
     private KoraliumMetadataClient cache;
 
     @Inject
-    public PrestoKoraliumClient(KoraliumConfig config)
+    public PrestoKoraliumMetadataClient(KoraliumConfig config)
     {
         this.config = config;
     }
@@ -48,8 +46,7 @@ public class PrestoKoraliumClient
 
     private void reloadCache()
     {
-        //this.cache = new KoraliumMetadataCache(channel);
-        this.cache = new KoraliumPrestoMetadataClient(config);
+        this.cache = new KoraliumPrestoMetadataCache(config);
     }
 
     @Override
