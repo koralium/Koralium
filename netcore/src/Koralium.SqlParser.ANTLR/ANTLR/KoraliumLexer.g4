@@ -71,6 +71,6 @@ STRING_LITERAL: '\'' ( ~'\'' | '\'\'')* '\'';
 VARIABLE_ID: '@' [a-zA-Z_] [a-zA-Z_0-9]*;
 
 NUMERIC_LITERAL:
-	((DIGIT+ ('.' DIGIT*)?) | ('.' DIGIT+)) ('E' [-+]? DIGIT+)?;
+	'-'? ((DIGIT+ ('.' DIGIT*)?) | ('.' DIGIT+)) ('E' [-+]? DIGIT+)?;
 
 fragment DIGIT: [0-9];
