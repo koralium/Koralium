@@ -18,6 +18,8 @@ namespace Koralium.Transport.ArrowFlight
 {
     internal class KoraliumFlightServer : FlightServer
     {
+        private const int DefaultMaxBatchSize = 1000000;
+
         private readonly IKoraliumTransportService _koraliumTransportService;
         public KoraliumFlightServer(IKoraliumTransportService koraliumTransportService)
         {
@@ -28,6 +30,14 @@ namespace Koralium.Transport.ArrowFlight
         {
             try
             {
+                int maxBatchSize = DefaultMaxBatchSize;
+                var maxBatchSizeMetadata = context.RequestHeaders.Get("max-batch-size");
+
+                if(maxBatchSizeMetadata != null && int.TryParse(maxBatchSizeMetadata.Value, out var parsedMaxBatchSize))
+                {
+                    maxBatchSize = parsedMaxBatchSize;
+                }
+
                 var queryResult = await _koraliumTransportService.Execute(ticket.Ticket.ToStringUtf8(), new Shared.SqlParameters(), context.GetHttpContext());
 
                 //Get the resulting schema
@@ -53,7 +63,7 @@ namespace Koralium.Transport.ArrowFlight
                     {
                         encoders[i].Encode(obj);
                     }
-                    if (encoders.Select(x => x.Size()).Sum() > 1000000)
+                    if (encoders.Select(x => x.Size()).Sum() > maxBatchSize)
                     {
                         await responseStream.WriteAsync(new RecordBatch(schema, encoders.Select(x => x.BuildArray()), count));
                         foreach (var encoder in encoders)
