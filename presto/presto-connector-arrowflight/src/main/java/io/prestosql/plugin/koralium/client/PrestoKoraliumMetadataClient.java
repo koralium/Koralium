@@ -31,27 +31,12 @@ public class PrestoKoraliumClient
         implements KoraliumMetadataClient
 {
     private final KoraliumConfig config;
-    private final Channel channel;
     private KoraliumMetadataClient cache;
 
     @Inject
     public PrestoKoraliumClient(KoraliumConfig config)
     {
         this.config = config;
-        this.channel = config.getChannel();
-
-        //Just using a method from the library to use it
-        NettyServerBuilder builder = NettyServerBuilder.forPort(1111);
-    }
-
-    public String getUrl()
-    {
-        return config.getUrl();
-    }
-
-    public Channel getChannel()
-    {
-        return channel;
     }
 
     private void loadCache()
