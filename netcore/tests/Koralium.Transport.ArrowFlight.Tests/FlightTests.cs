@@ -122,6 +122,35 @@ namespace Koralium.Transport.ArrowFlight.Tests
         }
 
         [Test]
+        public async Task TestGetPartitionsWithParameters()
+        {
+            var expectedDescriptor = FlightDescriptor.CreateCommandDescriptor("select orderkey from orders");
+
+            Metadata metadata = new Metadata();
+            metadata.Add("enable-partitions", "true");
+            metadata.Add("P_p1", "1");
+
+            var actualFlightInfo = await client.GetInfo(expectedDescriptor, metadata);
+
+            var expectedSchema = new Schema.Builder()
+                .Field(new Field("orderkey", Int64Type.Default, false))
+                .Build();
+
+            var expectedEndpoints = new List<FlightEndpoint>()
+            {
+                new FlightEndpoint(new FlightTicket("SET p1 = b64'MQ==';\r\nSELECT orderkey FROM orders WHERE Orderkey < 16001"), new List<FlightLocation>()),
+                new FlightEndpoint(new FlightTicket("SET p1 = b64'MQ==';\r\nSELECT orderkey FROM orders WHERE (Orderkey >= 16001) AND (Orderkey < 32001)"), new List<FlightLocation>()),
+                new FlightEndpoint(new FlightTicket("SET p1 = b64'MQ==';\r\nSELECT orderkey FROM orders WHERE Orderkey >= 48001"), new List<FlightLocation>())
+            };
+
+            var expectedFlightInfo = new FlightInfo(expectedSchema, expectedDescriptor, expectedEndpoints);
+
+            FlightInfoComparer.Compare(expectedFlightInfo, actualFlightInfo);
+
+            Assert.Pass(); //add pass here to skip warning, assertions are done in flight info comparer
+        }
+
+        [Test]
         public async Task TestGetStream()
         {
             Metadata headers = new Metadata();
