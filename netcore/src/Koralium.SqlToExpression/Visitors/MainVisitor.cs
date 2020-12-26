@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace Koralium.SqlToExpression.Visitors
 {
@@ -173,6 +174,11 @@ namespace Koralium.SqlToExpression.Visitors
             else if (setVariableStatement.ScalarExpression is NumericLiteral numericLiteral)
             {
                 _visitorMetadata.Parameters.Add(SqlParameter.Create(setVariableStatement.VariableReference.Name, numericLiteral.Value));
+            }
+            else if(setVariableStatement.ScalarExpression is Base64Literal base64Literal)
+            {
+                var decodedString = Encoding.UTF8.GetString(Convert.FromBase64String(base64Literal.Value));
+                _visitorMetadata.Parameters.Add(SqlParameter.Create(setVariableStatement.VariableReference.Name, decodedString));
             }
             else
             {

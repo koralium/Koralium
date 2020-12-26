@@ -441,5 +441,10 @@ namespace Koralium.SqlParser.Visitor
                 }
             }
         }
+
+        public override void VisitBase64Literal(Base64Literal base64Literal)
+        {
+            Push($"b64'{base64Literal.Value}'");
+        }
     }
 }

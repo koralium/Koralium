@@ -138,5 +138,27 @@ namespace Koralium.SqlParser.SmokeTests
 
             actual.Should().BeEquivalentTo(expected, x => x.RespectingRuntimeTypes());
         }
+
+        [Test]
+        public void TestSetBase64VariableString()
+        {
+            var actual = Parser.Parse("SET @Test = b64'MQ=='").Statements;
+            var expected = new List<Statement>()
+            {
+                new SetVariableStatement()
+                {
+                    VariableReference = new VariableReference()
+                    {
+                        Name = "@Test"
+                    },
+                    ScalarExpression = new Base64Literal()
+                    {
+                        Value = "MQ=="
+                    }
+                }
+            };
+
+            actual.Should().BeEquivalentTo(expected, x => x.RespectingRuntimeTypes());
+        }
     }
 }

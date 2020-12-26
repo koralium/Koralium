@@ -823,8 +823,19 @@ namespace Koralium.SqlParser.ANTLR
             {
                 throw new SqlParserException("Could not parse variable reference");
             }
-            
-            var scalarExpression = Visit(context.scalar_expression()) as ScalarExpression;
+
+            ScalarExpression scalarExpression = null;
+            if(context.b64 != null)
+            {
+                scalarExpression = new Base64Literal()
+                {
+                    Value = context.b64.Text.Substring(4, context.b64.Text.Length - 5)
+                };
+            }
+            else
+            {
+                scalarExpression = Visit(context.scalar_expression()) as ScalarExpression;
+            }
 
             if(scalarExpression == null)
             {

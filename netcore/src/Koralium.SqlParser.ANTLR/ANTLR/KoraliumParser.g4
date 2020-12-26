@@ -13,7 +13,8 @@ sql_statement
 	| select_statement
 	;
 
-set_variable_statement: SET variable_reference '=' scalar_expression;
+set_variable_statement: SET variable_reference '=' (b64=BASE64_LITERAL | scalar_expression);
+
 
 select_statement: (
   SELECT (DISTINCT)? select_expression (',' select_expression)*

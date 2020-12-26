@@ -124,7 +124,9 @@ namespace Koralium.Transport.ArrowFlight.Tests
         [Test]
         public async Task TestGetStream()
         {
-            var getStream = client.GetStream(new FlightTicket("select * from orders"));
+            Metadata headers = new Metadata();
+            headers.Add("P_p1", "1");
+            var getStream = client.GetStream(new FlightTicket("select * from orders where orderkey > @p1"), headers);
 
             await foreach(var recordBatch in getStream.ResponseStream)
             {

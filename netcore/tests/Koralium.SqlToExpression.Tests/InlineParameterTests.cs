@@ -70,5 +70,21 @@ namespace Koralium.SqlToExpression.Tests
 
             AssertAreEqual(expected, actual.Result);
         }
+
+        [Test]
+        public async Task TestInlineParametersBase64()
+        {
+            var actual = await SqlExecutor.Execute(@"
+                SET @Parameter = b64'MTk5NS0xMC0yMw==';
+                SELECT Orderkey, Orderdate FROM ""order"" WHERE Orderdate > @Parameter
+            ");
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderdate > DateTime.Parse("1995-10-23"))
+                .Select(x => new { x.Orderkey, x.Orderdate })
+                .AsQueryable();
+
+            AssertAreEqual(expected, actual.Result);
+        }
     }
 }

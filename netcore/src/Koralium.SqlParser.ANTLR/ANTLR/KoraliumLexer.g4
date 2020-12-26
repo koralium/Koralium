@@ -66,6 +66,8 @@ COMMENT
   :  '--' ~( '\r' | '\n' )*
   ;
 
+BASE64_LITERAL: 'B64' STRING_LITERAL;
+
 STRING_LITERAL: '\'' ( ~'\'' | '\'\'')* '\'';
 
 VARIABLE_ID: '@' [a-zA-Z_] [a-zA-Z_0-9]*;
