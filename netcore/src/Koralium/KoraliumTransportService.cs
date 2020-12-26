@@ -14,6 +14,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Koralium.SqlParser.Statements;
+using Koralium.SqlParser.Literals;
+using System.Text;
 
 namespace Koralium
 {
@@ -115,7 +117,7 @@ namespace Koralium
 
             foreach (var header in httpContext.Request.Headers)
             {
-                if (header.Key.StartsWith("P_"))
+                if (header.Key.StartsWith("P_", StringComparison.OrdinalIgnoreCase))
                 {
                     var parameterName = header.Key.Substring(2);
 
@@ -125,7 +127,20 @@ namespace Koralium
                     }
                     var value = header.Value.First();
 
-                    sqlParameters.Add(SqlParameter.Create(parameterName, value));
+                    var base64Value = Convert.ToBase64String(Encoding.UTF8.GetBytes(value));
+
+                    //Add the parameter as base64 inline parameter
+                    sqlTree.Statements.Insert(0, new SetVariableStatement()
+                    {
+                        VariableReference = new SqlParser.Expressions.VariableReference()
+                        {
+                            Name = parameterName
+                        },
+                        ScalarExpression = new Base64Literal()
+                        {
+                            Value = base64Value
+                        }
+                    });
                 }
             }
 

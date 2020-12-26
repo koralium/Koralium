@@ -163,26 +163,30 @@ namespace Koralium.SqlToExpression.Visitors
 
         public override void VisitSetVariableStatement(SetVariableStatement setVariableStatement)
         {
-            if (setVariableStatement.ScalarExpression is StringLiteral stringLiteral)
+            //Parameters from other sources go before inline parameters
+            if (!_visitorMetadata.Parameters.Contains(setVariableStatement.VariableReference.Name))
             {
-                _visitorMetadata.Parameters.Add(SqlParameter.Create(setVariableStatement.VariableReference.Name, stringLiteral.Value));
-            }
-            else if (setVariableStatement.ScalarExpression is IntegerLiteral integerLiteral)
-            {
-                _visitorMetadata.Parameters.Add(SqlParameter.Create(setVariableStatement.VariableReference.Name, integerLiteral.Value));
-            }
-            else if (setVariableStatement.ScalarExpression is NumericLiteral numericLiteral)
-            {
-                _visitorMetadata.Parameters.Add(SqlParameter.Create(setVariableStatement.VariableReference.Name, numericLiteral.Value));
-            }
-            else if(setVariableStatement.ScalarExpression is Base64Literal base64Literal)
-            {
-                var decodedString = Encoding.UTF8.GetString(Convert.FromBase64String(base64Literal.Value));
-                _visitorMetadata.Parameters.Add(SqlParameter.Create(setVariableStatement.VariableReference.Name, decodedString));
-            }
-            else
-            {
-                throw new NotImplementedException($"The parameter type: {setVariableStatement.ScalarExpression.GetType().Name} is not implemented");
+                if (setVariableStatement.ScalarExpression is StringLiteral stringLiteral)
+                {
+                    _visitorMetadata.Parameters.Add(SqlParameter.Create(setVariableStatement.VariableReference.Name, stringLiteral.Value));
+                }
+                else if (setVariableStatement.ScalarExpression is IntegerLiteral integerLiteral)
+                {
+                    _visitorMetadata.Parameters.Add(SqlParameter.Create(setVariableStatement.VariableReference.Name, integerLiteral.Value));
+                }
+                else if (setVariableStatement.ScalarExpression is NumericLiteral numericLiteral)
+                {
+                    _visitorMetadata.Parameters.Add(SqlParameter.Create(setVariableStatement.VariableReference.Name, numericLiteral.Value));
+                }
+                else if (setVariableStatement.ScalarExpression is Base64Literal base64Literal)
+                {
+                    var decodedString = Encoding.UTF8.GetString(Convert.FromBase64String(base64Literal.Value));
+                    _visitorMetadata.Parameters.Add(SqlParameter.Create(setVariableStatement.VariableReference.Name, decodedString));
+                }
+                else
+                {
+                    throw new NotImplementedException($"The parameter type: {setVariableStatement.ScalarExpression.GetType().Name} is not implemented");
+                }
             }
         }
 

@@ -39,6 +39,15 @@ namespace Koralium.Shared
             return _parameters.TryGetValue(name.ToLower(), out sqlParameter);
         }
 
+        public bool Contains(string name)
+        {
+            if (!name.StartsWith("@"))
+            {
+                name = "@" + name;
+            }
+            return _parameters.ContainsKey(name.ToLower());
+        }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return _parameters.GetEnumerator();
