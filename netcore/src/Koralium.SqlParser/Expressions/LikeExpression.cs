@@ -8,6 +8,8 @@ namespace Koralium.SqlParser.Expressions
 
         public ScalarExpression Right { get; set; }
 
+        public bool Not { get; set; }
+
         public override void Accept(KoraliumSqlVisitor visitor)
         {
             visitor.VisitLikeExpression(this);
@@ -18,7 +20,8 @@ namespace Koralium.SqlParser.Expressions
             return new LikeExpression()
             {
                 Left = Left.Clone() as ScalarExpression,
-                Right = Right.Clone() as ScalarExpression
+                Right = Right.Clone() as ScalarExpression,
+                Not = Not
             };
         }
     }

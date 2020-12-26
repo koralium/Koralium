@@ -782,6 +782,19 @@ namespace Koralium.SqlParser.Tests
         }
 
         [Test]
+        public void TestNotLikeExpression()
+        {
+            var actual = new LikeExpression()
+            {
+                Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                Right = new StringLiteral() { Value = "%test%" },
+                Not = true
+            }.Print();
+            var expected = "c1 NOT LIKE '%test%'";
+            actual.Should().Be(expected);
+        }
+
+        [Test]
         public void TestLimitNoOffset()
         {
             var actual = new OffsetLimitClause()

@@ -89,7 +89,7 @@ search_expression: CONTAINS '(' (wildcard='*' | '(' column_reference (',' column
 
 in_expression: element=in_left_scalar NOT? IN '(' scalar_expression (',' scalar_expression)* ')';
 
-like_expression: element=in_left_scalar LIKE right=scalar_expression;
+like_expression: element=in_left_scalar NOT? LIKE right=scalar_expression;
 
 in_left_scalar: scalar_expression;
 
