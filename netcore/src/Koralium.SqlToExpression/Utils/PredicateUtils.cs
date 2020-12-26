@@ -85,20 +85,28 @@ namespace Koralium.SqlToExpression.Utils
                     !sqlParameterLeft.GetValueType().Equals(rightExpression.Type)
                     )
                 {
-                    var value = sqlParameterLeft.GetValue();
-                    var changedTypeValue = Convert.ChangeType(value, rightExpression.Type);
-
-                    leftExpression = Expression.Constant(changedTypeValue);
+                    if(sqlParameterLeft.TryGetValue(rightExpression.Type, out var value))
+                    {
+                        leftExpression = Expression.Constant(value);
+                    }
+                    else
+                    {
+                        throw new SqlErrorException($"Could not cast {sqlParameterLeft.GetValueType().Name} to {rightExpression.Type}");
+                    }
                 }
                 else if (rightExpression is MemberExpression memberExpressionRight &&
                     memberExpressionRight.Expression is ConstantExpression constantExpressionRightVariable &&
                     constantExpressionRightVariable.Value is SqlParameter sqlParameter &&
                     !sqlParameter.GetValueType().Equals(leftExpression.Type))
                 {
-                    var value = sqlParameter.GetValue();
-                    var changedTypeValue = Convert.ChangeType(value, leftExpression.Type);
-
-                    rightExpression = Expression.Constant(changedTypeValue);
+                    if (sqlParameter.TryGetValue(leftExpression.Type, out var value))
+                    {
+                        rightExpression = Expression.Constant(value);
+                    }
+                    else
+                    {
+                        throw new SqlErrorException($"Could not cast {sqlParameter.GetValueType().Name} to {leftExpression.Type}");
+                    }
                 }
                 //If the types still does not match, we convert on the right
                 else if (!leftExpression.Type.Equals(rightExpression.Type))

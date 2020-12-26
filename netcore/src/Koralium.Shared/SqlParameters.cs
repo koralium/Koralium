@@ -32,6 +32,10 @@ namespace Koralium.Shared
 
         public bool TryGetParameter(string name, out SqlParameter sqlParameter)
         {
+            if (!name.StartsWith("@"))
+            {
+                name = "@" + name;
+            }
             return _parameters.TryGetValue(name.ToLower(), out sqlParameter);
         }
 

@@ -13,6 +13,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Koralium.SqlParser.Statements;
 
 namespace Koralium
 {
@@ -50,6 +51,22 @@ namespace Koralium
 
         public async ValueTask<Transport.QueryResult> Execute(string sql, SqlParameters sqlParameters, HttpContext httpContext)
         {
+            foreach (var header in httpContext.Request.Headers)
+            {
+                if (header.Key.StartsWith("P_", StringComparison.OrdinalIgnoreCase))
+                {
+                    var parameterName = header.Key.Substring(2);
+
+                    if (header.Value.Count > 1)
+                    {
+                        throw new SqlErrorException("Two parameters found with the same name in the http headers.");
+                    }
+                    var value = header.Value.First();
+
+                    sqlParameters.Add(SqlParameter.Create(parameterName, value));
+                }
+            }
+
             CustomMetadataStore customMetadataStore = new CustomMetadataStore();
             var result = await _sqlExecutor.Execute(sql, sqlParameters, new TableResolverData(
                 httpContext, 
@@ -96,7 +113,23 @@ namespace Koralium
         {
             var sqlTree = _sqlParser.Parse(sql, out var errors);
 
-            if(errors.Count > 0)
+            foreach (var header in httpContext.Request.Headers)
+            {
+                if (header.Key.StartsWith("P_"))
+                {
+                    var parameterName = header.Key.Substring(2);
+
+                    if(header.Value.Count > 1)
+                    {
+                        throw new SqlErrorException("Two parameters found with the same name in the http headers.");
+                    }
+                    var value = header.Value.First();
+
+                    sqlParameters.Add(SqlParameter.Create(parameterName, value));
+                }
+            }
+
+            if (errors.Count > 0)
             {
                 throw new SqlErrorException(errors.First().Message);
             }

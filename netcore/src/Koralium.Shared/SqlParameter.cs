@@ -23,6 +23,8 @@ namespace Koralium.Shared
 
         public abstract bool TryGetValue<TValue>(out TValue value);
 
+        public abstract bool TryGetValue(Type type, out object value);
+
         public abstract object GetValue();
 
         public abstract Type GetValueType();
@@ -49,8 +51,16 @@ namespace Koralium.Shared
         {
             if (!(Value is TValue))
             {
-                value = default(TValue);
-                return false;
+                try
+                {
+                    value = (TValue)Convert.ChangeType(Value, typeof(TValue));
+                    return true;
+                }
+                catch (FormatException)
+                {
+                    value = default;
+                    return false;
+                }
             }
             value = (TValue)Convert.ChangeType(Value, typeof(TValue));
             return true;
@@ -64,6 +74,25 @@ namespace Koralium.Shared
         public override Type GetValueType()
         {
             return typeof(T);
+        }
+
+        public override bool TryGetValue(Type type, out object value)
+        {
+            if(Equals(typeof(T), type))
+            {
+                value = Value;
+                return true;
+            }
+            try
+            {
+                value = Convert.ChangeType(Value, type);
+                return true;
+            }
+            catch (FormatException)
+            {
+                value = default;
+                return false;
+            }
         }
     }
 }

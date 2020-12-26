@@ -14,9 +14,9 @@ namespace Koralium.WebTests.Resolvers.tpch
 
         protected override Task<IQueryable<Order>> GetQueryableData()
         {
-            if(QueryOptions.Parameters.TryGetParameter("test", out var parameter))
+            if(QueryOptions.Parameters.TryGetParameter("p1", out var parameter))
             {
-                if(parameter.TryGetValue<string>(out var stringValue))
+                if(parameter.TryGetValue<int>(out var stringValue))
                 {
                     return Task.FromResult(_tpchData.Orders.AsQueryable().Where(x => x.Custkey == 1));
                 }
