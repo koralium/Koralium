@@ -1008,6 +1008,15 @@ namespace Koralium.SqlToExpression.Tests
             ");
         }
 
+        [Test]
+        public void TestParameterNotFound()
+        {
+            Assert.That(async () =>
+            {
+                SqlParameters sqlParameters = new SqlParameters();
+                await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE orderkey > @P0", sqlParameters);
+            }, Throws.InstanceOf<SqlErrorException>().With.Message.EqualTo("The parameter @P0 could not be found, did you have include @ before the parameter name?"));
+        }
 
         //select name from customer where name > 'customer#000001500'
         //Gives the wrong results
