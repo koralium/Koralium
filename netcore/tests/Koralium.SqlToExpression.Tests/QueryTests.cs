@@ -719,6 +719,19 @@ namespace Koralium.SqlToExpression.Tests
         }
 
         [Test]
+        public async Task TestStringNotStartsWith()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority NOT LIKE '5-L%'");
+
+            var expected = TpchData.Orders
+                .Where(x => !x.Orderpriority.StartsWith("5-L"))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
         public async Task TestStringContains()
         {
             var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority like '%5-L%'");

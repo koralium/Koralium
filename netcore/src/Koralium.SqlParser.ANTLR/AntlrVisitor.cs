@@ -749,7 +749,8 @@ namespace Koralium.SqlParser.ANTLR
                 return new LikeExpression()
                 {
                     Left = left,
-                    Right = right
+                    Right = right,
+                    Not = context.NOT() != null
                 };
             }
 

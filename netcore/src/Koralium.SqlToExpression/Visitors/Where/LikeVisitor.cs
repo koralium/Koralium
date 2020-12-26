@@ -210,41 +210,44 @@ namespace Koralium.SqlToExpression.Visitors.Where
 
             var visitResult = VisitInternal(likeExpression.Right);
 
+            Expression expression = null;
             if (visitResult.StartsWith && visitResult.EndsWith)
             {
-                var containsExpression = PredicateUtils.CallContains(
+                expression = PredicateUtils.CallContains(
                     leftExpression,
                     visitResult.Expression,
                     _visitorMetadata.StringOperationsProvider);
-                AddExpressionToStack(containsExpression);
             }
             //Starts with
             else if (visitResult.StartsWith)
             {
-                var startsWithExpression = PredicateUtils.CallStartsWith(
+                expression = PredicateUtils.CallStartsWith(
                     leftExpression,
                     visitResult.Expression,
                     _visitorMetadata.StringOperationsProvider);
-                AddExpressionToStack(startsWithExpression);
             }
             //Ends with
             else if (visitResult.EndsWith)
             {
-                var endsWithExpression = PredicateUtils.CallEndsWith(
+                expression = PredicateUtils.CallEndsWith(
                     leftExpression,
                     visitResult.Expression,
                     _visitorMetadata.StringOperationsProvider);
-                AddExpressionToStack(endsWithExpression);
             }
             else
             {
-                var equalsExpression = PredicateUtils.CreateComparisonExpression(
+                expression = PredicateUtils.CreateComparisonExpression(
                     leftExpression,
                     visitResult.Expression,
                     BooleanComparisonType.Equals,
                     _visitorMetadata.StringOperationsProvider);
-                AddExpressionToStack(equalsExpression);
             }
+
+            if (likeExpression.Not)
+            {
+                expression = Expression.Not(expression);
+            }
+            AddExpressionToStack(expression);
         }
 
         public override void AddExpressionToStack(Expression expression)

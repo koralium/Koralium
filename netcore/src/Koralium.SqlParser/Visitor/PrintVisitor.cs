@@ -266,7 +266,14 @@ namespace Koralium.SqlParser.Visitor
             var left = VisitPop(likeExpression.Left);
             var right = VisitPop(likeExpression.Right);
 
-            Push($"{left} LIKE {right}");
+            if (likeExpression.Not)
+            {
+                Push($"{left} NOT LIKE {right}");
+            }
+            else
+            {
+                Push($"{left} LIKE {right}");
+            }
         }
 
         public override void VisitOffsetLimitClause(OffsetLimitClause offsetLimitClause)
