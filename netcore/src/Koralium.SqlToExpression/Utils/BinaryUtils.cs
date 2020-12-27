@@ -11,7 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 using Koralium.SqlParser.Expressions;
 using System.Linq.Expressions;
 using System.Reflection;
