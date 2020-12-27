@@ -1,4 +1,5 @@
-﻿using Koralium.Transport;
+﻿using Koralium.Shared;
+using Koralium.Transport;
 using System;
 using System.Collections.Generic;
 
@@ -59,6 +60,10 @@ namespace Koralium.Utils
             {
                 return (ColumnType.DateTime, false);
             }
+            if (type.Equals(typeof(short)))
+            {
+                return (ColumnType.Short, false);
+            }
             if (IsArray(type))
             {
                 return (ColumnType.List, true);
@@ -68,7 +73,7 @@ namespace Koralium.Utils
                 return (ColumnType.Object, true);
             }
 
-            throw new Exception("Unsupported type");
+            throw new SqlErrorException($"Unsupported type '{type.FullName}");
         }
     }
 }

@@ -225,8 +225,8 @@ namespace Koralium.WebTests
             SetTypeTestValue<int?>(arr, (t, x) => t.IntValueNullable = x, 1, 3, 17, null);
             SetTypeTestValue<long>(arr, (t, x) => t.LongValue = x, 1, 3, 17);
             SetTypeTestValue<long?>(arr, (t, x) => t.LongValueNullable = x, 1, 3, 17, null);
-            //SetTypeTestValue<short>(arr, (t, x) => t.ShortValue = x, 1, 3, 17);
-            //SetTypeTestValue<short?>(arr, (t, x) => t.ShortValueNullable = x, 1, 3, 17, null);
+            SetTypeTestValue<short>(arr, (t, x) => t.ShortValue = x, 1, 3, 17);
+            SetTypeTestValue<short?>(arr, (t, x) => t.ShortValueNullable = x, 1, 3, 17, null);
             SetTypeTestValue(arr, (t, x) => t.StringValue = x, "test", null);
 
             //Complex

@@ -110,9 +110,29 @@ namespace Koralium.SqlToExpression.Utils
             return call;
         }
 
+        public static Type GetSumOutputType(Type type)
+        {
+            if(Equals(type, typeof(short)))
+            {
+                return typeof(int);
+            }
+            if(Equals(type, typeof(short?)))
+            {
+                return typeof(int?);
+            }
+            return type;
+        }
+
         public static Expression CallSum(Expression expression, GroupedStage groupedStage)
         {
-            var sumMethod = GetSumMethod(expression.Type);
+            var sumOutputType = GetSumOutputType(expression.Type);
+
+            if (!Equals(sumOutputType, expression.Type))
+            {
+                expression = Expression.Convert(expression, sumOutputType);
+            }
+
+            var sumMethod = GetSumMethod(sumOutputType);
             return CallMethod(expression, sumMethod, groupedStage);
         }
 
