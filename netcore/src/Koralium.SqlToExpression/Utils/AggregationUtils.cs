@@ -128,6 +128,14 @@ namespace Koralium.SqlToExpression.Utils
             {
                 return typeof(long?);
             }
+            if(Equals(type, typeof(ulong)))
+            {
+                return typeof(long);
+            }
+            if (Equals(type, typeof(ulong?)))
+            {
+                return typeof(long?);
+            }
             return type;
         }
 

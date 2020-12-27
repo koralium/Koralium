@@ -29,6 +29,7 @@ namespace EntityFrameworkCore.Koralium.Storage.Internal
             {
                 { typeof(string), _text },
                 { typeof(long), new LongTypeMapping("int64", System.Data.DbType.Int64) },
+                { typeof(ulong), new ULongTypeMapping("uint64", System.Data.DbType.UInt64) },
                 { typeof(double), new DoubleTypeMapping("double", System.Data.DbType.Double) },
                 { typeof(DateTime), new KoraliumDateTimeTypeMapping("timestamp", System.Data.DbType.DateTime) }
             };

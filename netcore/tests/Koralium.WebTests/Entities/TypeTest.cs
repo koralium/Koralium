@@ -63,6 +63,11 @@ namespace Koralium.WebTests.Entities
 
         public uint? UIntValueNullable { get; set; }
 
+        //UInt64
+        public ulong ULongValue { get; set; }
+
+        public ulong? ULongValueNullable { get; set; }
+
         //Object/Struct
         public TypeTestInnerObject Object { get; set; }
 

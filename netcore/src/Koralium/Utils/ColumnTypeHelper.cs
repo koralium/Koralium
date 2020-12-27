@@ -81,6 +81,10 @@ namespace Koralium.Utils
             {
                 return (ColumnType.UInt32, false);
             }
+            if (type.Equals(typeof(ulong)))
+            {
+                return (ColumnType.UInt64, false);
+            }
             if (IsArray(type))
             {
                 return (ColumnType.List, true);
