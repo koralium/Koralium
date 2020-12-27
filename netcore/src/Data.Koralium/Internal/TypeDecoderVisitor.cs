@@ -90,7 +90,7 @@ namespace Data.Koralium.Internal
 
         public void Visit(UInt64Type type)
         {
-            throw new NotImplementedException();
+            ColumnDecoder = new UInt64Decoder();
         }
 
         public void Visit(FloatType type)

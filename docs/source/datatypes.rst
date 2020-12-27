@@ -12,5 +12,6 @@ The supported data types are:
 * Long (int64)
 * String
 * UInt (uint32)
+* ULong (uint64)
 * Lists
 * Objects

@@ -91,6 +91,8 @@ public class PrestoArrowTypeVisitor
             switch (anInt.getBitWidth()) {
                 case 32:
                     return new TypeConvertResult(BigintType.BIGINT, KoraliumType.UINT32);
+                case 64:
+                    return new TypeConvertResult(BigintType.BIGINT, KoraliumType.UINT64);
                 default:
                     throw new IllegalArgumentException("only 8, 16, 32, 64 supported: " + anInt);
             }

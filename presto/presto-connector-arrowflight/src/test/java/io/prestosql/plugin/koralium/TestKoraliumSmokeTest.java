@@ -258,4 +258,21 @@ public class TestKoraliumSmokeTest
 
         Assert.assertEquals(result, expectedResult);
     }
+
+    @Test
+    public void TestUInt64()
+    {
+        MaterializedResult expectedResult = MaterializedResult.resultBuilder(this.getQueryRunner().getDefaultSession(),
+                BigintType.BIGINT)
+                .row(1L)
+                .row(3L)
+                .row(17L)
+                .row(1L)
+                .row(3L)
+                .build();
+
+        MaterializedResult result = this.computeActual("SELECT ULongValue FROM typetest");
+
+        Assert.assertEquals(result, expectedResult);
+    }
 }
