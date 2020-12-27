@@ -82,6 +82,10 @@ namespace Koralium.Transport.ArrowFlight
             {
                 throw new RpcException(new Status(StatusCode.InvalidArgument, error.Message));
             }
+            catch(Exception e)
+            {
+                throw new RpcException(new Status(StatusCode.Internal, "Internal error"));
+            }
         }
 
         public override async Task ListFlights(FlightCriteria request, IAsyncStreamWriter<FlightInfo> responseStream, ServerCallContext context)

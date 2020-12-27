@@ -209,6 +209,13 @@ namespace Koralium.SqlToExpression.Visitors
                 throw new SqlErrorException($"Cannot cast to the type {castExpression.ToType}, only primitive types are supported");
             }
 
+            //If it is a nullable type, treat the converted type as nullable as well.
+            //This is required when handling in memory data where sum or other aggregations will have problems with null objects if it is not converted to a nullable.
+            if(Nullable.GetUnderlyingType(expression.Type) != null)
+            {
+                toType = typeof(Nullable<>).MakeGenericType(toType);
+            }
+
             AddExpressionToStack(Expression.Convert(expression, toType));
         }
     }

@@ -28,7 +28,7 @@ namespace EntityFrameworkCore.Koralium.Storage.Internal
             = new Dictionary<Type, RelationalTypeMapping>
             {
                 { typeof(string), _text },
-                { typeof(long), new LongTypeMapping("bigint", System.Data.DbType.Int64) },
+                { typeof(long), new LongTypeMapping("int64", System.Data.DbType.Int64) },
                 { typeof(double), new DoubleTypeMapping("double", System.Data.DbType.Double) },
                 { typeof(DateTime), new KoraliumDateTimeTypeMapping("timestamp", System.Data.DbType.DateTime) }
             };

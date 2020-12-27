@@ -73,18 +73,29 @@ public class PrestoArrowTypeVisitor
     @Override
     public TypeConvertResult visit(ArrowType.Int anInt)
     {
-        switch (anInt.getBitWidth()) {
-            case 8:
-                return new TypeConvertResult(SmallintType.SMALLINT, KoraliumType.INT32);
-            case 16:
-                return new TypeConvertResult(SmallintType.SMALLINT, KoraliumType.INT16);
-            case 32:
-                return new TypeConvertResult(IntegerType.INTEGER, KoraliumType.INT32);
-            case 64:
-                return new TypeConvertResult(BigintType.BIGINT, KoraliumType.INT64);
-            default:
-                throw new IllegalArgumentException("only 8, 16, 32, 64 supported: " + anInt);
+        if (anInt.getIsSigned()) {
+            switch (anInt.getBitWidth()) {
+                case 8:
+                    return new TypeConvertResult(SmallintType.SMALLINT, KoraliumType.INT32);
+                case 16:
+                    return new TypeConvertResult(SmallintType.SMALLINT, KoraliumType.INT16);
+                case 32:
+                    return new TypeConvertResult(IntegerType.INTEGER, KoraliumType.INT32);
+                case 64:
+                    return new TypeConvertResult(BigintType.BIGINT, KoraliumType.INT64);
+                default:
+                    throw new IllegalArgumentException("only 8, 16, 32, 64 supported: " + anInt);
+            }
         }
+        else {
+            switch (anInt.getBitWidth()) {
+                case 32:
+                    return new TypeConvertResult(BigintType.BIGINT, KoraliumType.UINT32);
+                default:
+                    throw new IllegalArgumentException("only 8, 16, 32, 64 supported: " + anInt);
+            }
+        }
+
     }
 
     @Override

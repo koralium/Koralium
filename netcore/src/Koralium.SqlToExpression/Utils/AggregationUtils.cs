@@ -120,6 +120,14 @@ namespace Koralium.SqlToExpression.Utils
             {
                 return typeof(int?);
             }
+            if(Equals(type, typeof(uint)))
+            {
+                return typeof(long);
+            }
+            if (Equals(type, typeof(uint?)))
+            {
+                return typeof(long?);
+            }
             return type;
         }
 
