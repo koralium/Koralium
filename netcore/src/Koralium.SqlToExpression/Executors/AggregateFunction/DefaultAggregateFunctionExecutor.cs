@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 namespace Koralium.SqlToExpression.Executors.AggregateFunction
 {
     public class DefaultAggregateFunctionExecutor<Entity, OutType> : AggregateFunctionExecutor<Entity, OutType>
-        where OutType : struct, IConvertible
     {
         private OutType HandleSumFunction(IQueryable<Entity> queryable, ExecuteAggregateFunctionStage executeAggregateFunctionStage)
         {
