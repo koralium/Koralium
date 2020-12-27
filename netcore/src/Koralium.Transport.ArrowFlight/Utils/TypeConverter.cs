@@ -34,6 +34,8 @@ namespace Koralium.Transport.ArrowFlight.Utils
                     return ConvertObjectType(column);
                 case ColumnType.Short:
                     return Int16Type.Default;
+                case ColumnType.UInt32:
+                    return UInt32Type.Default;
             }
             throw new NotImplementedException();
         }

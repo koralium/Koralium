@@ -32,6 +32,7 @@ namespace Koralium.TestFramework
                 case TypeCode.Double:
                 case TypeCode.Decimal:
                 case TypeCode.Int16:
+                case TypeCode.UInt32:
                     return true;
                 default:
                     return false;
@@ -86,6 +87,7 @@ namespace Koralium.TestFramework
                 var actual = TestData().Sum(lambdaCompiled);
 
                 expected.Should().Be(actual);
+                return;
             }
             if (propertyInfo.PropertyType == typeof(decimal))
             {
@@ -96,6 +98,7 @@ namespace Koralium.TestFramework
                 var actual = TestData().Sum(lambdaCompiled);
 
                 expected.Should().Be(actual);
+                return;
             }
             if (propertyInfo.PropertyType == typeof(double?))
             {
@@ -106,6 +109,7 @@ namespace Koralium.TestFramework
                 var actual = TestData().Sum(lambdaCompiled);
 
                 expected.Should().Be(actual);
+                return;
             }
             if (propertyInfo.PropertyType == typeof(double))
             {
@@ -116,6 +120,7 @@ namespace Koralium.TestFramework
                 var actual = TestData().Sum(lambdaCompiled);
 
                 expected.Should().Be(actual);
+                return;
             }
             if (propertyInfo.PropertyType == typeof(float?))
             {
@@ -126,6 +131,7 @@ namespace Koralium.TestFramework
                 var actual = TestData().Sum(lambdaCompiled);
 
                 expected.Should().Be(actual);
+                return;
             }
             if (propertyInfo.PropertyType == typeof(float))
             {
@@ -136,6 +142,7 @@ namespace Koralium.TestFramework
                 var actual = TestData().Sum(lambdaCompiled);
 
                 expected.Should().Be(actual);
+                return;
             }
             if (propertyInfo.PropertyType == typeof(int?))
             {
@@ -146,6 +153,7 @@ namespace Koralium.TestFramework
                 var actual = TestData().Sum(lambdaCompiled);
 
                 expected.Should().Be(actual);
+                return;
             }
             if (propertyInfo.PropertyType == typeof(int))
             {
@@ -156,6 +164,7 @@ namespace Koralium.TestFramework
                 var actual = TestData().Sum(lambdaCompiled);
 
                 expected.Should().Be(actual);
+                return;
             }
             if (propertyInfo.PropertyType == typeof(long?))
             {
@@ -166,6 +175,7 @@ namespace Koralium.TestFramework
                 var actual = TestData().Sum(lambdaCompiled);
 
                 expected.Should().Be(actual);
+                return;
             }
             if (propertyInfo.PropertyType == typeof(long))
             {
@@ -176,7 +186,57 @@ namespace Koralium.TestFramework
                 var actual = TestData().Sum(lambdaCompiled);
 
                 expected.Should().Be(actual);
+                return;
             }
+            if (propertyInfo.PropertyType == typeof(short))
+            {
+                var convertedExpression = Expression.Convert(memberAccess, typeof(int));
+                var lambda = Expression.Lambda<Func<TEntity, int>>(convertedExpression, parameter);
+                var lambdaCompiled = lambda.Compile();
+
+                var expected = Context.Entities.Sum(lambda);
+                var actual = TestData().Sum(lambdaCompiled);
+
+                expected.Should().Be(actual);
+                return;
+            }
+            if (propertyInfo.PropertyType == typeof(short?))
+            {
+                var convertedExpression = Expression.Convert(memberAccess, typeof(int?));
+                var lambda = Expression.Lambda<Func<TEntity, int?>>(convertedExpression, parameter);
+                var lambdaCompiled = lambda.Compile();
+
+                var expected = Context.Entities.Sum(lambda);
+                var actual = TestData().Sum(lambdaCompiled);
+
+                expected.Should().Be(actual);
+                return;
+            }
+            if (propertyInfo.PropertyType == typeof(uint))
+            {
+                var convertedExpression = Expression.Convert(memberAccess, typeof(long));
+                var lambda = Expression.Lambda<Func<TEntity, long>>(convertedExpression, parameter);
+                var lambdaCompiled = lambda.Compile();
+
+                var expected = Context.Entities.Sum(lambda);
+                var actual = TestData().Sum(lambdaCompiled);
+
+                expected.Should().Be(actual);
+                return;
+            }
+            if (propertyInfo.PropertyType == typeof(uint?))
+            {
+                var convertedExpression = Expression.Convert(memberAccess, typeof(long?));
+                var lambda = Expression.Lambda<Func<TEntity, long?>>(convertedExpression, parameter);
+                var lambdaCompiled = lambda.Compile();
+
+                var expected = Context.Entities.Sum(lambda);
+                var actual = TestData().Sum(lambdaCompiled);
+
+                expected.Should().Be(actual);
+                return;
+            }
+            throw new NotImplementedException();
         }
     }
 }

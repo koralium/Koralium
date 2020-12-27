@@ -45,6 +45,11 @@ namespace Koralium.WebTests.Entities
 
         public DateTime? DateTimeNullable { get; set; }
 
+        //UInt32
+        public uint UIntValue { get; set; }
+
+        public uint? UIntValueNullable { get; set; }
+
         //Object/Struct
         public TypeTestInnerObject Object { get; set; }
 

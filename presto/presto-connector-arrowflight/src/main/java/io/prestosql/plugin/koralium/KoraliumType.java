@@ -26,6 +26,7 @@ import io.prestosql.plugin.koralium.decoders.ListDecoder;
 import io.prestosql.plugin.koralium.decoders.ObjectTypeDecoder;
 import io.prestosql.plugin.koralium.decoders.StringDecoder;
 import io.prestosql.plugin.koralium.decoders.TimestampDecoder;
+import io.prestosql.plugin.koralium.decoders.UInt32Decoder;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -51,7 +52,9 @@ public enum KoraliumType
     @JsonProperty("ARRAY")
     ARRAY(null, new ListDecoder()),
     @JsonProperty("INT16")
-    INT16(KoraliumType::simpleToStringConverter, new Int16Decoder());
+    INT16(KoraliumType::simpleToStringConverter, new Int16Decoder()),
+    @JsonProperty("UINT32")
+    UINT32(KoraliumType::simpleToStringConverter, new UInt32Decoder());
 
     private final ToStringConverter toStringConverter;
     private final KoraliumDecoder decoder;

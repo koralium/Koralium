@@ -376,7 +376,7 @@ namespace Data.Koralium.DataReaders
             _state = State.Closed;
 
             //Close the data reader
-            _dataReader.Close();
+            _dataReader?.Close();
         }
 
         public override void Close()

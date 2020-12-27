@@ -28,6 +28,8 @@ namespace Koralium.Transport.Json.Encoders
                     return new DateTimeEncoder(column);
                 case ColumnType.Short:
                     return new Int16Encoder(column);
+                case ColumnType.UInt32:
+                    return new UInt32Encoder(column);
             }
             throw new NotImplementedException();
         }

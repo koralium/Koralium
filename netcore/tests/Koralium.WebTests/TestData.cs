@@ -228,6 +228,8 @@ namespace Koralium.WebTests
             SetTypeTestValue<short>(arr, (t, x) => t.ShortValue = x, 1, 3, 17);
             SetTypeTestValue<short?>(arr, (t, x) => t.ShortValueNullable = x, 1, 3, 17, null);
             SetTypeTestValue(arr, (t, x) => t.StringValue = x, "test", null);
+            SetTypeTestValue<uint>(arr, (t, x) => t.UIntValue = x, 1, 3, 17);
+            SetTypeTestValue<uint?>(arr, (t, x) => t.UIntValueNullable = x, 1, 3, 17, null);
 
             //Complex
             SetTypeTestValue(arr, (t, x) => t.Object = x, GetTypeTestInnerObjects());

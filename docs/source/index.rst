@@ -16,5 +16,6 @@ Koralium SQL API
    joins
    searchfunctionality
    parameters
+   datatypes
    contributordocs
 

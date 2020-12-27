@@ -64,6 +64,10 @@ namespace Koralium.Utils
             {
                 return (ColumnType.Short, false);
             }
+            if (type.Equals(typeof(uint)))
+            {
+                return (ColumnType.UInt32, false);
+            }
             if (IsArray(type))
             {
                 return (ColumnType.List, true);
