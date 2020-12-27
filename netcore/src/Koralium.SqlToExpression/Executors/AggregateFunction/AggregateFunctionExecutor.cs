@@ -17,7 +17,8 @@ namespace Koralium.SqlToExpression.Executors.AggregateFunction
         {
             var result = await ExecuteAggregateFunction((IQueryable<Entity>)queryable, executeAggregateFunctionStage);
 
-            var anonType = AnonTypeUtils.GetAnonType(result.GetType());
+            var outType = typeof(OutType);
+            var anonType = AnonTypeUtils.GetAnonType(outType);
             var getDelegate = AnonTypeUtils.GetDelegates(anonType)[0];
             var columnMetadata = new ColumnMetadata(executeAggregateFunctionStage.ColumnName, result.GetType(), getDelegate);
 
