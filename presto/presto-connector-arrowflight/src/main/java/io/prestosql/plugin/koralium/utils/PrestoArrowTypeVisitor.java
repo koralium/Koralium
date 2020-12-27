@@ -95,7 +95,6 @@ public class PrestoArrowTypeVisitor
                     throw new IllegalArgumentException("only 8, 16, 32, 64 supported: " + anInt);
             }
         }
-
     }
 
     @Override
