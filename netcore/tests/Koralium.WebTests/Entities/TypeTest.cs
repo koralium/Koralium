@@ -23,9 +23,9 @@ namespace Koralium.WebTests.Entities
         public float? FloatValueNullable { get; set; }
 
         //Short
-        //public short ShortValue { get; set; }
+        public short ShortValue { get; set; }
 
-        //public short? ShortValueNullable { get; set; }
+        public short? ShortValueNullable { get; set; }
 
         //Int
         public int IntValue { get; set; }

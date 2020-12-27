@@ -29,6 +29,8 @@ namespace Koralium.Transport.ArrowFlight.Utils
                     return new ListEncoder(column);
                 case ColumnType.Object:
                     return new ObjectEncoder(column);
+                case ColumnType.Short:
+                    return new Int16Encoder(column);
             }
 
             throw new NotImplementedException();

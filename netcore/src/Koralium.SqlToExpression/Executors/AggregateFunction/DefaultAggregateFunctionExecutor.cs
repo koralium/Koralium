@@ -56,6 +56,11 @@ namespace Koralium.SqlToExpression.Executors.AggregateFunction
             {
                 return queryable.Sum(GetParameterLambda<long>(executeAggregateFunctionStage.ParameterExpression, parameter)).Cast<OutType>();
             }
+            if (typeof(OutType) == typeof(short))
+            {
+                return ((short)queryable.Sum(GetParameterLambda<int>(executeAggregateFunctionStage.ParameterExpression, parameter))).Cast<OutType>();
+            }
+
             throw new SqlErrorException($"Type ${typeof(OutType).Name} is not supported for sum operations");
         }
 

@@ -22,6 +22,7 @@ import io.prestosql.spi.type.BooleanType;
 import io.prestosql.spi.type.IntegerType;
 import io.prestosql.spi.type.RealType;
 import io.prestosql.spi.type.RowType;
+import io.prestosql.spi.type.SmallintType;
 import io.prestosql.spi.type.Type;
 import io.prestosql.spi.type.VarcharType;
 import io.prestosql.sql.analyzer.FeaturesConfig;
@@ -222,5 +223,22 @@ public class TestKoraliumSmokeTest
     public void testTemp()
     {
         assertQuery("SELECT COUNT(*) FROM lineitem JOIN orders ON NOT NOT lineitem.orderkey = orders.orderkey AND NOT NOT lineitem.quantity > 2");
+    }
+
+    @Test
+    public void TestInt16()
+    {
+        MaterializedResult expectedResult = MaterializedResult.resultBuilder(this.getQueryRunner().getDefaultSession(),
+                SmallintType.SMALLINT)
+                .row((short) 1)
+                .row((short) 3)
+                .row((short) 17)
+                .row((short) 1)
+                .row((short) 3)
+                .build();
+
+        MaterializedResult result = this.computeActual("SELECT shortvalue FROM typetest");
+
+        Assert.assertEquals(result, expectedResult);
     }
 }

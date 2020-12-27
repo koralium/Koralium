@@ -15,4 +15,6 @@ Koralium SQL API
    entityframeworkclient
    joins
    searchfunctionality
+   parameters
+   contributordocs
 

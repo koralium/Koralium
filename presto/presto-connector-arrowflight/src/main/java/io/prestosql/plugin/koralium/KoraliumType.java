@@ -18,6 +18,7 @@ import io.airlift.slice.Slice;
 import io.prestosql.plugin.koralium.decoders.BoolDecoder;
 import io.prestosql.plugin.koralium.decoders.DoubleDecoder;
 import io.prestosql.plugin.koralium.decoders.FloatDecoder;
+import io.prestosql.plugin.koralium.decoders.Int16Decoder;
 import io.prestosql.plugin.koralium.decoders.Int32Decoder;
 import io.prestosql.plugin.koralium.decoders.Int64Decoder;
 import io.prestosql.plugin.koralium.decoders.KoraliumDecoder;
@@ -48,7 +49,9 @@ public enum KoraliumType
     @JsonProperty("OBJECT")
     OBJECT(null, new ObjectTypeDecoder()), //Object is not used as a presto out type
     @JsonProperty("ARRAY")
-    ARRAY(null, new ListDecoder());
+    ARRAY(null, new ListDecoder()),
+    @JsonProperty("INT16")
+    INT16(KoraliumType::simpleToStringConverter, new Int16Decoder());
 
     private final ToStringConverter toStringConverter;
     private final KoraliumDecoder decoder;

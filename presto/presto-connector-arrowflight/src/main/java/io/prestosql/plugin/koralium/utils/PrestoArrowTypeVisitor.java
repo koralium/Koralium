@@ -77,7 +77,7 @@ public class PrestoArrowTypeVisitor
             case 8:
                 return new TypeConvertResult(SmallintType.SMALLINT, KoraliumType.INT32);
             case 16:
-                return new TypeConvertResult(SmallintType.SMALLINT, KoraliumType.INT32);
+                return new TypeConvertResult(SmallintType.SMALLINT, KoraliumType.INT16);
             case 32:
                 return new TypeConvertResult(IntegerType.INTEGER, KoraliumType.INT32);
             case 64:

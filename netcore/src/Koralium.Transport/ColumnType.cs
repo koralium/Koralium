@@ -11,6 +11,7 @@ namespace Koralium.Transport
         Int32 = 5,
         Int64 = 6,
         String = 7,
-        DateTime = 8
+        DateTime = 8,
+        Short = 9
     }
 }
