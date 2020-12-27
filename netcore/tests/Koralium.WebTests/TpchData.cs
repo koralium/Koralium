@@ -94,7 +94,7 @@ namespace Koralium.WebTests
             });
         }
 
-        private DateTime FixDate(DateTime time)
+        internal static DateTime FixDate(DateTime time)
         {
             var utc = time.ToUniversalTime();
             TimeSpan diff = time.Subtract(utc);

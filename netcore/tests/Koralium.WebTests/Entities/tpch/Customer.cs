@@ -14,6 +14,7 @@
 using CsvHelper.Configuration.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Koralium.WebTests.Entities.tpch
 {
@@ -37,6 +38,7 @@ namespace Koralium.WebTests.Entities.tpch
 
         [KoraliumIgnore]
         [Ignore]
+        [NotMapped]
         public List<Order> Orders { get; set; }
 
         public override bool Equals(object obj)

@@ -9,7 +9,12 @@ namespace Koralium.TestFramework
 
         public static bool IsPossibleFilter(Type type)
         {
-            return type.IsPrimitive || type == typeof(string);
+            Type innerType = Nullable.GetUnderlyingType(type);
+            if (innerType != null)
+            {
+                return IsPossibleFilter(innerType);
+            }
+            return type.IsPrimitive || type == typeof(string) || type == typeof(DateTime);
         }
 
         public static string GetValue(object value)

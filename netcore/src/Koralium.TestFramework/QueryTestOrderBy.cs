@@ -12,18 +12,13 @@ namespace Koralium.TestFramework
 {
     public abstract partial class QueryTest<TEntity>
     {
-        private static bool IsOrderable(Type type)
-        {
-            return type.IsPrimitive || type == typeof(string);
-        }
-
         private static IEnumerable<PropertyInfo> OrderableProperties
         {
             get
             {
                 foreach (var property in Properties)
                 {
-                    if (IsOrderable(property.PropertyType))
+                    if (TestFilterGenerator.IsPossibleFilter(property.PropertyType))
                     {
                         yield return property;
                     }

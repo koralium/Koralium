@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EntityFrameworkCore.Koralium\EntityFrameworkCore.Koralium.csproj" />
+    <ProjectReference Include="..\Koralium.Shared\Koralium.Shared.csproj" />
   </ItemGroup>
 
 </Project>

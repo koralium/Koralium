@@ -52,6 +52,13 @@ namespace Koralium.Transport.ArrowFlight.Encoders
             nullBitmap.Clear();
         }
 
+        private void AddNull()
+        {
+            nullBitmap.Append(false);
+            nullCount++;
+            offsetBuilder.Append(currentOffset);
+        }
+
         public void Encode(object row)
         {
             var val = _getFunc(row);
@@ -59,12 +66,11 @@ namespace Koralium.Transport.ArrowFlight.Encoders
 
             if (_nullable && val == null)
             {
-                nullBitmap.Append(true);
-                nullCount++;
+                AddNull();
             }
             else
             {
-                nullBitmap.Append(false);
+                nullBitmap.Append(true);
                 offsetBuilder.Append(currentOffset);
 
                 var enumerable = (IEnumerable)val;
@@ -84,6 +90,15 @@ namespace Koralium.Transport.ArrowFlight.Encoders
         public long Size()
         {
             return _childEncoder.Size();
+        }
+
+        public void Pad(int length)
+        {
+            for (int i = 0; i < length; i++)
+            {
+                count++;
+                AddNull();
+            }
         }
     }
 }

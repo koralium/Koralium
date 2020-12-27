@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Common;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System;
@@ -29,7 +30,10 @@ namespace Koralium.TestFramework
 
                 foreach (var property in properties)
                 {
-                    yield return property;
+                    if (!property.HasAttribute<KoraliumIgnoreAttribute>())
+                    {
+                        yield return property;
+                    }
                 }
             }
         }

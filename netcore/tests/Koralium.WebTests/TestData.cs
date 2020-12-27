@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.WebTests.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -154,6 +155,104 @@ namespace Koralium.WebTests
                     CompanyId = "2"
                 }
             }.AsQueryable();
+        }
+
+        private static List<TypeTest> CreateTypeTestArray(int count)
+        {
+            List<TypeTest> output = new List<TypeTest>();
+            for(int i = 0; i < count; i++)
+            {
+                output.Add(new TypeTest());
+            }
+            return output;
+        }
+
+        private static void SetTypeTestValue<T>(List<TypeTest> arr, Action<TypeTest, T> setValue, params T[] possibleValues)
+        {
+            if(possibleValues.Length > arr.Count)
+            {
+                throw new InvalidOperationException("More possible values than in the array of objects");
+            }
+
+            for(int i = 0; i < arr.Count; i++)
+            {
+                setValue(arr[i], possibleValues[i % possibleValues.Length]);
+            }
+        }
+
+        private static TypeTestInnerObject[] GetTypeTestInnerObjects()
+        {
+            return new TypeTestInnerObject[]
+            {
+                new TypeTestInnerObject()
+                {
+                    StringValue = "test",
+                    IntList = new List<int>()
+                    {
+                        1,
+                        2,
+                        3
+                    },
+                    Object = new TypeTestInnerInnerObject()
+                    {
+                        StringValue = "test"
+                    }
+                },
+                new TypeTestInnerObject()
+                {
+                    StringValue = "test2",
+                    IntList = new List<int>(),
+                    Object = null
+                },
+                null
+            };
+        }
+
+        public static IQueryable<TypeTest> GetTypeTests()
+        {
+            var arr = CreateTypeTestArray(5);
+
+            //Primitive
+            SetTypeTestValue(arr, (t, x) => t.BoolValue = x, true, false);
+            SetTypeTestValue<bool?>(arr, (t, x) => t.BoolValueNullable = x, true, false, null);
+            SetTypeTestValue(arr, (t, x) => t.DateTime = x, TpchData.FixDate(DateTime.Parse("1990-03-13")));
+            SetTypeTestValue<DateTime?>(arr, (t, x) => t.DateTimeNullable = x, TpchData.FixDate(DateTime.Parse("1990-03-13")), null);
+            SetTypeTestValue(arr, (t, x) => t.DoubleValue = x, 1.0, 3.0, 17.0);
+            SetTypeTestValue<double?>(arr, (t, x) => t.DoubleValueNullable = x, 1.0, 3.0, 17.0, null);
+            SetTypeTestValue(arr, (t, x) => t.FloatValue = x, 1.0f, 3.0f, 17.0f);
+            SetTypeTestValue<float?>(arr, (t, x) => t.FloatValueNullable = x, 1.0f, 3.0f, 17.0f, null);
+            SetTypeTestValue(arr, (t, x) => t.IntValue = x, 1, 3, 17);
+            SetTypeTestValue<int?>(arr, (t, x) => t.IntValueNullable = x, 1, 3, 17, null);
+            SetTypeTestValue<long>(arr, (t, x) => t.LongValue = x, 1, 3, 17);
+            SetTypeTestValue<long?>(arr, (t, x) => t.LongValueNullable = x, 1, 3, 17, null);
+            //SetTypeTestValue<short>(arr, (t, x) => t.ShortValue = x, 1, 3, 17);
+            //SetTypeTestValue<short?>(arr, (t, x) => t.ShortValueNullable = x, 1, 3, 17, null);
+            SetTypeTestValue(arr, (t, x) => t.StringValue = x, "test", null);
+
+            //Complex
+            SetTypeTestValue(arr, (t, x) => t.Object = x, GetTypeTestInnerObjects());
+
+            SetTypeTestValue(arr, (t, x) => t.IntList = x, new List<int>()
+            {
+                1,
+                2,
+                3
+            },
+            new List<int>(),
+            null);
+
+            SetTypeTestValue(arr, (t, x) => t.IntListNullable = x, new List<int?>()
+            {
+                1,
+                null,
+                3
+            },
+            new List<int?>(),
+            null);
+
+            SetTypeTestValue(arr, (t, x) => t.ObjectList = x, GetTypeTestInnerObjects().ToList(), null);
+
+            return arr.AsQueryable();
         }
     }
 }

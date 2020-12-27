@@ -36,7 +36,8 @@ namespace Koralium.Transport.ArrowFlight.Encoders
             }
             else
             {
-                _builder.Append((DateTime)val);
+                var dateTime = (DateTime)val;
+                _builder.Append(dateTime);
             }
         }
 
@@ -70,6 +71,24 @@ namespace Koralium.Transport.ArrowFlight.Encoders
         public long Size()
         {
             return _builder.Length * 8;
+        }
+
+        public void Pad(int length)
+        {
+            if (_nullable)
+            {
+                for (int i = 0; i < length; i++)
+                {
+                    _builder.AppendNull();
+                }
+            }
+            else
+            {
+                for (int i = 0; i < length; i++)
+                {
+                    _builder.Append(DateTimeOffset.MinValue);
+                }
+            }
         }
     }
 }

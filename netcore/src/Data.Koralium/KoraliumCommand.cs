@@ -1,23 +1,12 @@
-﻿/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-using Data.Koralium.Client;
-using Data.Koralium.Client.Decoders;
+﻿using Apache.Arrow.Flight;
+using Data.Koralium.DataReaders;
+using Data.Koralium.Internal;
+using Grpc.Core;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Threading;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace Data.Koralium
@@ -25,12 +14,11 @@ namespace Data.Koralium
     public class KoraliumCommand : DbCommand
     {
         private KoraliumParameterCollection _parameters;
-        private KoraliumConnection _koraliumConnection;
-        private Task executeTask = null;
-        private readonly CancellationTokenSource cancellationToken = new CancellationTokenSource();
 
         public override string CommandText { get; set; }
         public override int CommandTimeout { get; set; }
+
+        internal DbDataReader DataReader { get; private set; }
 
         public override CommandType CommandType
         {
@@ -44,21 +32,22 @@ namespace Data.Koralium
             }
         }
 
-        public override bool DesignTimeVisible { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public override UpdateRowSource UpdatedRowSource { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override bool DesignTimeVisible { get; set; }
+        public override UpdateRowSource UpdatedRowSource { get; set; }
+
         protected override DbConnection DbConnection
         {
             get
             {
-                return _koraliumConnection;
+                return KoraliumConnection;
             }
             set
             {
-                _koraliumConnection = (KoraliumConnection)value;
+                KoraliumConnection = (KoraliumConnection)value;
             }
         }
 
-        internal KoraliumConnection KoraliumConnection => _koraliumConnection;
+        internal KoraliumConnection KoraliumConnection { get; private set; }
 
         public new virtual KoraliumParameterCollection Parameters
         {
@@ -77,24 +66,34 @@ namespace Data.Koralium
         protected override DbTransaction DbTransaction { get; set; }
 
         public override void Cancel()
+            => Dispose(true);
+
+        protected override void Dispose(bool disposing)
         {
-            cancellationToken.Cancel();
-            executeTask.Wait();
+            if (disposing)
+            {
+                DataReader?.Dispose();
+            }
         }
 
         public override int ExecuteNonQuery()
         {
-            throw new NotImplementedException();
+            using var reader = ExecuteDbDataReader(CommandBehavior.Default);
+            return reader.RecordsAffected;
         }
 
         public override object ExecuteScalar()
         {
-            var client = new KoraliumClient(KoraliumConnection.Channel, cancellationToken.Token);
-            return client.QueryScalar(CommandText);
+            using var reader = ExecuteDbDataReader(CommandBehavior.Default);
+
+            return reader.Read()
+                ? reader.GetValue(0)
+                : null;
         }
 
         public override void Prepare()
         {
+            //Prepare should get the flight tickets required
             throw new NotSupportedException();
         }
 
@@ -105,11 +104,43 @@ namespace Data.Koralium
 
         protected override DbDataReader ExecuteDbDataReader(CommandBehavior behavior)
         {
-            var client = new KoraliumClient(KoraliumConnection.Channel, cancellationToken.Token);
-            var channel = Channel.CreateUnbounded<KoraliumRow>();
-            executeTask = client.Query(CommandText, channel.Writer);
-            client.MetadataCollected.Wait(cancellationToken.Token); //Wait for metadata to be collected
-            return new KoraliumDataReader(client, channel.Reader, cancellationToken.Token);
+            var tokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(CommandTimeout));
+            return AsyncHelper.RunSync(() => ExecuteDbDataReaderAsync(behavior, tokenSource.Token));
+        }
+
+        protected override async Task<DbDataReader> ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+        {
+            //Check so no other data reader has been open with this command
+            if(DataReader != null)
+            {
+                throw new InvalidOperationException("Another data reader has already been opened");
+            }
+
+            Metadata metadata = new Metadata();
+
+            if (!string.IsNullOrEmpty(KoraliumConnection.ConnectionOptions.AccessToken))
+            {
+                metadata.Add("Authorization", $"Bearer {KoraliumConnection.ConnectionOptions.AccessToken}");
+            }
+
+            if(_parameters != null)
+            {
+                foreach (var parameter in _parameters)
+                {
+                    var koraliumParameter = (KoraliumParameter)parameter;
+                    metadata.Add($"P_{koraliumParameter.ParameterName}", koraliumParameter.Value.ToString());
+                }
+            }
+            
+
+            var endpoints = new List<FlightEndpoint>();
+            endpoints.Add(new FlightEndpoint(new FlightTicket(CommandText), new List<FlightLocation>()));
+
+            DataReader = new FlightEndpointsDataReader(this, endpoints, metadata);
+
+            await DataReader.NextResultAsync();
+
+            return DataReader;
         }
     }
 }
