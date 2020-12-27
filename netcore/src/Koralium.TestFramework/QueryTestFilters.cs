@@ -36,14 +36,14 @@ namespace Koralium.TestFramework
 
             var parameter = Expression.Parameter(typeof(TEntity));
             var propertyMember = Expression.MakeMemberAccess(parameter, propertyInfo);
-            var equalsExpression = Expression.Equal(propertyMember, Expression.Constant(firstValue));
+            var equalsExpression = Expression.Equal(propertyMember, Expression.Constant(firstValue, propertyMember.Type));
 
             var lambdaExpression = Expression.Lambda(equalsExpression, parameter);
             var filterFunction = (Expression<Func<TEntity, bool>>)lambdaExpression;
 
             var actual = Context.Entities.Where(filterFunction).ToList();
 
-            var expected = data.Where(x => propertyInfo.GetValue(x).Equals(firstValue)).ToList();
+            var expected = data.Where(x => Equals(propertyInfo.GetValue(x), firstValue)).ToList();
             actual.Should().BeEquivalentTo(expected);
         }
     }

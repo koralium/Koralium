@@ -14,6 +14,7 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace EntityFrameworkCore.Koralium.Storage.Internal
 {
@@ -29,12 +30,77 @@ namespace EntityFrameworkCore.Koralium.Storage.Internal
                 { typeof(string), _text },
                 { typeof(long), new LongTypeMapping("bigint", System.Data.DbType.Int64) },
                 { typeof(double), new DoubleTypeMapping("double", System.Data.DbType.Double) },
-                { typeof(DateTime), new DateTimeTypeMapping("timestamp", System.Data.DbType.DateTime) }
+                { typeof(DateTime), new KoraliumDateTimeTypeMapping("timestamp", System.Data.DbType.DateTime) }
             };
 
         public KoraliumTypeMappingSource(TypeMappingSourceDependencies dependencies,
             RelationalTypeMappingSourceDependencies relationalDependencies) : base(dependencies, relationalDependencies)
         {
+        }
+
+        /// <summary>
+        /// Check if a type is either some case of IEnumerable based on a list, or an array
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private static bool IsArray(Type type)
+        {
+            if (type.IsGenericType) //If it is a generic type such as List<T>, IEnumerable<T> etc.
+            {
+                if (IsIEnumerableOfT(type, out var elementType))
+                {
+                    var genericListType = typeof(List<>).MakeGenericType(elementType);
+
+                    if (type.IsAssignableFrom(genericListType))
+                    {
+                        return true;
+                    }
+                }
+            }
+            //Check if it is an array
+            else if (type.IsArray)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private static bool IsPrimitiveOrStruct(Type type)
+        {
+            if (Nullable.GetUnderlyingType(type) != null)
+            {
+                return IsPrimitiveOrStruct(Nullable.GetUnderlyingType(type));
+            }
+
+            return type.IsPrimitive || type.IsEnum || type.IsValueType || type.Equals(typeof(string));
+
+            //if (type.IsPrimitive ||
+            //    type.Equals(typeof(string)) ||
+            //    type.Equals(typeof(DateTime)))
+            //    return true;
+            //return false;
+        }
+
+        private static bool IsIEnumerableOfT(Type type, out Type elementType)
+        {
+            //If it is an IEnumerable passed in, check for that
+            if (type.GetGenericTypeDefinition().Equals(typeof(IEnumerable<>)))
+            {
+                elementType = type.GetGenericArguments().First();
+                return true;
+            }
+
+            var enumerableInterface = type.GetInterfaces().FirstOrDefault(x => x.IsGenericType
+                   && x.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+
+            if (enumerableInterface == null)
+            {
+                elementType = null;
+                return false;
+            }
+
+            elementType = enumerableInterface.GetGenericArguments().First();
+            return true;
         }
 
         protected override RelationalTypeMapping FindMapping(in RelationalTypeMappingInfo mappingInfo)
@@ -51,6 +117,16 @@ namespace EntityFrameworkCore.Koralium.Storage.Internal
                 {
                     return new ListTypeMapping("array", clrType);
                 }
+            }
+
+            if (IsArray(clrType))
+            {
+                return new ListTypeMapping("array", clrType);
+            }
+
+            if (!IsPrimitiveOrStruct(clrType))
+            {
+                return new ObjectTypeMapping("object", clrType);
             }
 
             if (clrType != null

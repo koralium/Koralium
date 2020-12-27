@@ -72,5 +72,23 @@ namespace Koralium.Transport.ArrowFlight.Encoders
         {
             return _builder.Length;
         }
+
+        public void Pad(int length)
+        {
+            if (_nullable)
+            {
+                for(int i = 0; i < length; i++)
+                {
+                    _builder.AppendNull();
+                }
+            }
+            else
+            {
+                for (int i = 0; i < length; i++)
+                {
+                    _builder.Append(false);
+                }
+            }
+        }
     }
 }

@@ -20,7 +20,11 @@ namespace Koralium.Transport.ArrowFlight.Encoders
 
         void Encode(object row);
 
-        void Encode(IReadOnlyList<object> rows);
+        /// <summary>
+        /// Pad the arrow array by a set amount, this is used mostly for struct arrays.
+        /// </summary>
+        /// <param name="length"></param>
+        void Pad(int length);
 
         long Size();
     }

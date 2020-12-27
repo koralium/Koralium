@@ -108,6 +108,8 @@ namespace Koralium.WebTests
                     t.TableName = "efcustomer";
                 });
 
+                opt.AddTableResolver<TypeTestResolver, TypeTest>();
+
                 //Specific
                 opt.AddTableResolver<AutoMapperCustomerResolver, AutoMapperCustomer>();
                 opt.AddTableResolver<EmptyResolver, Empty>();

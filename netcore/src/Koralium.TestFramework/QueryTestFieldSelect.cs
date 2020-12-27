@@ -48,7 +48,7 @@ namespace Koralium.TestFramework
             var lambda = Expression.Lambda<Func<TEntity, TEntity>>(memberInit, parameter);
             var lambdaCompiled = lambda.Compile();
 
-            var expected = Context.Entities.Select(lambdaCompiled).ToList();
+            var expected = Context.Entities.Select(lambda).ToList();
             var actual = TestData().Select(lambdaCompiled).ToList();
 
             expected.Should().BeEquivalentTo(actual);
