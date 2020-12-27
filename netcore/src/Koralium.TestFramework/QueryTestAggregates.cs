@@ -28,6 +28,7 @@ namespace Koralium.TestFramework
             {
                 case TypeCode.Int32:
                 case TypeCode.Int64:
+                case TypeCode.Single:
                 case TypeCode.Double:
                 case TypeCode.Decimal:
                     return true;

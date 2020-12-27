@@ -125,8 +125,9 @@ scalar_expression2:
 	| variable_reference
 	;
 
-scalar_expression: 
-	literal_value
+scalar_expression
+	: CAST '(' casted=scalar_expression AS castedidentifier=IDENTIFIER ')'
+	| literal_value
 	| column_reference
 	| left=scalar_expression binary_operation_type right=scalar_expression
 	| function_call

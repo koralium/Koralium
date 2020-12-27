@@ -1031,6 +1031,18 @@ namespace Koralium.SqlToExpression.Tests
             }, Throws.InstanceOf<SqlErrorException>().With.Message.EqualTo("The parameter @P0 could not be found, did you have include @ before the parameter name?"));
         }
 
+        [Test]
+        public async Task TestCast()
+        {
+            var result = await SqlExecutor.Execute("SELECT CAST(orderkey AS single) FROM \"order\"");
+
+            var expected = TpchData.Orders
+                .Select(x => new { Orderkey = (float)x.Orderkey })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
         //select name from customer where name > 'customer#000001500'
         //Gives the wrong results
     }

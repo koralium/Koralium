@@ -53,6 +53,7 @@ LIMIT: 'LIMIT';
 OFFSET: 'OFFSET';
 SET: 'SET';
 CONTAINS: 'CONTAINS';
+CAST: 'CAST';
 
 SPACES: [ \u000B\t\r\n] -> channel(HIDDEN);
 

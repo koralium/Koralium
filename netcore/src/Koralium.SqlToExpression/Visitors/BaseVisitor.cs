@@ -185,5 +185,31 @@ namespace Koralium.SqlToExpression.Visitors
                 }
             }
         }
+
+        public override void VisitCastExpression(CastExpression castExpression)
+        {
+            castExpression.ScalarExpression.Accept(this);
+
+            var expression = PopStack();
+
+            Type toType = Type.GetType(castExpression.ToType, false, true);
+
+            if(toType == null && !castExpression.ToType.StartsWith("System."))
+            {
+                toType = Type.GetType($"System.{castExpression.ToType}", false, true);
+            }
+
+            if(toType == null)
+            {
+                throw new SqlErrorException($"Cannot cast to the type {castExpression.ToType}");
+            }
+
+            if (!toType.IsPrimitive)
+            {
+                throw new SqlErrorException($"Cannot cast to the type {castExpression.ToType}, only primitive types are supported");
+            }
+
+            AddExpressionToStack(Expression.Convert(expression, toType));
+        }
     }
 }

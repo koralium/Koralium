@@ -236,5 +236,11 @@ namespace Koralium.SqlParser.Visitor
         {
             //NOP
         }
+
+        public virtual void VisitCastExpression(CastExpression castExpression)
+        {
+            Visit(castExpression.ScalarExpression);
+            //DONE
+        }
     }
 }
