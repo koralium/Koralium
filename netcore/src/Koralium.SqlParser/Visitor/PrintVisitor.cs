@@ -453,5 +453,11 @@ namespace Koralium.SqlParser.Visitor
         {
             Push($"b64'{base64Literal.Value}'");
         }
+
+        public override void VisitCastExpression(CastExpression castExpression)
+        {
+            var text = VisitPop(castExpression.ScalarExpression);
+            Push($"CAST({text} AS {castExpression.ToType})");
+        }
     }
 }

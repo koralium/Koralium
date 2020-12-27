@@ -265,8 +265,26 @@ namespace Koralium.SqlParser.ANTLR
             };
         }
 
+        private object VisitCast([NotNull] KoraliumParser.Scalar_expressionContext context)
+        {
+            var innerScalar = Visit(context.casted) as ScalarExpression;
+
+            var toType = context.castedidentifier.Text.ToLower();
+
+            return new CastExpression()
+            {
+                ScalarExpression = innerScalar,
+                ToType = toType
+            };
+        }
+
         public override object VisitScalar_expression([NotNull] KoraliumParser.Scalar_expressionContext context)
         {
+            if(context.casted != null)
+            {
+                return VisitCast(context);
+            }
+
             var columnReferenceNode = context.column_reference();
 
             if(columnReferenceNode != null)

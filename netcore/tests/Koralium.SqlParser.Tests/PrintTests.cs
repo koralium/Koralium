@@ -1174,5 +1174,21 @@ namespace Koralium.SqlParser.Tests
 
             actual.Should().Be(expected);
         }
+
+        [Test]
+        public void TestCast()
+        {
+            var actual = new CastExpression()
+            {
+                ScalarExpression = new ColumnReference()
+                {
+                    Identifiers = new List<string>() { "c1" }
+                },
+                ToType = "double"
+            }.Print();
+            var expected = "CAST(c1 AS double)";
+
+            actual.Should().Be(expected);
+        }
     }
 }
