@@ -20,42 +20,7 @@ namespace Koralium.SqlToExpression.Utils
 {
     public static class AnonTypeUtils
     {
-        private static Type[] anonTypes = new Type[]
-            {
-                typeof(AnonType),
-                typeof(AnonType<>),
-                typeof(AnonType<,>),
-                typeof(AnonType<,,>),
-                typeof(AnonType<,,,>),
-                typeof(AnonType<,,,,>),
-                typeof(AnonType<,,,,,>),
-                typeof(AnonType<,,,,,,>),
-                typeof(AnonType<,,,,,,,>),
-                typeof(AnonType<,,,,,,,,>),
-                typeof(AnonType<,,,,,,,,,>),
-                typeof(AnonType<,,,,,,,,,,>),
-                typeof(AnonType<,,,,,,,,,,,>),
-                typeof(AnonType<,,,,,,,,,,,,>),
-                typeof(AnonType<,,,,,,,,,,,,,>),
-                typeof(AnonType<,,,,,,,,,,,,,,>),
-                typeof(AnonType<,,,,,,,,,,,,,,,>),
-                typeof(AnonType<,,,,,,,,,,,,,,,,>),
-                typeof(AnonType<,,,,,,,,,,,,,,,,,>),
-                typeof(AnonType<,,,,,,,,,,,,,,,,,,>),
-                typeof(AnonType<,,,,,,,,,,,,,,,,,,,>),
-                typeof(AnonType<,,,,,,,,,,,,,,,,,,,,>),
-                typeof(AnonType<,,,,,,,,,,,,,,,,,,,,,>),
-                typeof(AnonType<,,,,,,,,,,,,,,,,,,,,,,>),
-                typeof(AnonType<,,,,,,,,,,,,,,,,,,,,,,,>),
-                typeof(AnonType<,,,,,,,,,,,,,,,,,,,,,,,,>)
-            };
-
         private static ConcurrentDictionary<Type, Func<object, object>[]> typeToGetDelegates = new ConcurrentDictionary<Type, Func<object, object>[]>();
-
-        public static Type GetAnonType(params Type[] propertyTypes)
-        {
-            return anonTypes[propertyTypes.Length].MakeGenericType(propertyTypes);
-        }
 
         public static Func<object, object>[] GetDelegates(Type anonType)
         {
