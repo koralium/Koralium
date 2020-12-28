@@ -34,6 +34,12 @@ namespace Data.Koralium.Properties
             => GetString("EndOfResultSet");
 
         /// <summary>
+        /// Expected binary array
+        /// </summary>
+        public static string ExpectedBinaryArray
+            => GetString("ExpectedBinaryArray");
+
+        /// <summary>
         /// Expected string array
         /// </summary>
         public static string ExpectedStringArray

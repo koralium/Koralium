@@ -21,6 +21,7 @@ import io.prestosql.spi.type.IntegerType;
 import io.prestosql.spi.type.RealType;
 import io.prestosql.spi.type.SmallintType;
 import io.prestosql.spi.type.TimestampType;
+import io.prestosql.spi.type.VarbinaryType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 
 import static io.prestosql.spi.type.VarcharType.createUnboundedVarcharType;
@@ -131,7 +132,7 @@ public class PrestoArrowTypeVisitor
     @Override
     public TypeConvertResult visit(ArrowType.Binary binary)
     {
-        throw new IllegalArgumentException("Binary is not supported");
+        return new TypeConvertResult(VarbinaryType.VARBINARY, KoraliumType.BINARY);
     }
 
     @Override

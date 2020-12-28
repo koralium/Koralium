@@ -126,6 +126,9 @@
   <data name="EndOfResultSet" xml:space="preserve">
     <value>End of the result set has been reached, call NextResult() to get another result set.</value>
   </data>
+  <data name="ExpectedBinaryArray" xml:space="preserve">
+    <value>Expected binary array</value>
+  </data>
   <data name="ExpectedStringArray" xml:space="preserve">
     <value>Expected string array</value>
   </data>

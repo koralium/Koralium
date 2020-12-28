@@ -130,7 +130,7 @@ namespace Data.Koralium.Internal
 
         public void Visit(BinaryType type)
         {
-            throw new NotImplementedException();
+            ColumnDecoder = new BinaryDecoder();
         }
 
         public void Visit(TimestampType type)
