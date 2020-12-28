@@ -15,6 +15,7 @@ package io.prestosql.plugin.koralium;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.airlift.slice.Slice;
+import io.prestosql.plugin.koralium.decoders.BinaryDecoder;
 import io.prestosql.plugin.koralium.decoders.BoolDecoder;
 import io.prestosql.plugin.koralium.decoders.DoubleDecoder;
 import io.prestosql.plugin.koralium.decoders.FloatDecoder;
@@ -60,7 +61,9 @@ public enum KoraliumType
     @JsonProperty("UINT64")
     UINT64(KoraliumType::simpleToStringConverter, new UInt64Decoder()),
     @JsonProperty("UINT8")
-    UINT8(KoraliumType::simpleToStringConverter, new UInt8Decoder());
+    UINT8(KoraliumType::simpleToStringConverter, new UInt8Decoder()),
+    @JsonProperty("BINARY")
+    BINARY(null, new BinaryDecoder());
 
     private final ToStringConverter toStringConverter;
     private final KoraliumDecoder decoder;

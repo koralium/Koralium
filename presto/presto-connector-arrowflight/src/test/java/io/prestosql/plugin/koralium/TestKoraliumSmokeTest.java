@@ -24,6 +24,7 @@ import io.prestosql.spi.type.RealType;
 import io.prestosql.spi.type.RowType;
 import io.prestosql.spi.type.SmallintType;
 import io.prestosql.spi.type.Type;
+import io.prestosql.spi.type.VarbinaryType;
 import io.prestosql.spi.type.VarcharType;
 import io.prestosql.sql.analyzer.FeaturesConfig;
 import io.prestosql.testing.AbstractTestIntegrationSmokeTest;
@@ -37,6 +38,8 @@ import io.prestosql.tpch.TpchTable;
 import org.assertj.core.api.Assertions;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
+
+import java.nio.ByteBuffer;
 
 import static io.prestosql.SystemSessionProperties.JOIN_DISTRIBUTION_TYPE;
 
@@ -289,6 +292,28 @@ public class TestKoraliumSmokeTest
                 .build();
 
         MaterializedResult result = this.computeActual("SELECT ByteValue FROM typetest");
+
+        Assert.assertEquals(result, expectedResult);
+    }
+
+    @Test
+    public void TestBinary()
+    {
+        ByteBuffer buffer = ByteBuffer.allocate(3);
+        buffer.put(0, (byte) 1);
+        buffer.put(1, (byte) 3);
+        buffer.put(2, (byte) 17);
+
+        MaterializedResult expectedResult = MaterializedResult.resultBuilder(this.getQueryRunner().getDefaultSession(),
+                VarbinaryType.VARBINARY)
+                .row(new Object[]{buffer})
+                .row(new Object[]{null})
+                .row(new Object[]{buffer})
+                .row(new Object[]{null})
+                .row(new Object[]{buffer})
+                .build();
+
+        MaterializedResult result = this.computeActual("SELECT BinaryValue FROM typetest");
 
         Assert.assertEquals(result, expectedResult);
     }

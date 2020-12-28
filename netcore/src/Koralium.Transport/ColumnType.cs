@@ -28,6 +28,7 @@ namespace Koralium.Transport
         Short = 9,
         UInt32 = 10,
         UInt64 = 11,
-        Byte = 12
+        Byte = 12,
+        Binary = 13
     }
 }

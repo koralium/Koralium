@@ -53,6 +53,8 @@ namespace Koralium.Transport.ArrowFlight.Utils
                     return UInt64Type.Default;
                 case ColumnType.Byte:
                     return UInt8Type.Default;
+                case ColumnType.Binary:
+                    return BinaryType.Default;
             }
             throw new NotImplementedException();
         }

@@ -259,6 +259,9 @@ namespace Koralium.WebTests
 
             SetTypeTestValue(arr, (t, x) => t.ObjectList = x, GetTypeTestInnerObjects().ToList(), null);
 
+            //Binary
+            SetTypeTestValue<byte[]>(arr, (t, x) => t.BinaryValue = x, new byte[] { 1, 3, 17 }, null);
+
             return arr.AsQueryable();
         }
     }

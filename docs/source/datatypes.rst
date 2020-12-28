@@ -16,6 +16,7 @@ The supported data types are:
 * ULong (uint64)
 * Lists
 * Objects
+* Byte[] (binary)
 
 
 

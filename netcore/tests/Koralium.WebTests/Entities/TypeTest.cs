@@ -82,5 +82,8 @@ namespace Koralium.WebTests.Entities
         public List<int?> IntListNullable { get; set; }
 
         public List<TypeTestInnerObject> ObjectList { get; set; }
+
+        //Binary
+        public byte[] BinaryValue { get; set; }
     }
 }
