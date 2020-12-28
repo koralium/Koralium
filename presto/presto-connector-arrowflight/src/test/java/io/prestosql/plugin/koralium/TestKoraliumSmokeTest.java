@@ -275,4 +275,21 @@ public class TestKoraliumSmokeTest
 
         Assert.assertEquals(result, expectedResult);
     }
+
+    @Test
+    public void TestUInt8()
+    {
+        MaterializedResult expectedResult = MaterializedResult.resultBuilder(this.getQueryRunner().getDefaultSession(),
+                SmallintType.SMALLINT)
+                .row((short) 1)
+                .row((short) 3)
+                .row((short) 17)
+                .row((short) 1)
+                .row((short) 3)
+                .build();
+
+        MaterializedResult result = this.computeActual("SELECT ByteValue FROM typetest");
+
+        Assert.assertEquals(result, expectedResult);
+    }
 }

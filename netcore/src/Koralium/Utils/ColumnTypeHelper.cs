@@ -85,6 +85,10 @@ namespace Koralium.Utils
             {
                 return (ColumnType.UInt64, false);
             }
+            if (type.Equals(typeof(byte)))
+            {
+                return (ColumnType.Byte, false);
+            }
             if (IsArray(type))
             {
                 return (ColumnType.List, true);

@@ -45,7 +45,9 @@ namespace Koralium.SqlToExpression.Utils
                 typeof(AnonType<,,,,,,,,,,,,,,,,,,,>),
                 typeof(AnonType<,,,,,,,,,,,,,,,,,,,,>),
                 typeof(AnonType<,,,,,,,,,,,,,,,,,,,,,>),
-                typeof(AnonType<,,,,,,,,,,,,,,,,,,,,,,>)
+                typeof(AnonType<,,,,,,,,,,,,,,,,,,,,,,>),
+                typeof(AnonType<,,,,,,,,,,,,,,,,,,,,,,,>),
+                typeof(AnonType<,,,,,,,,,,,,,,,,,,,,,,,,>)
             };
 
         private static ConcurrentDictionary<Type, Func<object, object>[]> typeToGetDelegates = new ConcurrentDictionary<Type, Func<object, object>[]>();
