@@ -19,6 +19,7 @@ import io.prestosql.client.QueryData;
 import io.prestosql.client.QueryStatusInfo;
 import io.prestosql.server.testing.TestingPrestoServer;
 import io.prestosql.spi.type.Type;
+import io.prestosql.spi.type.VarcharType;
 import io.prestosql.testing.AbstractTestingPrestoClient;
 import io.prestosql.testing.ResultsSession;
 
@@ -35,7 +36,6 @@ import static io.prestosql.spi.type.BooleanType.BOOLEAN;
 import static io.prestosql.spi.type.DateType.DATE;
 import static io.prestosql.spi.type.DoubleType.DOUBLE;
 import static io.prestosql.spi.type.IntegerType.INTEGER;
-import static io.prestosql.spi.type.Varchars.isVarcharType;
 
 public class DataLoader
         extends AbstractTestingPrestoClient<Void>
@@ -120,7 +120,7 @@ public class DataLoader
             if (type == DATE && value instanceof String) {
                 return new SimpleDateFormat("yyyy-MM-dd").parse((String) value);
             }
-            if (type == BOOLEAN || type == DATE || isVarcharType(type)) {
+            if (type == BOOLEAN || type == DATE || type instanceof VarcharType) {
                 return value;
             }
             if (type == BIGINT) {
