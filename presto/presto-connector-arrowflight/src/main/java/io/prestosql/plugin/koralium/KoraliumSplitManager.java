@@ -18,13 +18,16 @@ import com.google.common.collect.ImmutableMap;
 import io.prestosql.plugin.koralium.client.FilterExtractor;
 import io.prestosql.plugin.koralium.client.KoraliumClient;
 import io.prestosql.plugin.koralium.client.QueryBuilder;
+import io.prestosql.spi.connector.ConnectorPartitionHandle;
 import io.prestosql.spi.connector.ConnectorSession;
 import io.prestosql.spi.connector.ConnectorSplit;
 import io.prestosql.spi.connector.ConnectorSplitManager;
 import io.prestosql.spi.connector.ConnectorSplitSource;
 import io.prestosql.spi.connector.ConnectorTableHandle;
 import io.prestosql.spi.connector.ConnectorTransactionHandle;
+import io.prestosql.spi.connector.DynamicFilter;
 import io.prestosql.spi.connector.FixedSplitSource;
+import io.prestosql.spi.predicate.TupleDomain;
 import org.apache.arrow.flight.FlightEndpoint;
 import org.apache.arrow.flight.FlightInfo;
 import org.apache.arrow.flight.Location;
@@ -35,7 +38,10 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
+import static io.prestosql.spi.connector.DynamicFilter.NOT_BLOCKED;
 import static java.util.Objects.requireNonNull;
 
 public class KoraliumSplitManager
@@ -53,15 +59,35 @@ public class KoraliumSplitManager
     public ConnectorSplitSource getSplits(
             ConnectorTransactionHandle transaction,
             ConnectorSession session,
-            ConnectorTableHandle connectorTableHandle,
-            SplitSchedulingStrategy splitSchedulingStrategy)
+            ConnectorTableHandle table,
+            SplitSchedulingStrategy splitSchedulingStrategy,
+            DynamicFilter dynamicFilter)
+    {
+        if (!dynamicFilter.isAwaitable()) {
+            return getSplitSource(session, table, splitSchedulingStrategy, dynamicFilter);
+        }
+
+        CompletableFuture<?> dynamicFilterFuture = whenCompleted(dynamicFilter);
+        CompletableFuture<ConnectorSplitSource> splitSourceFuture = dynamicFilterFuture.thenApply(
+                ignored -> getSplitSource(session, table, splitSchedulingStrategy, dynamicFilter));
+
+        return new KoraliumDynamicFilterSplitSource(dynamicFilterFuture, splitSourceFuture);
+    }
+
+    private ConnectorSplitSource getSplitSource(
+            ConnectorSession session,
+            ConnectorTableHandle table,
+            SplitSchedulingStrategy splitSchedulingStrategy,
+            DynamicFilter dynamicFilter)
     {
         String authToken = session.getIdentity().getExtraCredentials().get("auth_token");
 
-        KoraliumTableHandle tableHandle = (KoraliumTableHandle) connectorTableHandle;
+        KoraliumTableHandle tableHandle = (KoraliumTableHandle) table;
+
+        TupleDomain<KoraliumPrestoColumn> dynamicConstraint = dynamicFilter.getCurrentPredicate().transform(KoraliumPrestoColumn.class::cast);
+        String filter = FilterExtractor.getFilter(session, tableHandle.getConstraint().transform(KoraliumPrestoColumn.class::cast).intersect(dynamicConstraint));
 
         QueryBuilder queryBuilder = new QueryBuilder();
-        String filter = FilterExtractor.getFilter(session, tableHandle.getConstraint().transform(KoraliumPrestoColumn.class::cast));
 
         String query = "";
 
@@ -100,5 +126,59 @@ public class KoraliumSplitManager
         }
 
         return new FixedSplitSource(splits);
+    }
+
+    private static CompletableFuture<?> whenCompleted(DynamicFilter dynamicFilter)
+    {
+        if (dynamicFilter.isAwaitable()) {
+            return dynamicFilter.isBlocked().thenCompose(ignored -> whenCompleted(dynamicFilter));
+        }
+        return NOT_BLOCKED;
+    }
+
+    private static class KoraliumDynamicFilterSplitSource
+            implements ConnectorSplitSource
+    {
+        private final CompletableFuture<?> dynamicFilterFuture;
+        private final CompletableFuture<ConnectorSplitSource> splitSourceFuture;
+
+        private KoraliumDynamicFilterSplitSource(
+                CompletableFuture<?> dynamicFilterFuture,
+                CompletableFuture<ConnectorSplitSource> splitSourceFuture)
+        {
+            this.dynamicFilterFuture = requireNonNull(dynamicFilterFuture, "dynamicFilterFuture is null");
+            this.splitSourceFuture = requireNonNull(splitSourceFuture, "splitSourceFuture is null");
+        }
+
+        @Override
+        public CompletableFuture<ConnectorSplitBatch> getNextBatch(ConnectorPartitionHandle partitionHandle, int maxSize)
+        {
+            return splitSourceFuture.thenCompose(splitSource -> splitSource.getNextBatch(partitionHandle, maxSize));
+        }
+
+        @Override
+        public void close()
+        {
+            if (!dynamicFilterFuture.cancel(true)) {
+                splitSourceFuture.thenAccept(ConnectorSplitSource::close);
+            }
+        }
+
+        @Override
+        public boolean isFinished()
+        {
+            if (!splitSourceFuture.isDone()) {
+                return false;
+            }
+            if (splitSourceFuture.isCompletedExceptionally()) {
+                return false;
+            }
+            try {
+                return splitSourceFuture.get().isFinished();
+            }
+            catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
