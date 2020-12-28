@@ -89,6 +89,8 @@ public class PrestoArrowTypeVisitor
         }
         else {
             switch (anInt.getBitWidth()) {
+                case 8:
+                    return new TypeConvertResult(SmallintType.SMALLINT, KoraliumType.UINT8);
                 case 32:
                     return new TypeConvertResult(BigintType.BIGINT, KoraliumType.UINT32);
                 case 64:

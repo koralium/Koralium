@@ -75,7 +75,7 @@ namespace Data.Koralium.Internal
 
         public void Visit(UInt8Type type)
         {
-            throw new NotImplementedException();
+            ColumnDecoder = new UInt8Decoder();
         }
 
         public void Visit(UInt16Type type)

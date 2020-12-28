@@ -47,6 +47,7 @@ namespace Koralium.TestFramework
                 case TypeCode.Int16:
                 case TypeCode.UInt32:
                 case TypeCode.UInt64:
+                case TypeCode.Byte:
                     return true;
                 default:
                     return false;
@@ -263,6 +264,30 @@ namespace Koralium.TestFramework
                 return;
             }
             if (propertyInfo.PropertyType == typeof(ulong?))
+            {
+                var convertedExpression = Expression.Convert(memberAccess, typeof(long?));
+                var lambda = Expression.Lambda<Func<TEntity, long?>>(convertedExpression, parameter);
+                var lambdaCompiled = lambda.Compile();
+
+                var expected = Context.Entities.Sum(lambda);
+                var actual = TestData().Sum(lambdaCompiled);
+
+                expected.Should().Be(actual);
+                return;
+            }
+            if (propertyInfo.PropertyType == typeof(byte))
+            {
+                var convertedExpression = Expression.Convert(memberAccess, typeof(long));
+                var lambda = Expression.Lambda<Func<TEntity, long>>(convertedExpression, parameter);
+                var lambdaCompiled = lambda.Compile();
+
+                var expected = Context.Entities.Sum(lambda);
+                var actual = TestData().Sum(lambdaCompiled);
+
+                expected.Should().Be(actual);
+                return;
+            }
+            if (propertyInfo.PropertyType == typeof(byte?))
             {
                 var convertedExpression = Expression.Convert(memberAccess, typeof(long?));
                 var lambda = Expression.Lambda<Func<TEntity, long?>>(convertedExpression, parameter);
