@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.SqlToExpression.Executors.Select;
+using Koralium.SqlToExpression.Generated;
 using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages.ExecuteStages;
 using Koralium.SqlToExpression.Utils;
@@ -31,7 +32,7 @@ namespace Koralium.SqlToExpression.Executors.AggregateFunction
             var result = await ExecuteAggregateFunction((IQueryable<Entity>)queryable, executeAggregateFunctionStage);
 
             var outType = typeof(OutType);
-            var anonType = AnonTypeUtils.GetAnonType(outType);
+            var anonType = AnonType.GetAnonType(outType);
             var getDelegate = AnonTypeUtils.GetDelegates(anonType)[0];
             var columnMetadata = new ColumnMetadata(executeAggregateFunctionStage.ColumnName, result.GetType(), getDelegate);
 

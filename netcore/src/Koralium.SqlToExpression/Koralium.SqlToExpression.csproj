@@ -30,4 +30,23 @@
     <ProjectReference Include="..\Koralium.SqlParser\Koralium.SqlParser.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Generated\AnonType.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>AnonType.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Generated\AnonType.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AnonType.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
 </Project>

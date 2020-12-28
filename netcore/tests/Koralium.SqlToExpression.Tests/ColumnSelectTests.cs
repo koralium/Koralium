@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.SqlToExpression.Generated;
 using Koralium.SqlToExpression.Tests.Helpers;
 using Koralium.SqlToExpression.Tests.Models;
 using Koralium.SqlToExpression.Utils;
@@ -90,7 +91,7 @@ namespace Koralium.SqlToExpression.Tests
         {
             var parameter = Expression.Parameter(typeof(ColumnTest));
 
-            var anonType = AnonTypeUtils.GetAnonType(properties.Select(x => x.PropertyType).ToArray());
+            var anonType = AnonType.GetAnonType(properties.Select(x => x.PropertyType).ToArray());
 
             List<MemberAssignment> memberAssignments = new List<MemberAssignment>();
             for (int i = 0; i < properties.Length; i++)

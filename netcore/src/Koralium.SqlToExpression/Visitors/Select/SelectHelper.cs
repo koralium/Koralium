@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.SqlParser.Expressions;
+using Koralium.SqlToExpression.Generated;
 using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Koralium.SqlToExpression.Utils;
@@ -49,7 +50,7 @@ namespace Koralium.SqlToExpression.Visitors.Select
             }
 
             var typeBuilder = SqlTypeInfo.NewBuilder();
-            var anonType = AnonTypeUtils.GetAnonType(singleAggregateVisitor.OutType);
+            var anonType = AnonType.GetAnonType(singleAggregateVisitor.OutType);
             var propertyInfo = anonType.GetProperty($"P0");
             typeBuilder.AddProperty(singleAggregateVisitor.ColumnName, propertyInfo);
 
@@ -107,7 +108,7 @@ namespace Koralium.SqlToExpression.Visitors.Select
                 propertyTypes[i] = selects[i].Expression.Type;
             }
 
-            var anonType = AnonTypeUtils.GetAnonType(propertyTypes);
+            var anonType = AnonType.GetAnonType(propertyTypes);
 
             var getDelegates = AnonTypeUtils.GetDelegates(anonType);
 
