@@ -27,6 +27,7 @@ namespace Koralium.Transport
         DateTime = 8,
         Short = 9,
         UInt32 = 10,
-        UInt64 = 11
+        UInt64 = 11,
+        Byte = 12
     }
 }

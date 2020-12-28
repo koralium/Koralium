@@ -32,7 +32,12 @@ namespace Koralium.Transport.Json.Encoders
             _getFunc = column.GetFunction;
 
             Debug.Assert(column.Children.Count == 1);
-            _childEncoder = EncoderHelper.GetEncoder(column.Children.First());
+
+            var child = column.Children.First();
+
+            var listChildColumn = new Column(child.Name, child.Type, x => x, child.Children, child.ColumnType, child.IsNullable);
+
+            _childEncoder = EncoderHelper.GetEncoder(listChildColumn);
         }
 
         JsonEncodedText IJsonEncoder.PropertyName => _name;
@@ -51,7 +56,7 @@ namespace Koralium.Transport.Json.Encoders
             {
                 var enumerable = val as IEnumerable;
 
-                utf8JsonWriter.WriteStartArray();
+                utf8JsonWriter.WriteStartArray(_name);
 
                 foreach(var o in enumerable)
                 {
