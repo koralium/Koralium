@@ -122,9 +122,7 @@ namespace Koralium.Transport.ArrowFlight.Tests
 
             var expectedEndpoints = new List<FlightEndpoint>()
             {
-                new FlightEndpoint(new FlightTicket("SELECT orderkey FROM orders WHERE Orderkey < 16001"), new List<FlightLocation>()),
-                new FlightEndpoint(new FlightTicket("SELECT orderkey FROM orders WHERE (Orderkey >= 16001) AND (Orderkey < 32001)"), new List<FlightLocation>()),
-                new FlightEndpoint(new FlightTicket("SELECT orderkey FROM orders WHERE Orderkey >= 48001"), new List<FlightLocation>())
+                new FlightEndpoint(new FlightTicket("SELECT orderkey FROM orders"), new List<FlightLocation>())
             };
 
             var expectedFlightInfo = new FlightInfo(expectedSchema, expectedDescriptor, expectedEndpoints);
@@ -151,9 +149,7 @@ namespace Koralium.Transport.ArrowFlight.Tests
 
             var expectedEndpoints = new List<FlightEndpoint>()
             {
-                new FlightEndpoint(new FlightTicket("SET p1 = b64'MQ==';\r\nSELECT orderkey FROM orders WHERE Orderkey < 16001"), new List<FlightLocation>()),
-                new FlightEndpoint(new FlightTicket("SET p1 = b64'MQ==';\r\nSELECT orderkey FROM orders WHERE (Orderkey >= 16001) AND (Orderkey < 32001)"), new List<FlightLocation>()),
-                new FlightEndpoint(new FlightTicket("SET p1 = b64'MQ==';\r\nSELECT orderkey FROM orders WHERE Orderkey >= 48001"), new List<FlightLocation>())
+                new FlightEndpoint(new FlightTicket("SET p1 = b64'MQ==';\r\nSELECT orderkey FROM orders"), new List<FlightLocation>())
             };
 
             var expectedFlightInfo = new FlightInfo(expectedSchema, expectedDescriptor, expectedEndpoints);

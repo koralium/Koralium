@@ -14,6 +14,7 @@
 package io.prestosql.plugin.koralium;
 
 import io.airlift.configuration.Config;
+import io.prestosql.spi.HostAddress;
 
 import javax.validation.constraints.NotNull;
 
@@ -21,7 +22,7 @@ public class KoraliumConfig
 {
     private String url;
     private boolean cacheEnabled;
-    private String cacheRedisUrl;
+    private HostAddress cacheRedisUrl;
     private long cacheExpireTime = 60;
     private long cacheMaxSizeInBytes = 1024 * 1024 * 100;
 
@@ -36,7 +37,7 @@ public class KoraliumConfig
         return cacheEnabled;
     }
 
-    public String getCacheRedisUrl()
+    public HostAddress getCacheRedisUrl()
     {
         return cacheRedisUrl;
     }
@@ -68,7 +69,7 @@ public class KoraliumConfig
     @Config("koralium.cache.redisUrl")
     public KoraliumConfig setCacheRedisUrl(String url)
     {
-        this.cacheRedisUrl = url;
+        this.cacheRedisUrl = HostAddress.fromString(url);
         return this;
     }
 

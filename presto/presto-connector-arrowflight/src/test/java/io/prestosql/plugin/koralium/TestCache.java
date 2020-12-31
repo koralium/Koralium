@@ -17,6 +17,7 @@ import com.google.common.collect.ImmutableMap;
 import io.prestosql.testing.AbstractTestQueryFramework;
 import io.prestosql.testing.QueryRunner;
 import io.prestosql.tpch.TpchTable;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
 import java.util.Map;
@@ -24,16 +25,34 @@ import java.util.Map;
 public class TestCache
         extends AbstractTestQueryFramework
 {
+    private QueryServer server;
+    private RedisServer redisServer;
+
     @Override
     protected QueryRunner createQueryRunner() throws Exception
     {
+        redisServer = new RedisServer();
+
+        redisServer.start();
+        server = new QueryServer();
         Map<String, String> config = ImmutableMap.<String, String>builder()
                 .put("koralium.cache.enabled", "true")
-                .put("koralium.cache.redisUrl", "localhost")
+                .put("koralium.cache.redisUrl", redisServer.getHost() + ":" + redisServer.getPort())
                 .build();
 
         String accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlRlc3QgdGVzdCIsInVuaXF1ZV9uYW1lIjoidGVzdCIsImlhdCI6MTUxNjIzOTAyMn0.aF80OiteMckPhSQcAL549V4AcyKHJA8LUs4mhzBnf2w";
-        return KoraliumQueryRunner.createGrpcQueryRunner("127.0.0.1:5016", ImmutableMap.of(), "koralium", "default", TpchTable.getTables(), null, accessToken, config);
+        return KoraliumQueryRunner.createGrpcQueryRunner("127.0.0.1:5016", ImmutableMap.of(), "koralium", "default", TpchTable.getTables(), server, accessToken, config);
+    }
+
+    @AfterClass(alwaysRun = true)
+    public void tearDown()
+    {
+        if (server != null) {
+            server.close();
+        }
+        if (redisServer != null) {
+            redisServer.close();
+        }
     }
 
     @Test

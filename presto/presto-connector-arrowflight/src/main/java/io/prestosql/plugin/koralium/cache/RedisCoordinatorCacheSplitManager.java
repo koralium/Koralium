@@ -25,11 +25,13 @@ public class RedisCoordinatorCacheSplitManager
 {
     private final JedisPool jedisPool;
 
-    public RedisCoordinatorCacheSplitManager(String redisUrl)
+    public RedisCoordinatorCacheSplitManager(HostAddress redisUrl)
     {
+        requireNonNull(redisUrl, "redisUrl was null");
+
         JedisPoolConfig poolConfig = new JedisPoolConfig();
         poolConfig.setMaxTotal(128);
-        jedisPool = new JedisPool(poolConfig, requireNonNull(redisUrl, "redisUrl was null"));
+        jedisPool = new JedisPool(poolConfig, requireNonNull(redisUrl.getHostText(), "redisUrl was null"), redisUrl.getPort());
     }
 
     @Override
@@ -48,10 +50,12 @@ public class RedisCoordinatorCacheSplitManager
             return HostAddress.fromString(hostAddress);
         }
         catch (Exception e) {
-            //NOP
+            e.printStackTrace();
         }
         finally {
-            jedis.close();
+            if (jedis != null) {
+                jedis.close();
+            }
         }
         return null;
     }

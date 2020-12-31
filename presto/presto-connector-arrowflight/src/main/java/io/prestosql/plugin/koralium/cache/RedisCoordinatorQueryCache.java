@@ -13,6 +13,7 @@
  */
 package io.prestosql.plugin.koralium.cache;
 
+import io.prestosql.spi.HostAddress;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -36,14 +37,16 @@ public class RedisCoordinatorQueryCache
     private final long defaultExpireTime;
 
     public RedisCoordinatorQueryCache(
-            String redisUrl,
+            HostAddress redisUrl,
             String nodeAddress,
             long defaultExpireTime,
             long cacheMaxSize)
     {
+        requireNonNull(redisUrl, "redisUrl was null");
+
         JedisPoolConfig poolConfig = new JedisPoolConfig();
         poolConfig.setMaxTotal(128);
-        jedisPool = new JedisPool(poolConfig, requireNonNull(redisUrl, "RedisUrl was null"));
+        jedisPool = new JedisPool(poolConfig, redisUrl.getHostText(), redisUrl.getPort());
         entries = new HashMap<>();
         this.nodeAddress = nodeAddress;
         this.defaultExpireTime = defaultExpireTime;
