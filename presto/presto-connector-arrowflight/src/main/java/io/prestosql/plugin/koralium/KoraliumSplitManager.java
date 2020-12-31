@@ -14,10 +14,12 @@
 package io.prestosql.plugin.koralium;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import io.prestosql.plugin.koralium.cache.QueryCacheFactory;
+import io.prestosql.plugin.koralium.cache.QueryCacheSplitManager;
 import io.prestosql.plugin.koralium.client.FilterExtractor;
 import io.prestosql.plugin.koralium.client.KoraliumClient;
 import io.prestosql.plugin.koralium.client.QueryBuilder;
+import io.prestosql.spi.HostAddress;
 import io.prestosql.spi.connector.ConnectorPartitionHandle;
 import io.prestosql.spi.connector.ConnectorSession;
 import io.prestosql.spi.connector.ConnectorSplit;
@@ -35,7 +37,9 @@ import org.apache.arrow.flight.Location;
 import javax.inject.Inject;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -48,11 +52,13 @@ public class KoraliumSplitManager
         implements ConnectorSplitManager
 {
     private final KoraliumClient client;
+    private final QueryCacheSplitManager queryCacheSplitManager;
 
     @Inject
-    public KoraliumSplitManager(KoraliumClient client)
+    public KoraliumSplitManager(KoraliumClient client, QueryCacheFactory queryCacheFactory)
     {
         this.client = requireNonNull(client, "client is null");
+        queryCacheSplitManager = queryCacheFactory.getCacheSplitManager();
     }
 
     @Override
@@ -100,11 +106,13 @@ public class KoraliumSplitManager
             query = queryBuilder.buildQuery(tableHandle.getDesiredColumns(), tableHandle.getTableName(), filter, tableHandle.getSortOrder(), tableHandle.getLimit());
         }
 
-        Map<String, String> headers = null;
+        Map<String, String> headers = new HashMap<String, String>();
 
         if (authToken != null) {
-            headers = ImmutableMap.of("Authorization", "Bearer " + authToken);
+            headers.put("Authorization", "Bearer " + authToken);
         }
+
+        headers.put("enable-partitions", "true");
 
         FlightInfo flightInfo = this.client.getFlightInfo(query, headers);
 
@@ -122,7 +130,10 @@ public class KoraliumSplitManager
                 }
             }
 
-            splits.add(new KoraliumSplit(endpoint.getTicket().getBytes(), locationBuilder.build(), isCount));
+            String splitQuery = new String(endpoint.getTicket().getBytes(), StandardCharsets.UTF_8);
+            HostAddress cacheNode = queryCacheSplitManager.getCacheNode(splitQuery);
+
+            splits.add(new KoraliumSplit(endpoint.getTicket().getBytes(), locationBuilder.build(), isCount, cacheNode));
         }
 
         return new FixedSplitSource(splits);

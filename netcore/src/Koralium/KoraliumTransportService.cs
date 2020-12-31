@@ -29,6 +29,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Koralium.SqlParser.Statements;
 using Koralium.SqlParser.Literals;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace Koralium
 {
@@ -38,16 +39,20 @@ namespace Koralium
         private readonly IServiceProvider _serviceProvider;
         private readonly MetadataStore _metadataStore;
         private readonly ISqlParser _sqlParser;
+        private readonly ILogger<KoraliumTransportService> _logger;
+
         public KoraliumTransportService(
             SqlExecutor sqlExecutor, 
             IServiceProvider serviceProvider, 
             MetadataStore metadataStore,
-            ISqlParser sqlParser)
+            ISqlParser sqlParser,
+            ILogger<KoraliumTransportService> logger)
         {
             _sqlExecutor = sqlExecutor;
             _serviceProvider = serviceProvider;
             _metadataStore = metadataStore;
             _sqlParser = sqlParser;
+            _logger = logger;
         }
 
         private Transport.Column GetTransportColumn(TableColumn tableColumn)
@@ -66,6 +71,7 @@ namespace Koralium
 
         public async ValueTask<Transport.QueryResult> Execute(string sql, SqlParameters sqlParameters, HttpContext httpContext)
         {
+            _logger.LogInformation("Executing query: " + sql);
             foreach (var header in httpContext.Request.Headers)
             {
                 if (header.Key.StartsWith("P_", StringComparison.OrdinalIgnoreCase))

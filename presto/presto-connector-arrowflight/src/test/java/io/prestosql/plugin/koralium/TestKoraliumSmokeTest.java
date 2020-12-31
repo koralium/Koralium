@@ -16,6 +16,7 @@ package io.prestosql.plugin.koralium;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.prestosql.Session;
+import io.prestosql.SystemSessionProperties;
 import io.prestosql.spi.type.ArrayType;
 import io.prestosql.spi.type.BigintType;
 import io.prestosql.spi.type.BooleanType;
@@ -51,9 +52,9 @@ public class TestKoraliumSmokeTest
     @Override
     protected QueryRunner createQueryRunner() throws Exception
     {
-        server = new QueryServer();
+        //server = new QueryServer();
         String accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlRlc3QgdGVzdCIsInVuaXF1ZV9uYW1lIjoidGVzdCIsImlhdCI6MTUxNjIzOTAyMn0.aF80OiteMckPhSQcAL549V4AcyKHJA8LUs4mhzBnf2w";
-        return KoraliumQueryRunner.createGrpcQueryRunner("127.0.0.1:5016", ImmutableMap.of(), "koralium", "default", TpchTable.getTables(), server, accessToken);
+        return KoraliumQueryRunner.createGrpcQueryRunner("127.0.0.1:5016", ImmutableMap.of(), "koralium", "default", TpchTable.getTables(), null, accessToken, ImmutableMap.of());
     }
 
     @AfterClass(alwaysRun = true)
@@ -226,6 +227,22 @@ public class TestKoraliumSmokeTest
     public void testTemp()
     {
         assertQuery("SELECT COUNT(*) FROM lineitem JOIN orders ON NOT NOT lineitem.orderkey = orders.orderkey AND NOT NOT lineitem.quantity > 2");
+    }
+
+    @Test
+    public void testAggregatePushdown()
+    {
+        Session session = Session.builder(getSession())
+                .setSystemProperty(JOIN_DISTRIBUTION_TYPE, FeaturesConfig.JoinDistributionType.BROADCAST.name())
+                .setSystemProperty(SystemSessionProperties.PUSH_AGGREGATION_THROUGH_OUTER_JOIN, "true")
+                .setSystemProperty(SystemSessionProperties.PUSH_PARTIAL_AGGREGATION_THROUGH_JOIN, "true")
+                .setSystemProperty(SystemSessionProperties.PREFER_PARTIAL_AGGREGATION, "true")
+                .build();
+
+        DistributedQueryRunner runner = (DistributedQueryRunner) getQueryRunner();
+        ResultWithQueryId<MaterializedResult> result = runner.executeWithQueryId(
+                session,
+                "SELECT sum(lineitem.Quantity) FROM lineitem where orderkey = 1");
     }
 
     @Test

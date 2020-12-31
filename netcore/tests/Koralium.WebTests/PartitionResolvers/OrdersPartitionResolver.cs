@@ -77,14 +77,17 @@ namespace Koralium.WebTests.PartitionResolvers
 
             if (keys.Count > 0)
             {
+                var firstData = tpchData.Orders.Where(x => x.Orderkey < keys.First()).ToList();
                 partitionFilters.Add(QueryBuilder.BooleanExpression<Order>(x => x.Orderkey < keys.First()));
 
                 //Middle partitions contains both start and end
-                for(int i = 1; i < keys.Count - 1; i++)
+                for(int i = 1; i < keys.Count; i++)
                 {
+                    var middleData = tpchData.Orders.Where(x => x.Orderkey >= keys[i - 1] && x.Orderkey < keys[i]).ToList();
                     partitionFilters.Add(QueryBuilder.BooleanExpression<Order>(x => x.Orderkey >= keys[i - 1] && x.Orderkey < keys[i]));
+                    
                 }
-
+                var lastData = tpchData.Orders.Where(x => x.Orderkey >= keys.Last()).ToList();
                 partitionFilters.Add(QueryBuilder.BooleanExpression<Order>(x => x.Orderkey >= keys.Last()));
                 //Last partition only contains a start
             }

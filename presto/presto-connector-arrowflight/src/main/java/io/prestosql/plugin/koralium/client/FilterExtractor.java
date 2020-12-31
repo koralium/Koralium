@@ -123,11 +123,17 @@ public final class FilterExtractor
 
                     String singlePredicate = null;
                     if (!singleValues.isEmpty()) {
-                        List<String> equalStatements = singleValues.stream()
-                                .map(x -> columnName + " = " + x)
-                                .collect(Collectors.toList());
+                        if (singleValues.size() > 1) {
+                            String inPredicate = columnName + " IN (" + Joiner.on(", ").join(singleValues) + ")";
+                            singlePredicate = inPredicate;
+                        }
+                        else {
+                            List<String> equalStatements = singleValues.stream()
+                                    .map(x -> columnName + " = " + x)
+                                    .collect(Collectors.toList());
 
-                        singlePredicate = Joiner.on(" OR ").join(equalStatements);
+                            singlePredicate = Joiner.on(" OR ").join(equalStatements);
+                        }
                     }
 
                     String rangePredicate = null;

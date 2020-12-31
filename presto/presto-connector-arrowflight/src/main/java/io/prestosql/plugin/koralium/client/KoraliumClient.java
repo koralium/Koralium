@@ -90,5 +90,6 @@ public class KoraliumClient
     public void close() throws InterruptedException
     {
         flightClient.close();
+        allocator.close();
     }
 }

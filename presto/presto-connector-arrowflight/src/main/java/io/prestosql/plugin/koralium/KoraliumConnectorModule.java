@@ -18,8 +18,10 @@ import com.fasterxml.jackson.databind.deser.std.FromStringDeserializer;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
+import io.prestosql.plugin.koralium.cache.QueryCacheFactory;
 import io.prestosql.plugin.koralium.client.KoraliumClient;
 import io.prestosql.plugin.koralium.client.PrestoKoraliumMetadataClient;
+import io.prestosql.spi.NodeManager;
 import io.prestosql.spi.type.Type;
 import io.prestosql.spi.type.TypeId;
 import io.prestosql.spi.type.TypeManager;
@@ -36,16 +38,19 @@ public class KoraliumConnectorModule
         implements Module
 {
     private final TypeManager typeManager;
+    private final NodeManager nodeManager;
 
-    public KoraliumConnectorModule(TypeManager typeManager)
+    public KoraliumConnectorModule(TypeManager typeManager, NodeManager nodeManager)
     {
         this.typeManager = typeManager;
+        this.nodeManager = nodeManager;
     }
 
     @Override
     public void configure(Binder binder)
     {
         binder.bind(TypeManager.class).toInstance(typeManager);
+        binder.bind(NodeManager.class).toInstance(nodeManager);
 
         binder.bind(KoraliumConnector.class).in(Scopes.SINGLETON);
         binder.bind(KoraliumMetadata.class).in(Scopes.SINGLETON);
@@ -53,6 +58,7 @@ public class KoraliumConnectorModule
         binder.bind(KoraliumClient.class).in(Scopes.SINGLETON);
         binder.bind(KoraliumSplitManager.class).in(Scopes.SINGLETON);
         binder.bind(KoraliumPageSourceProvider.class).in(Scopes.SINGLETON);
+        binder.bind(QueryCacheFactory.class).in(Scopes.SINGLETON);
         configBinder(binder).bindConfig(KoraliumConfig.class);
 
         jsonBinder(binder).addDeserializerBinding(Type.class).to(TypeDeserializer.class);

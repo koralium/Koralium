@@ -48,7 +48,7 @@ public class KoraliumConnectorFactory
 
         Bootstrap app = new Bootstrap(
                 new JsonModule(),
-                new KoraliumConnectorModule(context.getTypeManager()));
+                new KoraliumConnectorModule(context.getTypeManager(), context.getNodeManager()));
 
         Injector injector = app.strictConfig()
                 .doNotInitializeLogging()

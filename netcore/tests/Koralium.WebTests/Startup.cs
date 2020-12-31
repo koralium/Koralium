@@ -95,7 +95,6 @@ namespace Koralium.WebTests
                 {
                     t.TableName = "orders";
                     t.UseInMemoryCaseInsensitiveStringOperations();
-                    t.SetPartitionResolver(new OrdersPartitionResolver());
                 });
                 opt.AddTableResolver<PartResolver, Part>();
                 opt.AddTableResolver<PartsuppResolver, Partsupp>();
