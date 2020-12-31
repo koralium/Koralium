@@ -28,7 +28,7 @@ public class TestKoraliumAggregations
     protected QueryRunner createQueryRunner() throws Exception
     {
         server = new QueryServer();
-        return KoraliumQueryRunner.createGrpcQueryRunner("127.0.0.1:5016", ImmutableMap.of(), "koralium", "default", TpchTable.getTables(), server, null);
+        return KoraliumQueryRunner.createGrpcQueryRunner("127.0.0.1:5016", ImmutableMap.of(), "koralium", "default", TpchTable.getTables(), server, null, ImmutableMap.of());
     }
 
     @AfterClass(alwaysRun = true)

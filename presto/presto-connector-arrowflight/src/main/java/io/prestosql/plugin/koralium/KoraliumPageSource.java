@@ -14,6 +14,8 @@
 package io.prestosql.plugin.koralium;
 
 import com.google.common.collect.ImmutableMap;
+import io.prestosql.plugin.koralium.cache.QueryCache;
+import io.prestosql.plugin.koralium.cache.QueryCacheEntry;
 import io.prestosql.plugin.koralium.client.KoraliumClient;
 import io.prestosql.plugin.koralium.decoders.KoraliumDecoder;
 import io.prestosql.plugin.koralium.utils.SchemaToDecoders;
@@ -52,15 +54,21 @@ public class KoraliumPageSource
     private final AtomicLong readTimeNanos = new AtomicLong(0);
     private final long readStart;
     private Throwable error;
+    private final QueryCache queryCache;
+    private final QueryCacheEntry cacheEntry;
 
     public KoraliumPageSource(KoraliumSplit split,
                               List<KoraliumPrestoColumn> columns,
-                              ConnectorSession session)
+                              ConnectorSession session,
+                              QueryCache queryCache,
+                              String query)
     {
         this.split = split;
         this.columns = columns;
         finished = new AtomicBoolean();
         readStart = System.nanoTime();
+        this.queryCache = queryCache;
+        this.cacheEntry = queryCache.newEntry(query);
 
         columnBuilders = columns.stream()
                 .map(KoraliumPrestoColumn::getType)
@@ -98,11 +106,22 @@ public class KoraliumPageSource
         if (stream.next()) {
             BigIntVector vector = (BigIntVector) root.getVector(0);
             long val = vector.get(0);
-            completedBatches.add(new Page((int) val));
+            Page page = new Page((int) val);
+            cacheEntry.addPage(page);
+            queryCache.add(cacheEntry);
+            completedBatches.add(page);
         }
         else {
             completedBatches.add(new Page(0));
         }
+        try {
+            root.close();
+            client.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
         finished.set(true);
         setFinalReadTime();
     }
@@ -132,7 +151,9 @@ public class KoraliumPageSource
                         blocks[i] = columnBuilders[i].build();
                         columnBuilders[i] = columnBuilders[i].newBlockBuilderLike(null);
                     }
-                    completedBatches.add(new Page(blocks));
+                    Page page = new Page(blocks);
+                    this.cacheEntry.addPage(page);
+                    completedBatches.add(page);
                 }
 
                 try {
@@ -142,8 +163,12 @@ public class KoraliumPageSource
                     e.printStackTrace();
                 }
 
+                queryCache.add(cacheEntry);
                 finished.set(true);
                 setFinalReadTime();
+
+                //Close root allocator
+                root.close();
                 //Close the stream
                 stream.close();
                 //close the client

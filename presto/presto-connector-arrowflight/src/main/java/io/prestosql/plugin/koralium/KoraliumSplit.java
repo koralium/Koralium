@@ -15,6 +15,7 @@ package io.prestosql.plugin.koralium;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.ImmutableList;
 import io.prestosql.spi.HostAddress;
 import io.prestosql.spi.connector.ConnectorSplit;
 
@@ -29,17 +30,27 @@ public class KoraliumSplit
     private final List<URI> uriAddresses;
     private final List<HostAddress> remoteAddresses;
     private final boolean isCount;
+    private final HostAddress cacheUrl;
 
     @JsonCreator
     public KoraliumSplit(
             @JsonProperty("ticket") byte[] ticket,
             @JsonProperty("uriAddresses") List<URI> uriAddresses,
-            @JsonProperty("isCount") boolean isCount)
+            @JsonProperty("isCount") boolean isCount,
+            @JsonProperty("cacheNode") HostAddress cacheUrl)
     {
         this.ticket = ticket;
         this.uriAddresses = uriAddresses;
-        this.remoteAddresses = uriAddresses.stream().map(HostAddress::fromUri).collect(Collectors.toList());
+
+        if (cacheUrl != null) {
+            this.remoteAddresses = ImmutableList.of(cacheUrl);
+        }
+        else {
+            this.remoteAddresses = uriAddresses.stream().map(HostAddress::fromUri).collect(Collectors.toList());
+        }
+
         this.isCount = isCount;
+        this.cacheUrl = cacheUrl;
     }
 
     @JsonProperty
@@ -58,6 +69,12 @@ public class KoraliumSplit
     public boolean isCount()
     {
         return isCount;
+    }
+
+    @JsonProperty("cacheNode")
+    public HostAddress getCacheUrl()
+    {
+        return cacheUrl;
     }
 
     @Override

@@ -13,6 +13,10 @@
  */
 package io.prestosql.plugin.koralium;
 
+import io.prestosql.plugin.koralium.cache.QueryCache;
+import io.prestosql.plugin.koralium.cache.QueryCacheEntry;
+import io.prestosql.plugin.koralium.cache.QueryCacheFactory;
+import io.prestosql.spi.NodeManager;
 import io.prestosql.spi.connector.ColumnHandle;
 import io.prestosql.spi.connector.ConnectorPageSource;
 import io.prestosql.spi.connector.ConnectorPageSourceProvider;
@@ -22,6 +26,9 @@ import io.prestosql.spi.connector.ConnectorTableHandle;
 import io.prestosql.spi.connector.ConnectorTransactionHandle;
 import io.prestosql.spi.connector.DynamicFilter;
 
+import javax.inject.Inject;
+
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
@@ -29,6 +36,16 @@ import static com.google.common.collect.ImmutableList.toImmutableList;
 public class KoraliumPageSourceProvider
         implements ConnectorPageSourceProvider
 {
+    private final QueryCache queryCache;
+    private final NodeManager nodeManager;
+
+    @Inject
+    public KoraliumPageSourceProvider(QueryCacheFactory queryCacheFactory, NodeManager nodeManager)
+    {
+        this.queryCache = queryCacheFactory.getCache();
+        this.nodeManager = nodeManager;
+    }
+
     @Override
     public ConnectorPageSource createPageSource(
             ConnectorTransactionHandle transaction,
@@ -44,6 +61,13 @@ public class KoraliumPageSourceProvider
 
         KoraliumSplit koraliumSplit = (KoraliumSplit) split;
 
-        return new KoraliumPageSource(koraliumSplit, columnHandles, session);
+        String query = new String(koraliumSplit.getTicket(), StandardCharsets.UTF_8);
+
+        QueryCacheEntry cacheEntry = queryCache.get(query);
+        if (cacheEntry != null) {
+            return new KoraliumPageSourceCache(cacheEntry.getIterator());
+        }
+
+        return new KoraliumPageSource(koraliumSplit, columnHandles, session, queryCache, query);
     }
 }

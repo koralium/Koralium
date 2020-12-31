@@ -20,6 +20,10 @@ import javax.validation.constraints.NotNull;
 public class KoraliumConfig
 {
     private String url;
+    private boolean cacheEnabled;
+    private String cacheRedisUrl;
+    private long cacheExpireTime = 60;
+    private long cacheMaxSizeInBytes = 1024 * 1024 * 100;
 
     @NotNull
     public String getUrl()
@@ -27,10 +31,58 @@ public class KoraliumConfig
         return url;
     }
 
+    public boolean isCacheEnabled()
+    {
+        return cacheEnabled;
+    }
+
+    public String getCacheRedisUrl()
+    {
+        return cacheRedisUrl;
+    }
+
+    public long getCacheExpireTime()
+    {
+        return cacheExpireTime;
+    }
+
+    public long getCacheMaxSizeInBytes()
+    {
+        return cacheMaxSizeInBytes;
+    }
+
     @Config("koralium.url")
     public KoraliumConfig setUrl(String url)
     {
         this.url = url;
+        return this;
+    }
+
+    @Config("koralium.cache.enabled")
+    public KoraliumConfig setCacheEnabled(boolean value)
+    {
+        this.cacheEnabled = value;
+        return this;
+    }
+
+    @Config("koralium.cache.redisUrl")
+    public KoraliumConfig setCacheRedisUrl(String url)
+    {
+        this.cacheRedisUrl = url;
+        return this;
+    }
+
+    @Config("koralium.cache.expireTime")
+    public KoraliumConfig setCacheExpireTime(long cacheExpireTime)
+    {
+        this.cacheExpireTime = cacheExpireTime;
+        return this;
+    }
+
+    @Config("koralium.cache.maxSizeInBytes")
+    public KoraliumConfig setCacheMaxSizeInBytes(long maxSize)
+    {
+        this.cacheMaxSizeInBytes = maxSize;
         return this;
     }
 }

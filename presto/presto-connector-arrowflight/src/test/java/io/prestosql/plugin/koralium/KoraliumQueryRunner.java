@@ -50,7 +50,8 @@ public final class KoraliumQueryRunner
             String schema,
             Iterable<TpchTable<?>> tables,
             QueryServer server,
-            String authToken) throws Exception
+            String authToken,
+            Map<String, String> extraConfig) throws Exception
     {
         DistributedQueryRunner queryRunner = null;
 
@@ -75,7 +76,7 @@ public final class KoraliumQueryRunner
             uri = server.getHost() + ":" + server.getPort();
         }
 
-        installGrpcPlugin(uri, queryRunner, testFactory);
+        installGrpcPlugin(uri, queryRunner, testFactory, extraConfig);
 
         return queryRunner;
     }
@@ -99,12 +100,15 @@ public final class KoraliumQueryRunner
         csvOutput.print("./tmpData/" + table.getTableName() + ".csv");
     }
 
-    private static void installGrpcPlugin(String uri, QueryRunner queryRunner, TestingKoraliumConnectorFactory factory)
+    private static void installGrpcPlugin(String uri, QueryRunner queryRunner, TestingKoraliumConnectorFactory factory, Map<String, String> extraConfig)
     {
         queryRunner.installPlugin(new KoraliumPlugin(factory));
-        Map<String, String> config = ImmutableMap.<String, String>builder()
-                .put("koralium.url", uri)
-                .build();
+        ImmutableMap.Builder<String, String> builder = ImmutableMap.<String, String>builder()
+                .put("koralium.url", uri);
+
+        builder.putAll(extraConfig);
+
+        Map<String, String> config = builder.build();
 
         queryRunner.createCatalog("koralium", "koralium", config);
     }
