@@ -483,6 +483,17 @@ namespace Koralium.SqlParser.ANTLR
 
         public override object VisitBoolean_expression([NotNull] KoraliumParser.Boolean_expressionContext context)
         {
+            if(context.exclamationexpr != null || context.notexpr != null)
+            {
+                KoraliumParser.Boolean_expressionContext expr = context.exclamationexpr ?? context.notexpr;
+
+                var booleanExpression = Visit(expr) as BooleanExpression;
+                return new NotExpression()
+                {
+                    BooleanExpression = booleanExpression
+                };
+            }
+
             //Check if there is an expression inside 
             if(context.inner != null)
             {

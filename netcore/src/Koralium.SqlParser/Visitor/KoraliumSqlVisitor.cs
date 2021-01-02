@@ -255,5 +255,11 @@ namespace Koralium.SqlParser.Visitor
             Visit(castExpression.ScalarExpression);
             //DONE
         }
+
+        public virtual void VisitNotExpression(NotExpression notExpression)
+        {
+            Visit(notExpression.BooleanExpression);
+            //DONE
+        }
     }
 }
