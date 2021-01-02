@@ -104,7 +104,7 @@ namespace Koralium.Utils
             //Create query column for the inner type
             if(!typeLookup.TryGetValue(propertyType, out var children))
             {
-                children = CollectColumnMetadata("", innerType, null, ref globalIndex, typeLookup).ToList();
+                children = CollectColumnMetadata("", innerType, x => x, ref globalIndex, typeLookup).ToList();
                 typeLookup.Add(propertyType, children);
             }
 

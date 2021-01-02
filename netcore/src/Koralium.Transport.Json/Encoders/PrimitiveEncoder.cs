@@ -18,16 +18,12 @@ namespace Koralium.Transport.Json.Encoders
 {
     abstract class PrimitiveEncoder : IJsonEncoder
     {
-        private protected readonly JsonEncodedText _name;
         private readonly Func<object, object> _getFunc;
 
         protected PrimitiveEncoder(Column column)
         {
-            _name = JsonEncodedText.Encode(column.Name);
             _getFunc = column.GetFunction;
         }
-
-        JsonEncodedText IJsonEncoder.PropertyName => _name;
 
         Func<object, object> IJsonEncoder.GetValueFunc => _getFunc;
 
@@ -37,7 +33,7 @@ namespace Koralium.Transport.Json.Encoders
 
             if (val == null)
             {
-                utf8JsonWriter.WriteNull(_name);
+                utf8JsonWriter.WriteNullValue();
             }
             else
             {

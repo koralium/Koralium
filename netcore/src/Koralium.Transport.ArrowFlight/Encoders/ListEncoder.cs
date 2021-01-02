@@ -42,9 +42,7 @@ namespace Koralium.Transport.ArrowFlight.Encoders
             var child = column.Children.First();
             offsetBuilder = new ArrowBuffer.Builder<int>();
 
-            var listChildColumn = new Column(child.Name, child.Type, x => x, child.Children, child.ColumnType, child.IsNullable);
-
-            _childEncoder = EncoderHelper.GetEncoder(listChildColumn);
+            _childEncoder = EncoderHelper.GetEncoder(child);
             _valueType = TypeConverter.Convert(column);
             nullBitmap = new ArrowBuffer.BitmapBuilder();
         }
