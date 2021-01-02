@@ -76,7 +76,8 @@ boolean_expression
 ;
 
 predicate
-	: boolean_comparison_expression
+	: between_expression
+	| boolean_comparison_expression
 	| search_expression
 	| function_call
 	| in_expression
@@ -93,6 +94,8 @@ in_expression: element=in_left_scalar NOT? IN '(' scalar_expression (',' scalar_
 like_expression: element=in_left_scalar NOT? LIKE right=scalar_expression;
 
 in_left_scalar: scalar_expression;
+
+between_expression: ref=scalar_expression BETWEEN left=scalar_expression AND right=scalar_expression;
 
 boolean_comparison_expression: (
 	left=scalar_expression boolean_comparison_type right=scalar_expression

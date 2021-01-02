@@ -1220,5 +1220,19 @@ namespace Koralium.SqlParser.Tests
 
             actual.Should().Be(expected);
         }
+
+        [Test]
+        public void TestBetween()
+        {
+            var actual = new BetweenExpression()
+            {
+                Expression = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                From = new IntegerLiteral() { Value = 1 },
+                To = new IntegerLiteral() { Value = 10 }
+            }.Print();
+            var expected = "c1 BETWEEN 1 AND 10";
+
+            actual.Should().Be(expected);
+        }
     }
 }

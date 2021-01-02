@@ -261,5 +261,13 @@ namespace Koralium.SqlParser.Visitor
             Visit(notExpression.BooleanExpression);
             //DONE
         }
+
+        public virtual void VisitBetweenExpression(BetweenExpression betweenExpression)
+        {
+            Visit(betweenExpression.Expression);
+            Visit(betweenExpression.From);
+            Visit(betweenExpression.To);
+            //DONE
+        }
     }
 }

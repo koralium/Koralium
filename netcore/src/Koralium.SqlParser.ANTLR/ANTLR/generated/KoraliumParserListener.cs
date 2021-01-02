@@ -281,6 +281,16 @@ public interface IKoraliumParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitIn_left_scalar([NotNull] KoraliumParser.In_left_scalarContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="KoraliumParser.between_expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterBetween_expression([NotNull] KoraliumParser.Between_expressionContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="KoraliumParser.between_expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitBetween_expression([NotNull] KoraliumParser.Between_expressionContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="KoraliumParser.boolean_comparison_expression"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

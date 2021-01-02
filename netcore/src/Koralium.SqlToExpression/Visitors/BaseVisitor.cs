@@ -105,6 +105,30 @@ namespace Koralium.SqlToExpression.Visitors
             AddExpressionToStack(Expression.Not(expr));
         }
 
+        public override void VisitBetweenExpression(BetweenExpression betweenExpression)
+        {
+            //Convert the between expression into a boolean binary expression
+            var convertedExpression = new BooleanBinaryExpression()
+            {
+                Left = new BooleanComparisonExpression()
+                {
+                    Left = betweenExpression.Expression,
+                    Right = betweenExpression.From,
+                    Type = BooleanComparisonType.GreaterThanOrEqualTo
+                },
+                Right = new BooleanComparisonExpression()
+                {
+                    Left = betweenExpression.Expression,
+                    Right = betweenExpression.To,
+                    Type = BooleanComparisonType.LessThanOrEqualTo
+                },
+                Type = BooleanBinaryType.AND
+            };
+
+            //Visit the newly constructed boolean binary expression instead
+            convertedExpression.Accept(this);
+        }
+
         public override void VisitBinaryExpression(SqlParser.Expressions.BinaryExpression binaryExpression)
         {
             binaryExpression.Left.Accept(this);

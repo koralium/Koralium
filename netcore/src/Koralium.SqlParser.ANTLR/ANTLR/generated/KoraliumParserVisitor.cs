@@ -182,6 +182,12 @@ public interface IKoraliumParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitIn_left_scalar([NotNull] KoraliumParser.In_left_scalarContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="KoraliumParser.between_expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitBetween_expression([NotNull] KoraliumParser.Between_expressionContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="KoraliumParser.boolean_comparison_expression"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

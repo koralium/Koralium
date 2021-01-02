@@ -54,6 +54,7 @@ OFFSET: 'OFFSET';
 SET: 'SET';
 CONTAINS: 'CONTAINS';
 CAST: 'CAST';
+BETWEEN: 'BETWEEN';
 
 SPACES: [ \u000B\t\r\n] -> channel(HIDDEN);
 

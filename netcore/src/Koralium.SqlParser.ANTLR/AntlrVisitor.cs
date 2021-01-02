@@ -979,5 +979,36 @@ namespace Koralium.SqlParser.ANTLR
                 ScalarExpression = scalarExpression
             };
         }
+
+        public override object VisitBetween_expression([NotNull] KoraliumParser.Between_expressionContext context)
+        {
+            var reference = Visit(context.@ref) as ScalarExpression;
+
+            if(reference == null)
+            {
+                throw new SqlParserException("BETWEEN can only be used on scalar expressions");
+            }
+
+            var left = Visit(context.left) as ScalarExpression;
+
+            if(left == null)
+            {
+                throw new SqlParserException("First argument in BETWEEN is not a scalar expression");
+            }
+
+            var right = Visit(context.right) as ScalarExpression;
+
+            if(right == null)
+            {
+                throw new SqlParserException("Second argument in BETWEEN is not a scalar expression");
+            }
+
+            return new BetweenExpression()
+            {
+                Expression = reference,
+                From = left,
+                To = right
+            };
+        }
     }
 }
