@@ -19,16 +19,16 @@ jobs:
       id: tag
       run: echo ::set-output name=VERSION::$(echo ${GITHUB_REF##*/v})
     - run: npm install
-      working-directory: typescript-client
+      working-directory: typescript-client/legacy
     - name: Update package version
       run: npm version ${PACKAGE_VERSION}
-      working-directory: typescript-client
+      working-directory: typescript-client/legacy
       env:
         PACKAGE_VERSION: ${{ steps.tag.outputs.VERSION }}
     - run: npm run-script build
-      working-directory: typescript-client
+      working-directory: typescript-client/legacy
     - run: npm publish --access public
-      working-directory: typescript-client
+      working-directory: typescript-client/legacy
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_KEY }}
   
