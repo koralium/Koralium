@@ -335,6 +335,18 @@ public partial class KoraliumParserBaseListener : IKoraliumParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitIn_left_scalar([NotNull] KoraliumParser.In_left_scalarContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="KoraliumParser.between_expression"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterBetween_expression([NotNull] KoraliumParser.Between_expressionContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="KoraliumParser.between_expression"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitBetween_expression([NotNull] KoraliumParser.Between_expressionContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="KoraliumParser.boolean_comparison_expression"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

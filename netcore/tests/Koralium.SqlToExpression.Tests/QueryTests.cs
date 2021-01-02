@@ -1056,6 +1056,32 @@ namespace Koralium.SqlToExpression.Tests
             AssertAreEqual(expected, result.Result);
         }
 
+        [Test]
+        public async Task TestBetweenExpressionIntegers()
+        {
+            var result = await SqlExecutor.Execute("SELECT orderkey FROM \"order\" WHERE orderkey BETWEEN 1 AND 10");
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderkey >= 1 && x.Orderkey <= 10)
+                .Select(x => new { x.Orderkey })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestBetweenExpressionStrings()
+        {
+            var result = await SqlExecutor.Execute("SELECT orderkey FROM \"order\" WHERE Orderpriority BETWEEN '4' AND '5'");
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderpriority.CompareTo("4") >= 0 && x.Orderpriority.CompareTo("5") <= 0)
+                .Select(x => new { x.Orderkey })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
         //select name from customer where name > 'customer#000001500'
         //Gives the wrong results
     }

@@ -478,5 +478,13 @@ namespace Koralium.SqlParser.Visitor
             var text = VisitPop(notExpression.BooleanExpression);
             Push($"NOT ({text})");
         }
+
+        public override void VisitBetweenExpression(BetweenExpression betweenExpression)
+        {
+            var reference = VisitPop(betweenExpression.Expression);
+            var from = VisitPop(betweenExpression.From);
+            var to = VisitPop(betweenExpression.To);
+            Push($"{reference} BETWEEN {from} AND {to}");
+        }
     }
 }
