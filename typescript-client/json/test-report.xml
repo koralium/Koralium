@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+  <file path="C:\Users\seosal\source\repos\Koralium\new\Koralium\typescript-client\json\tests\queryBuilder.test.ts">
+    <testCase name="count with filter" duration="6"/>
+    <testCase name="Select same column" duration="0"/>
+    <testCase name="Select with limit and offset" duration="1"/>
+    <testCase name="Select multiple columns, filter, limit, offset" duration="1"/>
+    <testCase name="Object mapper" duration="1"/>
+    <testCase name="Object mapper, missing mapping" duration="1"/>
+    <testCase name="Filter builder equals" duration="2"/>
+    <testCase name="test in predicate for numbers" duration="1"/>
+    <testCase name="test in predicate for strings" duration="1"/>
+    <testCase name="Order by with object ascending" duration="1"/>
+    <testCase name="Order by with object descending" duration="1"/>
+    <testCase name="Empty filter string" duration="0"/>
+    <testCase name="Empty filter object" duration="0"/>
+    <testCase name="Search filter all fields" duration="1"/>
+    <testCase name="Search filter two fields" duration="1"/>
+  </file>
+  <file path="C:\Users\seosal\source\repos\Koralium\new\Koralium\typescript-client\json\tests\client.test.ts">
+    <testCase name="Get orders" duration="1209"/>
+    <testCase name="Get secure data" duration="834"/>
+    <testCase name="Test limit" duration="78"/>
+    <testCase name="Test limit with parameter" duration="50"/>
+    <testCase name="filter on date in parameter" duration="814"/>
+    <testCase name="select single field" duration="301"/>
+    <testCase name="query scalar count" duration="25"/>
+  </file>
+</testExecutions>
