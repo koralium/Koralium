@@ -1043,6 +1043,19 @@ namespace Koralium.SqlToExpression.Tests
             AssertAreEqual(expected, result.Result);
         }
 
+        [Test]
+        public async Task TestWhereNotComparison()
+        {
+            var result = await SqlExecutor.Execute("SELECT orderkey FROM \"order\" WHERE NOT orderkey != 1");
+
+            var expected = TpchData.Orders
+                .Where(x => x.Orderkey == 1)
+                .Select(x => new { x.Orderkey })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
         //select name from customer where name > 'customer#000001500'
         //Gives the wrong results
     }

@@ -1203,5 +1203,22 @@ namespace Koralium.SqlParser.Tests
 
             actual.Should().Be(expected);
         }
+
+        [Test]
+        public void TestNot()
+        {
+            var actual = new NotExpression()
+            {
+                BooleanExpression = new BooleanComparisonExpression()
+                {
+                    Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                    Right = new BooleanLiteral() { Value = true },
+                    Type = BooleanComparisonType.Equals
+                }
+            }.Print();
+            var expected = "NOT (c1 = true)";
+
+            actual.Should().Be(expected);
+        }
     }
 }

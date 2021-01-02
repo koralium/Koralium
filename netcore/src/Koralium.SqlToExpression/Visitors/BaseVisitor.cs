@@ -97,6 +97,14 @@ namespace Koralium.SqlToExpression.Visitors
             AddNameToStack(string.Join(".", identifiers));
         }
 
+        public override void VisitNotExpression(NotExpression notExpression)
+        {
+            notExpression.BooleanExpression.Accept(this);
+
+            var expr = PopStack();
+            AddExpressionToStack(Expression.Not(expr));
+        }
+
         public override void VisitBinaryExpression(SqlParser.Expressions.BinaryExpression binaryExpression)
         {
             binaryExpression.Left.Accept(this);

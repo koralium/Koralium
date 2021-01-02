@@ -67,7 +67,8 @@ groupby_element
 	;
 
 boolean_expression
-	: '!' boolean_expression
+	: '!' exclamationexpr=boolean_expression
+	| NOT notexpr=boolean_expression
 	| '(' inner=boolean_expression ')'
 	| left=boolean_expression boolean_binary_type right=boolean_expression
 	| predicate IS NOT isValue=(TRUE | FALSE)

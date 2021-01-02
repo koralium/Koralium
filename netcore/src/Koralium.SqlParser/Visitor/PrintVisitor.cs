@@ -472,5 +472,11 @@ namespace Koralium.SqlParser.Visitor
             var text = VisitPop(castExpression.ScalarExpression);
             Push($"CAST({text} AS {castExpression.ToType})");
         }
+
+        public override void VisitNotExpression(NotExpression notExpression)
+        {
+            var text = VisitPop(notExpression.BooleanExpression);
+            Push($"NOT ({text})");
+        }
     }
 }
