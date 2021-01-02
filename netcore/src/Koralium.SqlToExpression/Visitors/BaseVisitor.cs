@@ -79,6 +79,12 @@ namespace Koralium.SqlToExpression.Visitors
             AddNameToStack("null");
         }
 
+        public override void VisitBooleanLiteral(BooleanLiteral booleanLiteral)
+        {
+            AddExpressionToStack(Expression.Constant(booleanLiteral.Value));
+            AddNameToStack("bool");
+        }
+
         public override void VisitColumnReference(ColumnReference columnReference)
         {
             

@@ -19,23 +19,22 @@ namespace Koralium.Transport.Json.Encoders
 {
     public class ObjectEncoder : IJsonEncoder
     {
-        private readonly JsonEncodedText _name;
         private readonly Func<object, object> _getFunc;
         private readonly IJsonEncoder[] _childEncoders;
+        private readonly JsonEncodedText[] _names;
         public ObjectEncoder(Column column)
         {
-            _name = JsonEncodedText.Encode(column.Name);
             _getFunc = column.GetFunction;
 
             _childEncoders = new IJsonEncoder[column.Children.Count];
+            _names = new JsonEncodedText[column.Children.Count];
 
             for(int i = 0; i < column.Children.Count; i++)
             {
                 _childEncoders[i] = EncoderHelper.GetEncoder(column.Children[i]);
+                _names[i] = JsonEncodedText.Encode(column.Children[i].Name);
             }
         }
-
-        JsonEncodedText IJsonEncoder.PropertyName => _name;
 
         Func<object, object> IJsonEncoder.GetValueFunc => _getFunc;
 
@@ -45,14 +44,15 @@ namespace Koralium.Transport.Json.Encoders
 
             if(val == null)
             {
-                utf8JsonWriter.WriteNull(_name);
+                utf8JsonWriter.WriteNullValue();
             }
             else
             {
-                utf8JsonWriter.WriteStartObject(_name);
+                utf8JsonWriter.WriteStartObject();
 
                 for(int i = 0; i < _childEncoders.Length; i++)
                 {
+                    utf8JsonWriter.WritePropertyName(_names[i]);
                     _childEncoders[i].Encode(in utf8JsonWriter, val);
                 }
 

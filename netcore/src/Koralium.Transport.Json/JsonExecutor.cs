@@ -59,10 +59,12 @@ namespace Koralium.Transport.Json
             var responseStream = new System.Text.Json.Utf8JsonWriter(context.Response.Body);
 
             IJsonEncoder[] encoders = new IJsonEncoder[result.Columns.Count];
+            JsonEncodedText[] names = new JsonEncodedText[result.Columns.Count];
 
             for (int i = 0; i < encoders.Length; i++)
             {
                 encoders[i] = EncoderHelper.GetEncoder(result.Columns[i]);
+                names[i] = JsonEncodedText.Encode(result.Columns[i].Name);
             }
 
             System.Diagnostics.Stopwatch encodingWatch = new System.Diagnostics.Stopwatch();
@@ -75,6 +77,7 @@ namespace Koralium.Transport.Json
                 responseStream.WriteStartObject();
                 for (int i = 0; i < encoders.Length; i++)
                 {
+                    responseStream.WritePropertyName(names[i]);
                     encoders[i].Encode(in responseStream, in row);
                 }
                 responseStream.WriteEndObject();

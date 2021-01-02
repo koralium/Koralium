@@ -22,25 +22,19 @@ namespace Koralium.Transport.Json.Encoders
 {
     public class ListEncoder : IJsonEncoder
     {
-        private readonly JsonEncodedText _name;
         private readonly Func<object, object> _getFunc;
         private readonly IJsonEncoder _childEncoder;
 
         public ListEncoder(Column column)
         {
-            _name = JsonEncodedText.Encode(column.Name);
             _getFunc = column.GetFunction;
 
             Debug.Assert(column.Children.Count == 1);
 
             var child = column.Children.First();
 
-            var listChildColumn = new Column(child.Name, child.Type, x => x, child.Children, child.ColumnType, child.IsNullable);
-
-            _childEncoder = EncoderHelper.GetEncoder(listChildColumn);
+            _childEncoder = EncoderHelper.GetEncoder(child);
         }
-
-        JsonEncodedText IJsonEncoder.PropertyName => _name;
 
         Func<object, object> IJsonEncoder.GetValueFunc => _getFunc;
 
@@ -50,13 +44,13 @@ namespace Koralium.Transport.Json.Encoders
 
             if(val == null)
             {
-                utf8JsonWriter.WriteNull(_name);
+                utf8JsonWriter.WriteNullValue();
             }
             else
             {
                 var enumerable = val as IEnumerable;
 
-                utf8JsonWriter.WriteStartArray(_name);
+                utf8JsonWriter.WriteStartArray();
 
                 foreach(var o in enumerable)
                 {

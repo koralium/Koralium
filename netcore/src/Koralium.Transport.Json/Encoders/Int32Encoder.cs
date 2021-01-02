@@ -23,7 +23,7 @@ namespace Koralium.Transport.Json.Encoders
 
         private protected override void WriteValue(in Utf8JsonWriter writer, in object val)
         {
-            writer.WriteNumber(_name, (int)val);
+            writer.WriteNumberValue((int)val);
         }
     }
 }
