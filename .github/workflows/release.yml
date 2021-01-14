@@ -108,7 +108,7 @@ jobs:
       id: publish_nuget_json
       uses: rohith/publish-nuget@v2
       with:
-        PROJECT_FILE_PATH: netcore/src/Koralium.Json/Koralium.Json.csproj
+        PROJECT_FILE_PATH: netcore/src/Koralium.Transport.Json/Koralium.Transport.Json.csproj
         PACKAGE_NAME: Koralium.Json
         NUGET_KEY: ${{ secrets.NUGET_KEY }}
         TAG_COMMIT: false
@@ -131,5 +131,31 @@ jobs:
         NUGET_KEY: ${{ secrets.NUGET_KEY }}
         TAG_COMMIT: false
         VERSION_STATIC: ${{ steps.tag.outputs.VERSION }}
-
+    - name: publish Core
+      id: publish_nuget_koralium_core
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: netcore/src/Koralium.Core/Koralium.Core.csproj
+        PACKAGE_NAME: Koralium.SqlParser.ANTLR
+        NUGET_KEY: ${{ secrets.NUGET_KEY }}
+        TAG_COMMIT: false
+        VERSION_STATIC: ${{ steps.tag.outputs.VERSION }}
+    - name: publish Transport
+      id: publish_nuget_koralium_transport
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: netcore/src/Koralium.Transport/Koralium.Transport.csproj
+        PACKAGE_NAME: Koralium.SqlParser.ANTLR
+        NUGET_KEY: ${{ secrets.NUGET_KEY }}
+        TAG_COMMIT: false
+        VERSION_STATIC: ${{ steps.tag.outputs.VERSION }}
+    - name: publish Transport Arrow Flight
+      id: publish_nuget_koralium_transport_arrowflight
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: netcore/src/Koralium.Transport.ArrowFlight/Koralium.Transport.ArrowFlight.csproj
+        PACKAGE_NAME: Koralium.SqlParser.ANTLR
+        NUGET_KEY: ${{ secrets.NUGET_KEY }}
+        TAG_COMMIT: false
+        VERSION_STATIC: ${{ steps.tag.outputs.VERSION }}
 
