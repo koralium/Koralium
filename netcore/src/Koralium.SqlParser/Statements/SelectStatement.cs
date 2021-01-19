@@ -15,6 +15,7 @@ using Koralium.SqlParser.Clauses;
 using Koralium.SqlParser.Expressions;
 using Koralium.SqlParser.Statements;
 using Koralium.SqlParser.Visitor;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -61,6 +62,41 @@ namespace Koralium.SqlParser
                 SelectElements = SelectElements?.Select(x => x.Clone() as SelectExpression).ToList(),
                 WhereClause = WhereClause?.Clone() as WhereClause
             };
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = new HashCode();
+            hashCode.Add(Distinct);
+            hashCode.Add(FromClause);
+            hashCode.Add(WhereClause);
+            hashCode.Add(GroupByClause);
+            hashCode.Add(HavingClause);
+            hashCode.Add(OrderByClause);
+            hashCode.Add(OffsetLimitClause);
+            
+            foreach(var selectElement in SelectElements)
+            {
+                hashCode.Add(selectElement);
+            }
+
+            return hashCode.ToHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is SelectStatement other)
+            {
+                return Equals(Distinct, other.Distinct) &&
+                    Equals(FromClause, other.FromClause) &&
+                    Equals(WhereClause, other.WhereClause) &&
+                    Equals(GroupByClause, other.GroupByClause) &&
+                    Equals(HavingClause, other.HavingClause) &&
+                    Equals(OrderByClause, other.OrderByClause) &&
+                    Equals(OffsetLimitClause, other.OffsetLimitClause) &&
+                    SelectElements.AreEqual(other.SelectElements);
+            }
+            return false;
         }
     }
 }

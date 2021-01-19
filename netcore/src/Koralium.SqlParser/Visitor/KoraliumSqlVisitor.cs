@@ -39,7 +39,7 @@ namespace Koralium.SqlParser.Visitor
 
             foreach(var sqlNode in sqlNodes)
             {
-                sqlNode.Accept(this);
+                Visit(sqlNode);
             }
         }
 

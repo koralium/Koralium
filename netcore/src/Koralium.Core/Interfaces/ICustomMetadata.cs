@@ -12,9 +12,9 @@
  * limitations under the License.
  */
 
-namespace Koralium.Interfaces
+namespace Koralium
 {
-    public interface ICustomMetadataStore
+    public interface ICustomMetadata
     {
         void AddMetadata<T>(string name, T value);
     }

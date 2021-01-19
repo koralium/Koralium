@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.SqlParser.Visitor;
+using System;
 
 namespace Koralium.SqlParser.OrderBy
 {
@@ -31,6 +32,21 @@ namespace Koralium.SqlParser.OrderBy
                 Ascending = Ascending,
                 SelectStatement = SelectStatement.Clone() as SelectStatement
             };
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(SelectStatement, Ascending);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is OrderBySubquery other)
+            {
+                return Equals(SelectStatement, other.SelectStatement) &&
+                    Equals(Ascending, other.Ascending);
+            }
+            return false;
         }
     }
 }

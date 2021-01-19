@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.SqlParser.Visitor;
+using System;
 
 namespace Koralium.SqlParser.Expressions
 {
@@ -28,6 +29,20 @@ namespace Koralium.SqlParser.Expressions
             {
                 Alias = Alias
             };
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Alias);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is SelectStarExpression other)
+            {
+                return Equals(Alias, other.Alias);
+            }
+            return false;
         }
     }
 }

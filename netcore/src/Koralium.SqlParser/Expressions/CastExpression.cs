@@ -37,5 +37,20 @@ namespace Koralium.SqlParser.Expressions
                 ToType = ToType
             };
         }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(ScalarExpression, ToType);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is CastExpression other)
+            {
+                return Equals(ScalarExpression, other.ScalarExpression) &&
+                    Equals(ToType, other.ToType);
+            }
+            return false;
+        }
     }
 }

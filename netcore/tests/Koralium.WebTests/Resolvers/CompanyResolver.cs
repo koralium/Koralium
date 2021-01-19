@@ -11,6 +11,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.Interfaces;
+using Koralium.SqlToExpression;
 using Koralium.WebTests.Entities;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +21,7 @@ namespace Koralium.WebTests.Resolvers
 {
     public class CompanyResolver : TableResolver<Company>
     {
-        protected override Task<IQueryable<Company>> GetQueryableData()
+        protected override Task<IQueryable<Company>> GetQueryableData(IQueryOptions<Company> queryOptions, ICustomMetadata customMetadata)
         {
             return Task.FromResult(TestData.GetCompanies());
         }

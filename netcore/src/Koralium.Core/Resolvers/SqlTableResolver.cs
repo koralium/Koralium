@@ -31,7 +31,7 @@ namespace Koralium.Resolvers
             _metadataStore = metadataStore;
         }
 
-        public async ValueTask<IQueryable> ResolveTableName(string name, object additionalData, SqlToExpression.IQueryOptions queryOptions)
+        public async ValueTask<IQueryable> ResolveTableName(string name, object additionalData, IQueryOptions queryOptions)
         {
             if(!(additionalData is TableResolverData tableResolverData))
             {

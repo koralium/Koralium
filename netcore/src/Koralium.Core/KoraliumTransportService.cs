@@ -30,6 +30,7 @@ using Koralium.SqlParser.Statements;
 using Koralium.SqlParser.Literals;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using Koralium.Core.RowLevelSecurity;
 
 namespace Koralium
 {
@@ -87,9 +88,20 @@ namespace Koralium
                     sqlParameters.Add(SqlParameter.Create(parameterName, value));
                 }
             }
+            //Parse the sql
+            var sqlTree = _sqlParser.Parse(sql, out var errors);
+
+            //Check for parsing errors
+            if (errors.Count > 0)
+            {
+                throw new SqlErrorException(errors.First().Message);
+            }
+
+            //Apply the row level security filter on the query
+            await RowLevelSecurityHelper.ApplyRowLevelSecurity(sqlTree, httpContext, _metadataStore, _serviceProvider);
 
             CustomMetadataStore customMetadataStore = new CustomMetadataStore();
-            var result = await _sqlExecutor.Execute(sql, sqlParameters, new TableResolverData(
+            var result = await _sqlExecutor.Execute(sqlTree, sqlParameters, new TableResolverData(
                 httpContext, 
                 _serviceProvider, 
                 customMetadataStore)).ConfigureAwait(false);
@@ -167,6 +179,9 @@ namespace Koralium
             {
                 throw new SqlErrorException(errors.First().Message);
             }
+
+            //Apply the row level security filter on the query
+            await RowLevelSecurityHelper.ApplyRowLevelSecurity(sqlTree, httpContext, _metadataStore, _serviceProvider);
 
             var schema = _sqlExecutor.GetSchema(sqlTree, sqlParameters);
 

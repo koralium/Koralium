@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.SqlParser.Visitor;
+using System;
 
 namespace Koralium.SqlParser.From
 {
@@ -31,6 +32,20 @@ namespace Koralium.SqlParser.From
                 Alias = Alias,
                 SelectStatement = SelectStatement.Clone() as SelectStatement
             };
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(SelectStatement);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Subquery other)
+            {
+                return Equals(SelectStatement, other.SelectStatement);
+            }
+            return false;
         }
     }
 }

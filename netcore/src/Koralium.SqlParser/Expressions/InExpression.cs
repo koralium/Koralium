@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.SqlParser.Visitor;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -46,6 +47,30 @@ namespace Koralium.SqlParser.Expressions
                 Not = Not,
                 Values = Values.Select(x => x.Clone() as ScalarExpression).ToList()
             };
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = new HashCode();
+            hashCode.Add(Not);
+            hashCode.Add(Expression);
+
+            foreach (var value in Values)
+            {
+                hashCode.Add(value);
+            }
+            return hashCode.ToHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is InExpression other)
+            {
+                return Equals(Not, other.Not) &&
+                    Equals(Expression, other.Expression) &&
+                    Values.AreEqual(other.Values);
+            }
+            return false;
         }
     }
 }

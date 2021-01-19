@@ -13,6 +13,7 @@
  */
 using Koralium.SqlParser.Expressions;
 using Koralium.SqlParser.Visitor;
+using System;
 
 namespace Koralium.SqlParser.Statements
 {
@@ -34,6 +35,21 @@ namespace Koralium.SqlParser.Statements
                 ScalarExpression = ScalarExpression.Clone() as ScalarExpression,
                 VariableReference = VariableReference.Clone() as VariableReference
             };
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(VariableReference);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is SetVariableStatement other)
+            {
+                return Equals(VariableReference, other.VariableReference) &&
+                    Equals(ScalarExpression, other.ScalarExpression);
+            }
+            return false;
         }
     }
 }

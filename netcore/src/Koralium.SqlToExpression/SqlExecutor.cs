@@ -138,5 +138,15 @@ namespace Koralium.SqlToExpression
 
             return _queryExecutor.Execute(executeStages, data);
         }
+
+        public ValueTask<QueryResult> Execute(StatementList statementList, SqlParameters parameters = null, object data = null)
+        {
+            var stages = GetStages(statementList, parameters);
+
+            //Convert into execute stages
+            var executeStages = _stageConverter.Convert(stages);
+
+            return _queryExecutor.Execute(executeStages, data);
+        }
     }
 }

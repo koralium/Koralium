@@ -15,7 +15,7 @@ using Koralium.Shared;
 using System;
 using System.Linq.Expressions;
 
-namespace Koralium.SqlToExpression
+namespace Koralium
 {
     public interface IQueryOptions
     {

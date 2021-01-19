@@ -13,6 +13,7 @@
  */
 using Koralium.SqlParser.GroupBy;
 using Koralium.SqlParser.Visitor;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -38,6 +39,25 @@ namespace Koralium.SqlParser.Clauses
             {
                 Groups = Groups.Select(x => x.Clone() as Group).ToList()
             };
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = new HashCode();
+            foreach (var g in Groups)
+            {
+                hashCode.Add(g);
+            }
+            return hashCode.ToHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is GroupByClause other)
+            {
+                return Groups.AreEqual(other.Groups);
+            }
+            return false;
         }
     }
 }

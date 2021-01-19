@@ -13,6 +13,7 @@
  */
 using Koralium.SqlParser.Expressions;
 using Koralium.SqlParser.Visitor;
+using System;
 
 namespace Koralium.SqlParser.Clauses
 {
@@ -34,6 +35,21 @@ namespace Koralium.SqlParser.Clauses
                 Limit = Limit?.Clone() as ScalarExpression,
                 Offset = Offset?.Clone() as ScalarExpression
             };
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Offset, Limit);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is OffsetLimitClause other)
+            {
+                return Equals(Offset, other.Offset) &&
+                    Equals(Limit, other.Limit);
+            }
+            return false;
         }
     }
 }

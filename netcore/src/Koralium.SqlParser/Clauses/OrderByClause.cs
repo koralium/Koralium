@@ -13,6 +13,7 @@
  */
 using Koralium.SqlParser.OrderBy;
 using Koralium.SqlParser.Visitor;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -38,6 +39,25 @@ namespace Koralium.SqlParser.Clauses
             {
                 OrderExpressions = OrderExpressions.Select(x => x.Clone() as OrderElement).ToList()
             };
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = new HashCode();
+            foreach (var o in OrderExpressions)
+            {
+                hashCode.Add(o);
+            }
+            return hashCode.ToHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is OrderByClause other)
+            {
+                return OrderExpressions.AreEqual(other.OrderExpressions);
+            }
+            return false;
         }
     }
 }

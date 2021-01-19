@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.SqlParser.Visitor;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -32,6 +33,27 @@ namespace Koralium.SqlParser.Statements
             {
                 Statements = Statements.Select(x => x.Clone() as Statement).ToList()
             };
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = new HashCode();
+
+            foreach(var statement in Statements)
+            {
+                hashCode.Add(statement);
+            }
+
+            return hashCode.ToHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is StatementList other)
+            {
+                return Statements.AreEqual(other.Statements);
+            }
+            return false;
         }
     }
 }

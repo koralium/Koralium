@@ -11,6 +11,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.Interfaces;
+using Koralium.SqlToExpression;
 using Koralium.WebTests.Entities;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +22,7 @@ namespace Koralium.WebTests.Resolvers
 {
     public class EmptyResolver : TableResolver<Empty>
     {
-        protected override async Task<IQueryable<Empty>> GetQueryableData()
+        protected override async Task<IQueryable<Empty>> GetQueryableData(IQueryOptions<Empty> queryOptions, ICustomMetadata customMetadata)
         {
             return new List<Empty>().AsQueryable();
         }

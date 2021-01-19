@@ -13,6 +13,7 @@
  */
 using Koralium.SqlParser.Expressions;
 using Koralium.SqlParser.Visitor;
+using System;
 
 namespace Koralium.SqlParser.OrderBy
 {
@@ -32,6 +33,21 @@ namespace Koralium.SqlParser.OrderBy
                 Ascending = Ascending,
                 Expression = Expression.Clone() as ScalarExpression
             };
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Expression, Ascending);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is OrderExpression other)
+            {
+                return Equals(Expression, other.Expression) &&
+                    Equals(Ascending, other.Ascending);
+            }
+            return false;
         }
     }
 }

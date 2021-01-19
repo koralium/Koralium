@@ -11,6 +11,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.Interfaces;
+using Koralium.SqlToExpression;
 using Koralium.WebTests.Entities.tpch;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,7 +27,7 @@ namespace Koralium.WebTests.Resolvers.tpch
             _tpchData = tpchData;
         }
 
-        protected override Task<IQueryable<Nation>> GetQueryableData()
+        protected override Task<IQueryable<Nation>> GetQueryableData(IQueryOptions<Nation> queryOptions, ICustomMetadata customMetadata)
         {
             return Task.FromResult(_tpchData.Nation.AsQueryable());
         }
