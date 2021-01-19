@@ -143,6 +143,12 @@ public class RedisCoordinatorQueryCache
             }
         }
 
+        //If no block could be found, the cache must be emtpy, reset the size.
+        if (block == null) {
+            totalSize = 0;
+            return;
+        }
+
         entries.remove(block.getQuery());
 
         //Get the entry in redis
