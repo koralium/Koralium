@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.SqlParser.Visitor;
+using System;
 
 namespace Koralium.SqlParser.Expressions
 {
@@ -31,6 +32,21 @@ namespace Koralium.SqlParser.Expressions
                 Alias = Alias,
                 Expression = Expression.Clone() as ScalarExpression
             };
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Expression);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is SelectScalarExpression other)
+            {
+                return Equals(Expression, other.Expression) &&
+                    Equals(Alias, other.Alias);
+            }
+            return false;
         }
     }
 }

@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.SqlParser.Visitor;
+using System;
 
 namespace Koralium.SqlParser.Literals
 {
@@ -35,6 +36,20 @@ namespace Koralium.SqlParser.Literals
         public override object GetValue()
         {
             return Value;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Value);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is NumericLiteral other)
+            {
+                return Equals(Value, other.Value);
+            }
+            return false;
         }
     }
 }

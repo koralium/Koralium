@@ -13,6 +13,7 @@
  */
 using Koralium.SqlParser.Expressions;
 using Koralium.SqlParser.Visitor;
+using System;
 
 namespace Koralium.SqlParser.Clauses
 {
@@ -31,6 +32,20 @@ namespace Koralium.SqlParser.Clauses
             {
                 Expression = Expression.Clone() as BooleanExpression
             };
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Expression);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is WhereClause other)
+            {
+                return Equals(Expression, other.Expression);
+            }
+            return false;
         }
     }
 }

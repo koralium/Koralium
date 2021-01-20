@@ -39,5 +39,19 @@ namespace Koralium.SqlParser.Literals
         {
             return Value;
         }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Value);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is BooleanLiteral other)
+            {
+                return Equals(Value, other.Value);
+            }
+            return false;
+        }
     }
 }

@@ -21,5 +21,19 @@ namespace Koralium.SqlParser.Expressions
                 BooleanExpression = BooleanExpression.Clone() as BooleanExpression
             };
         }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(BooleanExpression);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is NotExpression other)
+            {
+                return Equals(BooleanExpression, other.BooleanExpression);
+            }
+            return false;
+        }
     }
 }

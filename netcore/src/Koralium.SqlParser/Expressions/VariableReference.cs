@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.SqlParser.Visitor;
+using System;
 
 namespace Koralium.SqlParser.Expressions
 {
@@ -30,6 +31,20 @@ namespace Koralium.SqlParser.Expressions
             {
                 Name = Name
             };
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Name);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is VariableReference other)
+            {
+                return Equals(Name, other.Name);
+            }
+            return false;
         }
     }
 }

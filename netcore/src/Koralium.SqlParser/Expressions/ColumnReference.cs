@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.SqlParser.Visitor;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -37,6 +38,26 @@ namespace Koralium.SqlParser.Expressions
         public ColumnReference()
         {
             Identifiers = new List<string>();
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = new HashCode();
+
+            foreach(var identifier in Identifiers)
+            {
+                hashCode.Add(identifier);
+            }
+            return hashCode.ToHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is ColumnReference other)
+            {
+                return Identifiers.AreEqualCaseInsensitive(other.Identifiers);
+            }
+            return false;
         }
     }
 }

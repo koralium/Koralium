@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.SqlParser.Visitor;
+using System;
 
 namespace Koralium.SqlParser.GroupBy
 {
@@ -30,6 +31,20 @@ namespace Koralium.SqlParser.GroupBy
             {
                 SelectStatement = SelectStatement.Clone() as SelectStatement
             };
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(SelectStatement);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is SelectStatementGroup other)
+            {
+                return Equals(SelectStatement, other.SelectStatement);
+            }
+            return false;
         }
     }
 }

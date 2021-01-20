@@ -25,16 +25,16 @@ namespace Koralium.WebTests.Resolvers.tpch
             _tpchData = tpchData;
         }
 
-        protected override Task<IQueryable<Order>> GetQueryableData()
+        protected override Task<IQueryable<Order>> GetQueryableData(IQueryOptions<Order> queryOptions, ICustomMetadata customMetadata)
         {
-            if(QueryOptions.Parameters.TryGetParameter("p1", out var parameter))
+            if(queryOptions.Parameters.TryGetParameter("p1", out var parameter))
             {
                 if(parameter.TryGetValue<int>(out var stringValue))
                 {
                     return Task.FromResult(_tpchData.Orders.AsQueryable().Where(x => x.Custkey == 1));
                 }
             }
-            AddCustomMetadata("test", "hello");
+            customMetadata.AddMetadata("test", "hello");
             return Task.FromResult(_tpchData.Orders.AsQueryable());
         }
     }

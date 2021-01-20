@@ -16,7 +16,7 @@ using System.Collections.Generic;
 
 namespace Koralium
 {
-    internal class CustomMetadataStore : ICustomMetadataStore
+    internal class CustomMetadataStore : ICustomMetadata
     {
         private Dictionary<string, object> values = new Dictionary<string, object>();
         public void AddMetadata<T>(string name, T value)

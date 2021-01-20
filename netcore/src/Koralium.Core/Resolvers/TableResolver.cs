@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.Interfaces;
+using Koralium.SqlParser.Expressions;
 using Koralium.SqlToExpression;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
@@ -22,37 +23,41 @@ namespace Koralium
 {
     public abstract class TableResolver<T> : ITableResolver
     {
-        private ICustomMetadataStore _customMetadataStore;
-
         protected HttpContext HttpContext { get; private set; }
 
-        protected IQueryOptions<T> QueryOptions { get; private set; }
+        protected abstract Task<IQueryable<T>> GetQueryableData(IQueryOptions<T> queryOptions, ICustomMetadata customMetadata);
 
         /// <summary>
-        /// Add custom metadata that will be returned to the caller
+        /// Override to create an expression given the current user in the http context that will limit the users visibility.
         /// 
-        /// This is useful to provide information such as total results if that is already collected from the backend database.
+        /// This does not contain query information since it can be called standalone without a query.
         /// </summary>
-        /// <typeparam name="T">Must be a primitive or string</typeparam>
-        /// <param name="name">Name of the custom metadata</param>
-        /// <param name="value">The value of the custom metadata</param>
-        protected void AddCustomMetadata<T>(string name, T value)
+        /// <param name="builder"></param>
+        /// <returns></returns>
+        protected virtual Task ApplyRowLevelSecurity(RowLevelSecurityContext<T> context)
         {
-            _customMetadataStore.AddMetadata<T>(name, value);
+            return Task.CompletedTask;
         }
 
-        public async Task<IQueryable> GetQueryable(
-            HttpContext httpContext, 
-            IQueryOptions queryOptions,
-            ICustomMetadataStore customMetadataStore)
+        async Task<BooleanExpression> ITableResolver.GetRowLevelSecurity(HttpContext httpContext)
+        {
+            HttpContext = httpContext;
+
+            //Create the builder
+            var builder = RowLevelSecurityContext.Create<T>();
+
+            //Allow user to add their expressions
+            await ApplyRowLevelSecurity(builder);
+
+            //Build the sql tree with the expressions
+            return builder.Build();
+        }
+
+        async Task<IQueryable> ITableResolver.GetQueryable(HttpContext httpContext, IQueryOptions queryOptions, ICustomMetadata customMetadataStore)
         {
             var genericQueryOptions = queryOptions.CreateGeneric<T>();
             HttpContext = httpContext;
-            QueryOptions = genericQueryOptions;
-            _customMetadataStore = customMetadataStore;
-            return await GetQueryableData();
+            return await GetQueryableData(genericQueryOptions, customMetadataStore);
         }
-
-        protected abstract Task<IQueryable<T>> GetQueryableData();
     }
 }

@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.SqlParser.Expressions;
 using Koralium.SqlToExpression;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
@@ -21,9 +22,11 @@ namespace Koralium.Interfaces
 {
     public interface ITableResolver
     {
-        Task<IQueryable> GetQueryable(
+        internal Task<IQueryable> GetQueryable(
             HttpContext httpContext, 
             IQueryOptions queryOptions,
-            ICustomMetadataStore customMetadataStore);
+            ICustomMetadata customMetadataStore);
+
+        internal Task<BooleanExpression> GetRowLevelSecurity(HttpContext httpContext);
     }
 }

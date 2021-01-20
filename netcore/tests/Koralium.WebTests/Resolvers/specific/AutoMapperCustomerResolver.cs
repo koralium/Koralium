@@ -12,6 +12,8 @@
  * limitations under the License.
  */
 using AutoMapper;
+using Koralium.Interfaces;
+using Koralium.SqlToExpression;
 using Koralium.WebTests.Database;
 using Koralium.WebTests.Entities.specific;
 using Koralium.WebTests.Entities.tpch;
@@ -33,7 +35,7 @@ namespace Koralium.WebTests.Resolvers.specific
             }).CreateMapper();
         }
 
-        protected override Task<IQueryable<AutoMapperCustomer>> GetQueryableData()
+        protected override Task<IQueryable<AutoMapperCustomer>> GetQueryableData(IQueryOptions<AutoMapperCustomer> queryOptions, ICustomMetadata customMetadata)
         {
             return Task.FromResult(_mapper.ProjectTo<AutoMapperCustomer>(_testContext.Customers));
         }

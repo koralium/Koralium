@@ -27,5 +27,21 @@ namespace Koralium.SqlParser.Expressions
                 To = To.Clone() as ScalarExpression
             };
         }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Expression, From, To);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is BetweenExpression other)
+            {
+                return Equals(Expression, other.Expression) &&
+                    Equals(From, other.From) &&
+                    Equals(To, other.To);
+            }
+            return false;
+        }
     }
 }

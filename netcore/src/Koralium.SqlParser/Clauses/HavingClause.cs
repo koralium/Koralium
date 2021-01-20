@@ -32,5 +32,19 @@ namespace Koralium.SqlParser.Clauses
                 Expression = Expression.Clone() as BooleanExpression
             };
         }
+
+        public override int GetHashCode()
+        {
+            return Expression.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is HavingClause other)
+            {
+                return Equals(Expression, other.Expression);
+            }
+            return false;
+        }
     }
 }

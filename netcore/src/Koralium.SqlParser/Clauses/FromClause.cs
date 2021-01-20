@@ -32,5 +32,19 @@ namespace Koralium.SqlParser.Clauses
                 TableReference = TableReference.Clone() as TableReference
             };
         }
+
+        public override int GetHashCode()
+        {
+            return TableReference.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is FromClause other)
+            {
+                return Equals(TableReference, other.TableReference);
+            }
+            return false;
+        }
     }
 }
