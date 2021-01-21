@@ -1,0 +1,21 @@
+﻿syntax = "proto3";
+
+
+option csharp_namespace = "Koralium.Transport.RowLevelSecurity";
+
+service KoraliumRowLevelSecurity {
+    rpc GetRowLevelSecurityFilter (RowLevelSecurityRequest) returns (RowLevelSecurityResponse);
+}
+
+message RowLevelSecurityRequest {
+
+    // Table name to get row level security filter for
+    string tableName = 1;
+    
+    // Optional table alias that will be appended before each column name
+    string tableAlias = 2;
+}
+
+message RowLevelSecurityResponse {
+    string sqlFilter = 1;
+}
