@@ -1,16 +1,16 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Protos\koralium.proto" />
+    <None Remove="Protos\RowLevelSecurityService.proto" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.14.0" />
-    <PackageReference Include="Grpc.Core" Version="2.34.1" />
+    <PackageReference Include="Grpc.AspNetCore.Server" Version="2.34.0" />
     <PackageReference Include="Grpc.Tools" Version="2.34.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -18,7 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\koralium.proto" />
+    <ProjectReference Include="..\Koralium.Transport\Koralium.Transport.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Protos\RowLevelSecurityService.proto" />
   </ItemGroup>
 
 </Project>

@@ -28,9 +28,16 @@ namespace Koralium.WebTests.Resolvers
         {
             _tpchData = tpchData;
         }
+
         protected override Task<IQueryable<Order>> GetQueryableData(IQueryOptions<Order> queryOptions, ICustomMetadata customMetadata)
         {
             return Task.FromResult(_tpchData.Orders.AsQueryable());
+        }
+
+        protected override Task ApplyRowLevelSecurity(RowLevelSecurityContext<Order> context)
+        {
+            context.AddFilter(x => x.Custkey > 10 && x.Custkey < 100);
+            return Task.CompletedTask;
         }
     }
 }

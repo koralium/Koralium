@@ -31,6 +31,8 @@ using Koralium.SqlParser.Literals;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Koralium.Core.RowLevelSecurity;
+using Koralium.Shared.Extensions.Logging;
+using Koralium.Core.Utils;
 
 namespace Koralium
 {
@@ -99,6 +101,9 @@ namespace Koralium
 
             //Apply the row level security filter on the query
             await RowLevelSecurityHelper.ApplyRowLevelSecurity(sqlTree, httpContext, _metadataStore, _serviceProvider);
+
+            //Only calculate the sql after the row level security if logging level is debug
+            _logger.LogConditionally(LogLevel.Debug, logger => logger.LogDebug($"Sql after row level security: {sqlTree.Print()}"));
 
             CustomMetadataStore customMetadataStore = new CustomMetadataStore();
             var result = await _sqlExecutor.Execute(sqlTree, sqlParameters, new TableResolverData(
@@ -249,6 +254,27 @@ namespace Koralium
                 builder.Add(new Table(table.Name));
             }
             return builder.ToImmutable();
+        }
+
+        public async Task<string> GetTableRowLevelSecurityFilter(string tableName, string tableAlias, HttpContext httpContext)
+        {
+            if (!_metadataStore.TryGetTable(tableName, out var table))
+            {
+                throw new SqlErrorException($"Table '{tableName}' does not exist.");
+            }
+
+            //Check that the user is authorized to access this table
+            //This is required since the calling service must know if the user is not actually authorized, if it has cached the data elsewhere.
+            await AuthorizationHelper.CheckAuthorization(_serviceProvider, table.SecurityPolicy, httpContext);
+
+            var filter = await RowLevelSecurityHelper.GetRowLevelSecurityQuery(table, httpContext, _metadataStore, _serviceProvider, tableAlias);
+
+            if (filter != null)
+            {
+                return filter.Print();
+            }
+
+            return string.Empty;
         }
     }
 }

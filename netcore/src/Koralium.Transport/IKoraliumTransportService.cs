@@ -41,5 +41,12 @@ namespace Koralium.Transport
         IImmutableList<Table> GetTables();
 
         Task<TransportPartitionsResult> GetPartitions(bool canHandlePartitions, string sql, SqlParameters sqlParameters, HttpContext httpContext);
+
+        /// <summary>
+        /// Retrieves the filter that should be applied to a query based on the current user
+        /// </summary>
+        /// <param name="tableName">The table to retrieve the filters for</param>
+        /// <returns></returns>
+        Task<string> GetTableRowLevelSecurityFilter(string tableName, string tableAlias, HttpContext httpContext);
     }
 }

@@ -12,8 +12,10 @@
  * limitations under the License.
  */
 using Grpc.Core;
+using Koralium.Core.Utils;
 using Koralium.Interfaces;
 using Koralium.Models;
+using Koralium.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,7 +42,7 @@ namespace Koralium.Resolvers
 
             if(_metadataStore.TryGetTable(name, out var table))
             {
-                await CheckAuthorization(tableResolverData.ServiceProvider, table.SecurityPolicy, tableResolverData.HttpContext);
+                await AuthorizationHelper.CheckAuthorization(tableResolverData.ServiceProvider, table.SecurityPolicy, tableResolverData.HttpContext);
 
                 var resolver = (ITableResolver)tableResolverData.ServiceProvider.GetRequiredService(table.Resolver);
 
@@ -49,38 +51,7 @@ namespace Koralium.Resolvers
             else
             {
                 //TODO: Fix exceptions
-                throw new Exception();
-            }
-        }
-
-        private async Task CheckAuthorization(IServiceProvider serviceProvider, string securityPolicy, HttpContext context)
-        {
-            //Check authentication and authorization
-            if (securityPolicy != null)
-            {
-                var authorizationPolicyProvider = serviceProvider.GetRequiredService<IAuthorizationPolicyProvider>();
-                var authorizationHandlerProvider = serviceProvider.GetRequiredService<IAuthorizationHandlerProvider>();
-                var user = context.User;
-                AuthorizationPolicy policy = null;
-                if (securityPolicy.Equals("default"))
-                {
-                    policy = await authorizationPolicyProvider.GetDefaultPolicyAsync();
-                }
-                else
-                {
-                    policy = await authorizationPolicyProvider.GetPolicyAsync(securityPolicy);
-                }
-                var authContext = new AuthorizationHandlerContext(policy.Requirements, user, null);
-                var authHandlers = await authorizationHandlerProvider.GetHandlersAsync(authContext);
-
-                foreach (var authHandler in authHandlers)
-                {
-                    await authHandler.HandleAsync(authContext);
-                }
-                if (!authContext.HasSucceeded)
-                {
-                    throw new RpcException(new Status(StatusCode.Unauthenticated, "Authorization failed"));
-                }
+                throw new SqlErrorException($"Table {name} does not exist");
             }
         }
     }

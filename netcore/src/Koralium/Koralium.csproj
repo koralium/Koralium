@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -8,6 +8,7 @@
     <ProjectReference Include="..\Koralium.Core\Koralium.Core.csproj" />
     <ProjectReference Include="..\Koralium.Transport.ArrowFlight\Koralium.Transport.ArrowFlight.csproj" />
     <ProjectReference Include="..\Koralium.Transport.Json\Koralium.Transport.Json.csproj" />
+    <ProjectReference Include="..\Koralium.Transport.RowLevelSecurity\Koralium.Transport.RowLevelSecurity.csproj" />
   </ItemGroup>
 
 </Project>
