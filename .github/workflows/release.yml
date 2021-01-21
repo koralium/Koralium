@@ -57,6 +57,32 @@ jobs:
       working-directory: typescript-client/json
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_KEY }}
+        
+  publishNpmRowLevelSecurity:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    # Setup .npmrc file to publish to npm
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+        registry-url: 'https://registry.npmjs.org'
+    - name: Extract tag name
+      id: tag
+      run: echo ::set-output name=VERSION::$(echo ${GITHUB_REF##*/v})
+    - run: npm install
+      working-directory: typescript-client/rowlevelsecurity
+    - name: Update package version
+      run: npm version ${PACKAGE_VERSION}
+      working-directory: typescript-client/rowlevelsecurity
+      env:
+        PACKAGE_VERSION: ${{ steps.tag.outputs.VERSION }}
+    - run: npm run-script build
+      working-directory: typescript-client/rowlevelsecurity
+    - run: npm publish --access public
+      working-directory: typescript-client/rowlevelsecurity
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_KEY }}
   
   publishNuget:
     runs-on: ubuntu-latest
