@@ -183,6 +183,7 @@ namespace Koralium.WebTests
                 endpoints.MapKoraliumJsonPost("sql");
                 endpoints.MapKoraliumJsonGet("sql");
                 endpoints.MapKoraliumArrowFlight();
+                endpoints.MapKoraliumRowLevelSecurityEndpoint();
 
                 endpoints.AddKoraliumLegacyGrpcEndpoint();
 

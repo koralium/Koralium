@@ -13,16 +13,40 @@ namespace Koralium.Core.RowLevelSecurity
 {
     internal static class RowLevelSecurityHelper
     {
-        public static Task<BooleanExpression> GetRowLevelSecurityQuery(string tableName, HttpContext httpContext, MetadataStore metadataStore, IServiceProvider serviceProvider)
+        public static Task<BooleanExpression> GetRowLevelSecurityQuery(
+            string tableName, 
+            HttpContext httpContext, 
+            MetadataStore metadataStore, 
+            IServiceProvider serviceProvider, 
+            string tableAlias = null)
         {
             if(!metadataStore.TryGetTable(tableName, out var table))
             {
                 throw new SqlErrorException($"Table {tableName} does not exist.");
             }
 
+            return GetRowLevelSecurityQuery(table, httpContext, metadataStore, serviceProvider, tableAlias);
+        }
+
+        public static async Task<BooleanExpression> GetRowLevelSecurityQuery(
+            KoraliumTable table,
+            HttpContext httpContext,
+            MetadataStore metadataStore,
+            IServiceProvider serviceProvider,
+            string tableAlias = null)
+        {
             var resolver = (ITableResolver)serviceProvider.GetRequiredService(table.Resolver);
 
-            return resolver.GetRowLevelSecurity(httpContext);
+            var filter = await resolver.GetRowLevelSecurity(httpContext);
+
+            //If there is a filter and table alias is set, add the tableAlias in front of all columns
+            if (filter != null && !string.IsNullOrEmpty(tableAlias))
+            {
+                var visitor = new AddAliasVisitor(tableAlias);
+                visitor.Visit(filter);
+            }
+
+            return filter;
         }
 
         public static async Task ApplyRowLevelSecurity(StatementList statementList, HttpContext httpContext, MetadataStore metadataStore, IServiceProvider serviceProvider)
@@ -36,7 +60,7 @@ namespace Koralium.Core.RowLevelSecurity
                 throw new SqlErrorException("Could not find any table in the select statement");
             }
 
-            var filter = await GetRowLevelSecurityQuery(tableName, httpContext, metadataStore, serviceProvider);
+            var filter = await GetRowLevelSecurityQuery(tableName, httpContext, metadataStore, serviceProvider, tableFinder.Alias);
 
             if (filter == null)
             {

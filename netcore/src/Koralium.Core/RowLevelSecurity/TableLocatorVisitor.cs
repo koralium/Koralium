@@ -13,10 +13,12 @@ namespace Koralium.Core.RowLevelSecurity
     class TableLocatorVisitor : KoraliumSqlVisitor
     {
         public string TableName { get; private set; }
+        public string Alias { get; private set; }
 
         public override void VisitFromTableReference(FromTableReference fromTableReference)
         {
             TableName = fromTableReference.TableName;
+            Alias = fromTableReference.Alias;
         }
 
         public override void VisitSelectStatement(SelectStatement selectStatement)
