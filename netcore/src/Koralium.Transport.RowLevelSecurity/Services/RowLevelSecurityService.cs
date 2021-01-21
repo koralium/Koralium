@@ -28,7 +28,7 @@ namespace Koralium.Transport.RowLevelSecurity.Services
             {
                 throw new RpcException(new Status(StatusCode.InvalidArgument, error.Message));
             }
-            catch(Exception e)
+            catch(Exception)
             {
                 throw new RpcException(new Status(StatusCode.Internal, "Internal error"));
             }
