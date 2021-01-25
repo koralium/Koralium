@@ -32,10 +32,11 @@ namespace Koralium.Transport.RowLevelSecurity.Tests
             headers.Add("Authorization", $"Bearer {AccessToken}");
             var filter = await client.GetRowLevelSecurityFilterAsync(new RowLevelSecurityRequest()
             {
-                TableName = "secure"
+                TableName = "secure",
+                Format = Format.Sql
             }, headers);
 
-            Assert.AreEqual("(Custkey > 10) AND (Custkey < 100)", filter.SqlFilter);
+            Assert.AreEqual("(Custkey > 10) AND (Custkey < 100)", filter.Filter);
         }
 
         [Test]
@@ -46,10 +47,28 @@ namespace Koralium.Transport.RowLevelSecurity.Tests
             var filter = await client.GetRowLevelSecurityFilterAsync(new RowLevelSecurityRequest()
             {
                 TableName = "secure",
-                TableAlias = "s"
+                Format = Format.Sql,
+                SqlOptions = new SqlOptions()
+                {
+                    TableAlias = "s"
+                }
             }, headers);
 
-            Assert.AreEqual("(s.Custkey > 10) AND (s.Custkey < 100)", filter.SqlFilter);
+            Assert.AreEqual("(s.Custkey > 10) AND (s.Custkey < 100)", filter.Filter);
+        }
+
+        [Test]
+        public async Task TestGetElasticSearchFilter()
+        {
+            Metadata headers = new Metadata();
+            headers.Add("Authorization", $"Bearer {AccessToken}");
+            var filter = await client.GetRowLevelSecurityFilterAsync(new RowLevelSecurityRequest()
+            {
+                TableName = "secure",
+                Format = Format.Elasticsearch
+            }, headers);
+
+            Assert.AreEqual("{\"bool\":{\"must\":[{\"range\":{\"Custkey\":{\"gt\":10,\"lt\":100}}}]}}", filter.Filter);
         }
     }
 }

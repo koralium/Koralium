@@ -7,15 +7,33 @@ service KoraliumRowLevelSecurity {
     rpc GetRowLevelSecurityFilter (RowLevelSecurityRequest) returns (RowLevelSecurityResponse);
 }
 
+enum Format {
+    sql = 0;
+    elasticsearch = 1;
+}
+
 message RowLevelSecurityRequest {
 
     // Table name to get row level security filter for
     string tableName = 1;
-    
-    // Optional table alias that will be appended before each column name
-    string tableAlias = 2;
+
+    //Which format to output the filter in
+    Format format = 3;
+
+    oneof formatOptions {
+     SqlOptions sqlOptions = 4;
+     ElasticSearchOptions elasticSearchOptions = 5;
+	}
 }
 
 message RowLevelSecurityResponse {
-    string sqlFilter = 1;
+    string filter = 1;
+}
+
+message SqlOptions {
+    string tableAlias = 1;
+}
+
+message ElasticSearchOptions {
+    bool lowerCaseStringValues = 1;
 }

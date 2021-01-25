@@ -13,9 +13,9 @@
  */
 import { KoraliumRowLevelSecurityClient as GrpcClient } from './generated/rowlevelsecurity_grpc_pb'
 import * as grpc from 'grpc';
-import { RowLevelSecurityRequest } from './generated/rowlevelsecurity_pb';
+import { RowLevelSecurityRequest, SqlOptions } from './generated/rowlevelsecurity_pb';
 
-interface GetUserFilterRequest {
+interface GetSqlFilterRequest {
   tableName: string
   tableAlias?: string
   headers?: { [name: string]: string }
@@ -29,14 +29,14 @@ export class KoraliumRowLevelSecurityClient {
     this.client = new GrpcClient(url, grpc.credentials.createInsecure())
   }
 
-  GetFilter(tableName: string): Promise<string>;
-  GetFilter(tableName: string, tableAlias: string): Promise<string>;
-  GetFilter(tableName: string, headers: { [name: string]: string }): Promise<string>;
-  GetFilter(tableName: string, tableAlias: string, headers: { [name: string]: string }): Promise<string>;
+  getSqlFilter(tableName: string): Promise<string>;
+  getSqlFilter(tableName: string, tableAlias: string): Promise<string>;
+  getSqlFilter(tableName: string, headers: { [name: string]: string }): Promise<string>;
+  getSqlFilter(tableName: string, tableAlias: string, headers: { [name: string]: string }): Promise<string>;
 
-  GetFilter(tableName: string, arg1?: string | { [name: string]: string }, arg2?: { [name: string]: string }): Promise<string> {
+  getSqlFilter(tableName: string, arg1?: string | { [name: string]: string }, arg2?: { [name: string]: string }): Promise<string> {
 
-    const parameters: GetUserFilterRequest = {tableName: tableName}
+    const parameters: GetSqlFilterRequest = {tableName: tableName}
 
     if (arg1) {
       if (typeof arg1 === 'string') {
@@ -50,14 +50,17 @@ export class KoraliumRowLevelSecurityClient {
       parameters.headers = arg2
     }
 
-    return this.getUserFilter_internal(parameters)
+    return this.getSqlFilter_internal(parameters)
   }
 
-  private getUserFilter_internal({ tableName, tableAlias, headers }: GetUserFilterRequest): Promise<string> {
+  private getSqlFilter_internal({ tableName, tableAlias, headers }: GetSqlFilterRequest): Promise<string> {
     const request = new RowLevelSecurityRequest();
     request.setTablename(tableName);
+    request.setFormat(0);
     if (tableAlias) {
-      request.setTablealias(tableAlias);
+      const sqlOptions = new SqlOptions();
+      sqlOptions.setTablealias(tableAlias);
+      request.setSqloptions(sqlOptions);
     }
     
     const metadata = new grpc.Metadata();
@@ -76,7 +79,7 @@ export class KoraliumRowLevelSecurityClient {
             return;
           }
           if (data) {
-            resolve(data.getSqlfilter())
+            resolve(data.getFilter())
           } else {
             reject("got invalid response.")
           }

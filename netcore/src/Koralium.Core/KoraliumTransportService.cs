@@ -33,6 +33,7 @@ using Microsoft.Extensions.Logging;
 using Koralium.Core.RowLevelSecurity;
 using Koralium.Shared.Extensions.Logging;
 using Koralium.Core.Utils;
+using Koralium.SqlParser.Expressions;
 
 namespace Koralium
 {
@@ -256,7 +257,7 @@ namespace Koralium
             return builder.ToImmutable();
         }
 
-        public async Task<string> GetTableRowLevelSecurityFilter(string tableName, string tableAlias, HttpContext httpContext)
+        public async Task<BooleanExpression> GetTableRowLevelSecurityFilter(string tableName, string tableAlias, HttpContext httpContext)
         {
             if (!_metadataStore.TryGetTable(tableName, out var table))
             {
@@ -269,12 +270,7 @@ namespace Koralium
 
             var filter = await RowLevelSecurityHelper.GetRowLevelSecurityQuery(table, httpContext, _metadataStore, _serviceProvider, tableAlias);
 
-            if (filter != null)
-            {
-                return filter.Print();
-            }
-
-            return string.Empty;
+            return filter;
         }
     }
 }

@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.Shared;
+using Koralium.SqlParser.Expressions;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
@@ -47,6 +48,6 @@ namespace Koralium.Transport
         /// </summary>
         /// <param name="tableName">The table to retrieve the filters for</param>
         /// <returns></returns>
-        Task<string> GetTableRowLevelSecurityFilter(string tableName, string tableAlias, HttpContext httpContext);
+        Task<BooleanExpression> GetTableRowLevelSecurityFilter(string tableName, string tableAlias, HttpContext httpContext);
     }
 }
