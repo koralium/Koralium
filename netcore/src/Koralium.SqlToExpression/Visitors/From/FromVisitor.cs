@@ -51,6 +51,8 @@ namespace Koralium.SqlToExpression.Visitors.From
                 {
                     throw new SqlErrorException($"The table '{tableName}' was not found");
                 }
+                //Add the table name to the aliases as well, to support using the tablename infront of columns
+                FromAliases.AddAlias(tableName);
 
                 var alias = namedTableReference?.Alias;
                 if (alias != null)
