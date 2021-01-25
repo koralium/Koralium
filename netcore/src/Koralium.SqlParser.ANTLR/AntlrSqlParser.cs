@@ -14,6 +14,7 @@
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using Koralium.SqlParser.Errors;
+using Koralium.SqlParser.Expressions;
 using Koralium.SqlParser.Statements;
 using System.Collections.Generic;
 
@@ -58,6 +59,36 @@ namespace Koralium.SqlParser.ANTLR
         public StatementList Parse(string text)
         {
             return Parse(text, out _);
+        }
+
+        public BooleanExpression ParseFilter(string text, out IReadOnlyList<SqlParserError> errors)
+        {
+            ICharStream stream = CharStreams.fromstring(text);
+            stream = new CaseChangingCharStream(stream);
+
+            ITokenSource lexer = new KoraliumLexer(stream);
+            ITokenStream tokens = new CommonTokenStream(lexer);
+            KoraliumParser parser = new KoraliumParser(tokens)
+            {
+                BuildParseTree = true
+            };
+
+            var errorsListener = new AntlrErrorListener();
+            parser.AddErrorListener(errorsListener);
+
+            var booleanExpression = parser.boolean_expression();
+
+            errors = errorsListener.Errors;
+
+            if (errors.Count > 0)
+            {
+                return null;
+            }
+
+            var visitor = new AntlrVisitor();
+
+            var result = visitor.Visit(booleanExpression) as BooleanExpression;
+            return result;
         }
     }
 }
