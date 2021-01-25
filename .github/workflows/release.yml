@@ -184,4 +184,12 @@ jobs:
         NUGET_KEY: ${{ secrets.NUGET_KEY }}
         TAG_COMMIT: false
         VERSION_STATIC: ${{ steps.tag.outputs.VERSION }}
-
+    - name: publish Transport RowLevelSecurity
+      id: publish_nuget_koralium_transport_rowlevelsecurity
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: netcore/src/Koralium.Transport.RowLevelSecurity/Koralium.Transport.RowLevelSecurity.csproj
+        PACKAGE_NAME: Koralium.Transport.RowLevelSecurity
+        NUGET_KEY: ${{ secrets.NUGET_KEY }}
+        TAG_COMMIT: false
+        VERSION_STATIC: ${{ steps.tag.outputs.VERSION }}
