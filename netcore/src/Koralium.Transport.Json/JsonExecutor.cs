@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using Koralium.Transport.Json.Encoders;
 using System.Text.Json;
+using Koralium.Shared;
 
 namespace Koralium.Transport.Json
 {
@@ -48,13 +49,34 @@ namespace Koralium.Transport.Json
             await Execute(sql, context);
         }
 
+        private static async Task WriteError(HttpContext context, int statusCode, string error)
+        {
+            context.Response.StatusCode = statusCode;
+            context.Response.ContentType = "text/plain";
+            await context.Response.WriteAsync(error);
+        }
+
         private static async Task Execute(string sql, HttpContext context)
         {
             context.Response.Headers.Add("Content-Type", "application/json");
 
             var koraliumService = context.RequestServices.GetService<IKoraliumTransportService>();
-
-            var result = await koraliumService.Execute(sql, new Shared.SqlParameters(), context);
+            
+            QueryResult result = null;
+            try
+            {
+                result = await koraliumService.Execute(sql, new Shared.SqlParameters(), context);
+            }
+            catch(SqlErrorException error)
+            {
+                await WriteError(context, 400, error.Message);
+                return;
+            }
+            catch(Exception)
+            {
+                await WriteError(context, 500, "Internal error");
+                return;
+            }
 
             var responseStream = new System.Text.Json.Utf8JsonWriter(context.Response.Body);
 
