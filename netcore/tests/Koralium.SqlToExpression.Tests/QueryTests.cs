@@ -1082,6 +1082,15 @@ namespace Koralium.SqlToExpression.Tests
             AssertAreEqual(expected, result.Result);
         }
 
+        [Test]
+        public async Task TestSelectColumnWithTableNamePrefix()
+        {
+            var result = await SqlExecutor.Execute("select customer.name from customer");
+            var expected = TpchData.Customers.Select(x => new { x.Name }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
         //select name from customer where name > 'customer#000001500'
         //Gives the wrong results
     }
