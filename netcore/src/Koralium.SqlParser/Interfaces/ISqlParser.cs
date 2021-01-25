@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.SqlParser.Errors;
+using Koralium.SqlParser.Expressions;
 using Koralium.SqlParser.Statements;
 using System.Collections.Generic;
 
@@ -22,5 +23,7 @@ namespace Koralium.SqlParser
         StatementList Parse(string text);
 
         StatementList Parse(string text, out IReadOnlyList<SqlParserError> errors);
+
+        BooleanExpression ParseFilter(string text, out IReadOnlyList<SqlParserError> errors);
     }
 }
