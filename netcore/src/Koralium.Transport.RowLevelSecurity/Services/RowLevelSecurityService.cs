@@ -1,5 +1,8 @@
 ﻿using Grpc.Core;
 using Koralium.Shared;
+using Koralium.SqlParser;
+using Koralium.SqlParser.Expressions;
+using Koralium.Transport.RowLevelSecurity.FormatConverters;
 using System;
 using System.Threading.Tasks;
 
@@ -18,11 +21,31 @@ namespace Koralium.Transport.RowLevelSecurity.Services
         {
             try
             {
-                var filter = await _koraliumTransportService.GetTableRowLevelSecurityFilter(request.TableName, request.TableAlias, context.GetHttpContext());
+                BooleanExpression filter;
+                string output = null;
+
+                switch (request.Format)
+                {
+                    case Format.Sql:
+                        filter = await _koraliumTransportService.GetTableRowLevelSecurityFilter(request.TableName, request.SqlOptions?.TableAlias, context.GetHttpContext());
+                        output = SqlFormat.Format(filter);
+                        break;
+                    case Format.Elasticsearch:
+                        filter = await _koraliumTransportService.GetTableRowLevelSecurityFilter(request.TableName, null, context.GetHttpContext());
+                        output = ElasticSearchFormat.Format(filter, request.ElasticSearchOptions);
+                        break;
+                    default:
+                        throw new RpcException(new Status(StatusCode.NotFound, "Could not find a formatter for the specified format"));
+                }
+
                 return new RowLevelSecurityResponse()
                 {
-                    SqlFilter = filter
+                    Filter = output
                 };
+            }
+            catch (RpcException)
+            {
+                throw;
             }
             catch(SqlErrorException error)
             {

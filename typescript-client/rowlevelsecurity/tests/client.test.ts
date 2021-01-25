@@ -33,7 +33,7 @@ afterAll(async () => {
 
 test("Get filter no table alias", async () => {
   const expected = "(Custkey > 10) AND (Custkey < 100)"
-  const result = await client.GetFilter("secure", {
+  const result = await client.getSqlFilter("secure", {
     Authorization: `Bearer ${accessToken}`
   })
 
@@ -42,7 +42,7 @@ test("Get filter no table alias", async () => {
 
 test("Get filter with table alias", async () => {
   const expected = "(s.Custkey > 10) AND (s.Custkey < 100)"
-  const result = await client.GetFilter("secure", "s", {
+  const result = await client.getSqlFilter("secure", "s", {
     Authorization: `Bearer ${accessToken}`
   })
 
@@ -51,8 +51,8 @@ test("Get filter with table alias", async () => {
 
 test("Get filter unauthorized", async () => {
   const t = async () => {
-    await client.GetFilter("secure", "s")
+    await client.getSqlFilter("secure", "s")
   };
 
-  expect(t).rejects.toMatch("13 INTERNAL: Internal error");
+  expect(t).rejects.toMatch("16 UNAUTHENTICATED: Authorization failed");
 })

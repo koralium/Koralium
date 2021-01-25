@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+  <file path="C:\Users\seosal\source\repos\Koralium\new\Koralium\typescript-client\rowlevelsecurity\tests\client.test.ts">
+    <testCase name="Get filter no table alias" duration="35"/>
+    <testCase name="Get filter with table alias" duration="15"/>
+    <testCase name="Get filter unauthorized" duration="2"/>
+  </file>
+</testExecutions>
