@@ -70,5 +70,24 @@ namespace Koralium.Transport.RowLevelSecurity.Tests
 
             Assert.AreEqual("{\"bool\":{\"must\":[{\"range\":{\"Custkey\":{\"gt\":10,\"lt\":100}}}]}}", filter.Filter);
         }
+
+        [Test]
+        public async Task TestGetCubeJsFilter()
+        {
+            Metadata headers = new Metadata();
+            headers.Add("Authorization", $"Bearer {AccessToken}");
+            var filter = await client.GetRowLevelSecurityFilterAsync(new RowLevelSecurityRequest()
+            {
+                TableName = "secure",
+                Format = Format.Cubejs,
+                CubejsOptions = new CubeJsOptions()
+                {
+                    CubeName = "orders",
+                    LowerCaseFirstMemberCharacter = true
+                }
+            }, headers);
+
+            Assert.AreEqual("{\"and\":[{\"member\":\"orders.custkey\",\"operator\":\"gt\",\"values\":[\"10\"]},{\"member\":\"orders.custkey\",\"operator\":\"lt\",\"values\":[\"100\"]}]}", filter.Filter);
+        }
     }
 }
