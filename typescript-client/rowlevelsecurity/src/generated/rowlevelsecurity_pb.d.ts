@@ -20,6 +20,11 @@ export class RowLevelSecurityRequest extends jspb.Message {
   getElasticsearchoptions(): ElasticSearchOptions | undefined;
   setElasticsearchoptions(value?: ElasticSearchOptions): void;
 
+  hasCubejsoptions(): boolean;
+  clearCubejsoptions(): void;
+  getCubejsoptions(): CubeJsOptions | undefined;
+  setCubejsoptions(value?: CubeJsOptions): void;
+
   getFormatoptionsCase(): RowLevelSecurityRequest.FormatoptionsCase;
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): RowLevelSecurityRequest.AsObject;
@@ -37,12 +42,14 @@ export namespace RowLevelSecurityRequest {
     format: FormatMap[keyof FormatMap],
     sqloptions?: SqlOptions.AsObject,
     elasticsearchoptions?: ElasticSearchOptions.AsObject,
+    cubejsoptions?: CubeJsOptions.AsObject,
   }
 
   export enum FormatoptionsCase {
     FORMATOPTIONS_NOT_SET = 0,
     SQLOPTIONS = 4,
     ELASTICSEARCHOPTIONS = 5,
+    CUBEJSOPTIONS = 6,
   }
 }
 
@@ -106,9 +113,34 @@ export namespace ElasticSearchOptions {
   }
 }
 
+export class CubeJsOptions extends jspb.Message {
+  getCubename(): string;
+  setCubename(value: string): void;
+
+  getLowercasefirstmembercharacter(): boolean;
+  setLowercasefirstmembercharacter(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CubeJsOptions.AsObject;
+  static toObject(includeInstance: boolean, msg: CubeJsOptions): CubeJsOptions.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: CubeJsOptions, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CubeJsOptions;
+  static deserializeBinaryFromReader(message: CubeJsOptions, reader: jspb.BinaryReader): CubeJsOptions;
+}
+
+export namespace CubeJsOptions {
+  export type AsObject = {
+    cubename: string,
+    lowercasefirstmembercharacter: boolean,
+  }
+}
+
 export interface FormatMap {
   SQL: 0;
   ELASTICSEARCH: 1;
+  CUBEJS: 2;
 }
 
 export const Format: FormatMap;

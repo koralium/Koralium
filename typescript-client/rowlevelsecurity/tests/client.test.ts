@@ -56,3 +56,26 @@ test("Get filter unauthorized", async () => {
 
   expect(t).rejects.toMatch("16 UNAUTHENTICATED: Authorization failed");
 })
+
+test("Get cubejs filter", async () => {
+  const expected = {
+    and: [
+      {
+        member: "orders.custkey",
+        operator: "gt",
+        values: ["10"]
+      },
+      {
+        member: "orders.custkey",
+        operator: "lt",
+        values: ["100"]
+      }
+    ]
+  }
+
+  const actual = await client.getCubeJsFilter("secure", "orders", {
+    Authorization: `Bearer ${accessToken}`
+  })
+
+  expect(actual).toEqual(expected);
+});
