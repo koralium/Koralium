@@ -3,6 +3,7 @@ using Koralium.Shared;
 using Koralium.SqlParser;
 using Koralium.SqlParser.Expressions;
 using Koralium.Transport.RowLevelSecurity.FormatConverters;
+using Koralium.Transport.RowLevelSecurity.FormatConverters.Cubejs;
 using System;
 using System.Threading.Tasks;
 
@@ -33,6 +34,10 @@ namespace Koralium.Transport.RowLevelSecurity.Services
                     case Format.Elasticsearch:
                         filter = await _koraliumTransportService.GetTableRowLevelSecurityFilter(request.TableName, null, context.GetHttpContext());
                         output = ElasticSearchFormat.Format(filter, request.ElasticSearchOptions);
+                        break;
+                    case Format.Cubejs:
+                        filter = await _koraliumTransportService.GetTableRowLevelSecurityFilter(request.TableName, null, context.GetHttpContext());
+                        output = CubejsFormat.Format(filter, request.CubejsOptions);
                         break;
                     default:
                         throw new RpcException(new Status(StatusCode.NotFound, "Could not find a formatter for the specified format"));

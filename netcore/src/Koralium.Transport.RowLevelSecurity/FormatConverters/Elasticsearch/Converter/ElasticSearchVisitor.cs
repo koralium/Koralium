@@ -175,7 +175,6 @@ namespace Koralium.Transport.RowLevelSecurity.FormatConverters.Elasticsearch
                     });
                     break;
             }
-            base.VisitBooleanComparisonExpression(booleanComparisonExpression);
         }
 
         public override void VisitNotExpression(NotExpression notExpression)
