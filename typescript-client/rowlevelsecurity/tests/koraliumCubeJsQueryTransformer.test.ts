@@ -93,3 +93,43 @@ test('Test cache', async () => {
   expect(actual1).toEqual(expected)
   expect(actual2).toEqual(expected)
 })
+
+test('Test multiple dimensions from same cube', async () => {
+  const queryTransformer = new KoraliumCubeJsQueryTransformer();
+  queryTransformer.addCubeTable('Orders', 'secure', '127.0.0.1:5016')
+
+  const actual = await queryTransformer.transformQuery({
+    measures: [],
+    dimensions: [
+      'Orders.orderkey',
+      'Orders.custkey'
+    ]
+  }, accessToken)
+
+  const expected: Query = {
+    measures: [],
+    dimensions: [
+      'Orders.orderkey',
+      'Orders.custkey'
+    ],
+    filters: [
+      {
+        and: [
+          {
+            member: "Orders.custkey",
+            operator: "gt",
+            values: ["10"]
+          },
+          {
+            member: "Orders.custkey",
+            operator: "lt",
+            values: ["100"]
+          }
+        ]
+      }
+    ]
+  }
+
+  expect(actual).toEqual(expected)
+  
+})
