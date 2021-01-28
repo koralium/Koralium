@@ -9,10 +9,6 @@ interface ServiceContainer {
   cacheTtl?: number;
 }
 
-interface UserContainer {
-  cubeFilters: Map<string, QueryFilter | BinaryFilter>
-}
-
 export class KoraliumCubeJsQueryTransformer {
 
   private services: Map<string, ServiceContainer>;
@@ -45,7 +41,7 @@ export class KoraliumCubeJsQueryTransformer {
         cubes.push(splitDimension[0].toLowerCase())
       }
     })
-    query.measures.forEach(x => {
+    query.measures?.forEach(x => {
       const splitMeasure = x.split('.')
       if (splitMeasure.length > 1) {
         cubes.push(splitMeasure[0].toLowerCase())
@@ -64,7 +60,6 @@ export class KoraliumCubeJsQueryTransformer {
       return this.services.get(x) !== undefined
     })
   }
-
   
   private async getCubeFilters(cubeName: string, token?: string): Promise<QueryFilter | BinaryFilter> {
 
