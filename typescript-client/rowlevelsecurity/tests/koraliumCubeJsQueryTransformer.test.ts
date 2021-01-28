@@ -13,7 +13,7 @@ beforeAll(() => {
 
 test('Add filters to query', async () => {
   const queryTransformer = new KoraliumCubeJsQueryTransformer();
-  queryTransformer.addCubeTable('orders', 'secure', '127.0.0.1:5016')
+  queryTransformer.addCubeTable('Orders', 'secure', '127.0.0.1:5016')
 
   const actual = await queryTransformer.transformQuery({
     measures: [],
@@ -31,12 +31,12 @@ test('Add filters to query', async () => {
       {
         and: [
           {
-            member: "orders.custkey",
+            member: "Orders.custkey",
             operator: "gt",
             values: ["10"]
           },
           {
-            member: "orders.custkey",
+            member: "Orders.custkey",
             operator: "lt",
             values: ["100"]
           }
