@@ -24,8 +24,7 @@ export class KoraliumCubeJsQueryTransformer {
   }
 
   addCubeTable(cubeName: string, koraliumTableName: string, url: string, cacheTtl?: number) {
-    cubeName = cubeName.toLowerCase()
-    this.services.set(cubeName, {
+    this.services.set(cubeName.toLowerCase(), {
       client: new KoraliumRowLevelSecurityClient(url),
       cubeName: cubeName,
       tableName: koraliumTableName,
@@ -57,7 +56,7 @@ export class KoraliumCubeJsQueryTransformer {
 
     // Filter the list so it only contains cubes that actually requires filters
     return cubes.filter(x => {
-      return this.services.get(x) !== undefined
+      return this.services.get(x.toLowerCase()) !== undefined
     })
   }
   
@@ -72,7 +71,7 @@ export class KoraliumCubeJsQueryTransformer {
       }
     }
 
-    const service = this.services.get(cubeName)
+    const service = this.services.get(cubeName.toLowerCase())
 
     //Send query here to the 
     const filters: QueryFilter | BinaryFilter = {}
