@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testExecutions version="1">
-  <file path="C:\Users\seosal\source\repos\Koralium\new\Koralium\typescript-client\rowlevelsecurity\tests\client.test.ts">
-    <testCase name="Get filter no table alias" duration="19"/>
-    <testCase name="Get filter with table alias" duration="13"/>
-    <testCase name="Get filter unauthorized" duration="1"/>
-    <testCase name="Get cubejs filter" duration="105"/>
-  </file>
   <file path="C:\Users\seosal\source\repos\Koralium\new\Koralium\typescript-client\rowlevelsecurity\tests\koraliumCubeJsQueryTransformer.test.ts">
-    <testCase name="Add filters to query" duration="24"/>
-    <testCase name="Test cache" duration="8"/>
+    <testCase name="Add filters to query" duration="20"/>
+    <testCase name="Test cache" duration="11"/>
+  </file>
+  <file path="C:\Users\seosal\source\repos\Koralium\new\Koralium\typescript-client\rowlevelsecurity\tests\client.test.ts">
+    <testCase name="Get filter no table alias" duration="23"/>
+    <testCase name="Get filter with table alias" duration="6"/>
+    <testCase name="Get filter unauthorized" duration="1"/>
+    <testCase name="Get cubejs filter" duration="79"/>
   </file>
 </testExecutions>
