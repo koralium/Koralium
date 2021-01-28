@@ -33,31 +33,35 @@ export class KoraliumCubeJsQueryTransformer {
   }
 
   private getCubeNames(query: Query): Array<string> {
-    const cubes: Array<string> = []
+    const cubes: Set<string> = new Set<string>()
     query.dimensions?.forEach(x => {
       const splitDimension = x.split('.')
       if (splitDimension.length > 1) {
-        cubes.push(splitDimension[0].toLowerCase())
+        cubes.add(splitDimension[0].toLowerCase())
       }
     })
     query.measures?.forEach(x => {
       const splitMeasure = x.split('.')
       if (splitMeasure.length > 1) {
-        cubes.push(splitMeasure[0].toLowerCase())
+        cubes.add(splitMeasure[0].toLowerCase())
       }
     })
 
     query.timeDimensions?.forEach(x => {
       const splitDimension = x.dimension.split('.')
       if (splitDimension.length > 1) {
-        cubes.push(splitDimension[0].toLowerCase())
+        cubes.add(splitDimension[0].toLowerCase())
       }
     })
 
     // Filter the list so it only contains cubes that actually requires filters
-    return cubes.filter(x => {
-      return this.services.get(x.toLowerCase()) !== undefined
+    const output: Array<string> = []
+    cubes.forEach(name => {
+      if (this.services.get(name) !== undefined) {
+        output.push(name)
+      }
     })
+    return output;
   }
   
   private async getCubeFilters(cubeName: string, token?: string): Promise<QueryFilter | BinaryFilter> {
