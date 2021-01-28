@@ -12,3 +12,4 @@
  * limitations under the License.
  */
 export * from './rowLevelSecurityClient'
+export * from './koraliumCubeJsQueryTransformer'

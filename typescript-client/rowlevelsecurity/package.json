@@ -17,6 +17,7 @@
     "chai": "4.2.0",
     "chai-arrays": "^2.2.0",
     "cross-env": "5.2.0",
+    "grpc-tools": "^1.9.0",
     "jest": "^26.1.0",
     "jest-editor-support": "^27.2.0",
     "jest-sonar-reporter": "^2.0.0",
@@ -26,10 +27,10 @@
     "ts-jest": "^26.1.1",
     "ts-node": "^8.10.2",
     "ts-protoc-gen": "^0.12.0",
-    "typescript": "^3.2.2",
-    "grpc-tools": "^1.9.0"
+    "typescript": "^3.2.2"
   },
   "dependencies": {
-    "grpc": "^1.24.3"
+    "grpc": "^1.24.3",
+    "node-cache": "^5.1.2"
   }
 }

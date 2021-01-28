@@ -10,6 +10,7 @@ service KoraliumRowLevelSecurity {
 enum Format {
     sql = 0;
     elasticsearch = 1;
+    cubejs = 2;
 }
 
 message RowLevelSecurityRequest {
@@ -23,6 +24,7 @@ message RowLevelSecurityRequest {
     oneof formatOptions {
      SqlOptions sqlOptions = 4;
      ElasticSearchOptions elasticSearchOptions = 5;
+     CubeJsOptions cubejsOptions = 6;
 	}
 }
 
@@ -36,4 +38,9 @@ message SqlOptions {
 
 message ElasticSearchOptions {
     bool lowerCaseStringValues = 1;
+}
+
+message CubeJsOptions {
+    string cubeName = 1;
+    bool lowerCaseFirstMemberCharacter = 2;
 }
