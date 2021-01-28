@@ -15,8 +15,9 @@ interface QueryTimeDimension {
   dateRange?: string[] | string;
   granularity?: QueryTimeDimensionGranularity;
 }
+
 export interface Query {
-  measures: string[];
+  measures?: string[];
   dimensions?: string[];
   filters?: (QueryFilter | BinaryFilter)[];
   timeDimensions?: QueryTimeDimension[];
