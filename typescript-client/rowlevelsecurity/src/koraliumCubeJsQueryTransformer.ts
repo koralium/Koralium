@@ -1,3 +1,4 @@
+import NodeCache from "node-cache";
 import { BinaryFilter, Query, QueryFilter } from "./cubejsModels";
 import { KoraliumRowLevelSecurityClient } from "./rowLevelSecurityClient";
 
@@ -5,22 +6,34 @@ interface ServiceContainer {
   client: KoraliumRowLevelSecurityClient;
   tableName: string;
   cubeName: string;
+  cacheTtl?: number;
+}
+
+interface UserContainer {
+  cubeFilters: Map<string, QueryFilter | BinaryFilter>
 }
 
 export class KoraliumCubeJsQueryTransformer {
 
   private services: Map<string, ServiceContainer>;
+  private usersCache: NodeCache;
   
   constructor(){
     this.services = new Map<string, ServiceContainer>();
+    this.usersCache = new NodeCache();
   }
 
-  addCubeTable(cubeName: string, koraliumTableName: string, url: string) {
+  private getCacheKey(token: string, cubeName: string) {
+    return `${cubeName}:${token}`
+  }
+
+  addCubeTable(cubeName: string, koraliumTableName: string, url: string, cacheTtl?: number) {
     cubeName = cubeName.toLowerCase()
     this.services.set(cubeName, {
       client: new KoraliumRowLevelSecurityClient(url),
       cubeName: cubeName,
-      tableName: koraliumTableName
+      tableName: koraliumTableName,
+      cacheTtl: cacheTtl
     });
   }
 
@@ -54,6 +67,16 @@ export class KoraliumCubeJsQueryTransformer {
 
   
   private async getCubeFilters(cubeName: string, token?: string): Promise<QueryFilter | BinaryFilter> {
+
+    // Check if the filter has already been collected for the user
+    if (token) {
+      const filter = this.usersCache.get<QueryFilter | BinaryFilter>(this.getCacheKey(token, cubeName))
+
+      if (filter) {
+        return filter;
+      }
+    }
+
     const service = this.services.get(cubeName)
 
     //Send query here to the 
@@ -66,6 +89,11 @@ export class KoraliumCubeJsQueryTransformer {
         headers['Authorization'] = `Bearer ${token}`
       }
       const filters = await service.client.getCubeJsFilter(service.tableName, service.cubeName, headers)
+
+      if (token) {
+        this.usersCache.set(this.getCacheKey(token, cubeName), filters, service.cacheTtl ?? 3600)
+      }
+
       return filters;
     }
     else {

@@ -21,7 +21,7 @@ test('Add filters to query', async () => {
       'Orders.orderkey'
     ]
   }, accessToken)
-  
+
   const expected: Query = {
     measures: [],
     dimensions: [
@@ -47,4 +47,49 @@ test('Add filters to query', async () => {
 
   expect(actual).toEqual(expected)
   
+})
+
+test('Test cache', async () => {
+  const queryTransformer = new KoraliumCubeJsQueryTransformer();
+  queryTransformer.addCubeTable('orders', 'secure', '127.0.0.1:5016')
+
+  const actual1 = await queryTransformer.transformQuery({
+    measures: [],
+    dimensions: [
+      'Orders.orderkey'
+    ]
+  }, accessToken)
+
+  const actual2 = await queryTransformer.transformQuery({
+    measures: [],
+    dimensions: [
+      'Orders.orderkey'
+    ]
+  }, accessToken)
+
+  const expected: Query = {
+    measures: [],
+    dimensions: [
+      'Orders.orderkey'
+    ],
+    filters: [
+      {
+        and: [
+          {
+            member: "orders.custkey",
+            operator: "gt",
+            values: ["10"]
+          },
+          {
+            member: "orders.custkey",
+            operator: "lt",
+            values: ["100"]
+          }
+        ]
+      }
+    ]
+  }
+
+  expect(actual1).toEqual(expected)
+  expect(actual2).toEqual(expected)
 })
