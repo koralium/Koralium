@@ -193,3 +193,21 @@ jobs:
         NUGET_KEY: ${{ secrets.NUGET_KEY }}
         TAG_COMMIT: false
         VERSION_STATIC: ${{ steps.tag.outputs.VERSION }}
+    - name: publish Transport LegacyGrpc
+      id: publish_nuget_koralium_transport_legacygrpc
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: netcore/src/Koralium.Transport.LegacyGrpc/Koralium.Transport.LegacyGrpc.csproj
+        PACKAGE_NAME: Koralium.Transport.LegacyGrpc
+        NUGET_KEY: ${{ secrets.NUGET_KEY }}
+        TAG_COMMIT: false
+        VERSION_STATIC: ${{ steps.tag.outputs.VERSION }}
+    - name: publish Transport LegacyGrpc Abstractions
+      id: publish_nuget_koralium_transport_legacygrpc_abstractions
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: netcore/src/Koralium.Transport.LegacyGrpc.Abstractions/Koralium.Transport.LegacyGrpc.Abstractions.csproj
+        PACKAGE_NAME: Koralium.Transport.LegacyGrpc.Abstractions
+        NUGET_KEY: ${{ secrets.NUGET_KEY }}
+        TAG_COMMIT: false
+        VERSION_STATIC: ${{ steps.tag.outputs.VERSION }}
