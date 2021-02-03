@@ -19,6 +19,11 @@ namespace Koralium.Transport.Json.Encoders
 {
     public class ObjectEncoder : IJsonEncoder
     {
+        private static readonly JsonSerializerOptions jsonOptions = new JsonSerializerOptions()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+
         private readonly Func<object, object> _getFunc;
         private readonly IJsonEncoder[] _childEncoders;
         private readonly JsonEncodedText[] _names;
@@ -32,7 +37,7 @@ namespace Koralium.Transport.Json.Encoders
             for(int i = 0; i < column.Children.Count; i++)
             {
                 _childEncoders[i] = EncoderHelper.GetEncoder(column.Children[i]);
-                _names[i] = JsonEncodedText.Encode(column.Children[i].Name);
+                _names[i] = JsonEncodedText.Encode(jsonOptions.PropertyNamingPolicy.ConvertName(column.Children[i].Name));
             }
         }
 
@@ -42,6 +47,7 @@ namespace Koralium.Transport.Json.Encoders
         {
             var val = _getFunc(row);
 
+            
             if(val == null)
             {
                 utf8JsonWriter.WriteNullValue();

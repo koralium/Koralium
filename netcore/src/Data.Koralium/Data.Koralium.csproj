@@ -14,18 +14,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="library\Protos\Flight.proto" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="Apache.Arrow.Flight" Version="3.0.0" />
     <PackageReference Include="Google.Protobuf" Version="3.14.0" />
     <PackageReference Include="Grpc.Net.Client" Version="2.34.0" />
     <PackageReference Include="Grpc.Tools" Version="2.34.1" PrivateAssets="All" />
     <PackageReference Include="System.Threading.Channels" Version="5.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Protobuf Include="library\Protos\Flight.proto" />
   </ItemGroup>
 
   <ItemGroup>
