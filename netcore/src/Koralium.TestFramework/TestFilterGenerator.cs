@@ -27,7 +27,7 @@ namespace Koralium.TestFramework
             {
                 return IsPossibleFilter(innerType);
             }
-            return type.IsPrimitive || type == typeof(string) || type == typeof(DateTime);
+            return type.IsPrimitive || type == typeof(string) || type == typeof(DateTime) || type.IsEnum;
         }
 
         public static string GetValue(object value)

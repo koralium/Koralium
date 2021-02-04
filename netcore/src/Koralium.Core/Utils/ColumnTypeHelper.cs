@@ -34,7 +34,8 @@ namespace Koralium.Utils
             }
             if (type.IsPrimitive ||
                 type.Equals(typeof(string)) ||
-                type.Equals(typeof(DateTime)))
+                type.Equals(typeof(DateTime)) ||
+                type.IsEnum)
                 return true;
             return false;
         }
@@ -92,6 +93,10 @@ namespace Koralium.Utils
             if (type.Equals(typeof(byte[])))
             {
                 return (ColumnType.Binary, true);
+            }
+            if (type.IsEnum)
+            {
+                return (ColumnType.Enum, false);
             }
             if (IsArray(type))
             {

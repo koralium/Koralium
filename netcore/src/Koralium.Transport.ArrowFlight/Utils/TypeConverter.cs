@@ -39,6 +39,7 @@ namespace Koralium.Transport.ArrowFlight.Utils
                     return Int32Type.Default;
                 case ColumnType.Int64:
                     return Int64Type.Default;
+                case ColumnType.Enum:
                 case ColumnType.String:
                     return StringType.Default;
                 case ColumnType.List:

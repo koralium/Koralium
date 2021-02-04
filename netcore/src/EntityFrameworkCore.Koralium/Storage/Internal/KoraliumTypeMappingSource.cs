@@ -74,12 +74,6 @@ namespace EntityFrameworkCore.Koralium.Storage.Internal
             }
 
             return type.IsPrimitive || type.IsEnum || type.IsValueType || type.Equals(typeof(string));
-
-            //if (type.IsPrimitive ||
-            //    type.Equals(typeof(string)) ||
-            //    type.Equals(typeof(DateTime)))
-            //    return true;
-            //return false;
         }
 
         private static bool IsIEnumerableOfT(Type type, out Type elementType)
@@ -118,6 +112,11 @@ namespace EntityFrameworkCore.Koralium.Storage.Internal
                 {
                     return new ListTypeMapping("array", clrType);
                 }
+            }
+
+            if(clrType.IsEnum)
+            {
+                return new EnumTypeMapping("enum", clrType);
             }
 
             if (IsArray(clrType))
