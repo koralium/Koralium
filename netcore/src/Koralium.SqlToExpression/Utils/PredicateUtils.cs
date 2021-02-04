@@ -55,6 +55,15 @@ namespace Koralium.SqlToExpression.Utils
             }
             else
             {
+                //Enum conversion
+                if (toType.IsEnum && value is string s)
+                {
+                    if(!Enum.TryParse(toType, s, true, out var enumValue))
+                    {
+                        throw new SqlErrorException($"'{s}' is not a valid value of the enum '{toType.Name}'");
+                    }
+                    return Expression.Constant(enumValue);
+                }
                 return Expression.Constant(Convert.ChangeType(value, toType));
             }
         }

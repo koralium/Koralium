@@ -112,11 +112,16 @@ namespace Data.Koralium.Decoders
 
         public override object GetFieldValue(in int index, Type type)
         {
-            if(Equals(type, typeof(string)))
+            var val = GetString(index);
+            if (type.IsEnum && Enum.TryParse(type, val, out var enumValue))
             {
-                return GetString(index);
+                return enumValue;
             }
-            return Convert.ChangeType(GetString(index), type);
+            if (Equals(type, typeof(string)))
+            {
+                return val;
+            }
+            return Convert.ChangeType(val, type);
         }
     }
 }

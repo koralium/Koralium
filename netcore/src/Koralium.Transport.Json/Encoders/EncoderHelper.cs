@@ -49,6 +49,8 @@ namespace Koralium.Transport.Json.Encoders
                     return new UInt8Encoder(column);
                 case ColumnType.Binary:
                     return new BinaryEncoder(column);
+                case ColumnType.Enum:
+                    return new EnumEncoder(column);
             }
             throw new NotImplementedException();
         }

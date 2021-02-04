@@ -19,6 +19,7 @@ using System.IO;
 using Koralium.Transport.Json.Encoders;
 using System.Text.Json;
 using Koralium.Shared;
+using Microsoft.Extensions.Logging;
 
 namespace Koralium.Transport.Json
 {
@@ -61,7 +62,9 @@ namespace Koralium.Transport.Json
             context.Response.Headers.Add("Content-Type", "application/json");
 
             var koraliumService = context.RequestServices.GetService<IKoraliumTransportService>();
-            
+            var logger = context.RequestServices.GetService<ILogger<IKoraliumTransportService>>();
+
+
             QueryResult result = null;
             try
             {
@@ -69,11 +72,13 @@ namespace Koralium.Transport.Json
             }
             catch(SqlErrorException error)
             {
+                logger.LogWarning(error.Message);
                 await WriteError(context, 400, error.Message);
                 return;
             }
-            catch(Exception)
+            catch(Exception e)
             {
+                logger.LogError(e, "Unexpected exception thrown");
                 await WriteError(context, 500, "Internal error");
                 return;
             }

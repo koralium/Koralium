@@ -35,6 +35,11 @@ namespace Koralium.TestFramework
                 return CanBeAggregated(nullableInner);
             }
 
+            if (type.IsEnum)
+            {
+                return false;
+            }
+
             var typeCode = Type.GetTypeCode(type);
 
             switch (typeCode)

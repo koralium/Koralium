@@ -85,5 +85,7 @@ namespace Koralium.WebTests.Entities
 
         //Binary
         public byte[] BinaryValue { get; set; }
+
+        public TestTypeEnum EnumValue { get; set; }
     }
 }

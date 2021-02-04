@@ -17,6 +17,20 @@ The supported data types are:
 * Lists
 * Objects
 * Byte[] (binary)
+* Enums
 
+Enums
+------
+
+All enums are represented as strings both in Json and Apache Arrow Flight.
+This is done to create a better readability of the value of the enum.
+
+This means that enums are filtered the same way as strings, example:
+
+```
+SELECT enumValue FROM test WHERE enumValue = 'Active'
+```
+
+This would only select rows that has 'enumValue' set as 'Active'.
 
 
