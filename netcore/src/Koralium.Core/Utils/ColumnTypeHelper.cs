@@ -96,7 +96,7 @@ namespace Koralium.Utils
             }
             if (type.IsEnum)
             {
-                return (ColumnType.Enum, false);
+                return (ColumnType.Enum, true);
             }
             if (IsArray(type))
             {
