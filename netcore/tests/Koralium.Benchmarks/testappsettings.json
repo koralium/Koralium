@@ -7,5 +7,5 @@
       "Microsoft.Hosting.Lifetime": "Warning"
     }
   },
-  "TestDataLocation": "../../../../../../TestData"
+  "TestDataLocation": "../../../../../../../../../../TestData"
 }

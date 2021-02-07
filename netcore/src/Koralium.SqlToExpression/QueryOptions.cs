@@ -13,6 +13,7 @@
  */
 using Koralium.Shared;
 using Koralium.SqlToExpression;
+using Koralium.SqlToExpression.Indexing;
 using System;
 using System.Linq.Expressions;
 
@@ -22,7 +23,7 @@ namespace Koralium.SqlToExpression
     {
         private readonly ParameterExpression _parameterExpression;
         private MemberInitExpression _selectExpression;
-        private Expression _whereExpression;
+        protected private Expression _whereExpression;
         private int? _limit;
         private int? _offset;
 
@@ -127,6 +128,8 @@ namespace Koralium.SqlToExpression
 
     internal class QueryOptions<Entity> : QueryOptions, IQueryOptions<Entity>
     {
+        private IndexHelper<Entity> indexHelper;
+
         public QueryOptions(
             ParameterExpression parameterExpression,
             MemberInitExpression selectExpression,
@@ -138,6 +141,15 @@ namespace Koralium.SqlToExpression
             )
             : base(parameterExpression, selectExpression, whereExpression, limit, offset, containsFullTextSearch, parameters)
         {
+        }
+
+        public bool TryGetEqualFiltersForProperty<TProp>(Expression<Func<Entity, TProp>> propertySelection, out System.Collections.Generic.IReadOnlyList<TProp> equalValues)
+        {
+            if(indexHelper == null)
+            {
+                indexHelper = new IndexHelper<Entity>(_whereExpression);
+            }
+            return indexHelper.TryGetEqualFiltersForProperty(propertySelection, out equalValues);
         }
 
         public bool TryGetSelectExpression(out Expression<Func<Entity, Entity>> selectExpression)

@@ -21,7 +21,7 @@ namespace Koralium.Transport.Benchmarks
         static void Main(string[] args)
         {
             var webFactory = new TestWebFactory();
-            var summary = BenchmarkRunner.Run(typeof(Program).Assembly);
+            var summary = BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
             webFactory.Stop();
         }
     }

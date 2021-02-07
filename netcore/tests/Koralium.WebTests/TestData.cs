@@ -20,6 +20,30 @@ namespace Koralium.WebTests
 {
     public class TestData
     {
+        private static long lastIndexSize = 0;
+        private static List<IndexTest> indexTestData;
+        private static Dictionary<long, IndexTest> indexTestIndex;
+
+        public static (IQueryable<IndexTest>, IReadOnlyDictionary<long, IndexTest>) GetIndexTestData(long indexSize)
+        {
+            if(indexTestData == null || (indexSize != lastIndexSize))
+            {
+                lastIndexSize = indexSize;
+                indexTestData = new List<IndexTest>();
+                indexTestIndex = new Dictionary<long, IndexTest>();
+                for(int i = 0; i < indexSize; i++)
+                {
+                    var obj = new IndexTest()
+                    {
+                        Key = i
+                    };
+                    indexTestData.Add(obj);
+                    indexTestIndex.Add(i, obj);
+                }
+            }
+            return (indexTestData.AsQueryable(), indexTestIndex);
+        }
+
         public static IQueryable<Test> GetData()
         {
             var o = new List<Test>()

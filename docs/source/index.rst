@@ -17,6 +17,7 @@ Koralium SQL API
    searchfunctionality
    parameters
    datatypes
+   indexsupport
    trinoconnector
    contributordocs
 
