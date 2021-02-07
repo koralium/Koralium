@@ -35,6 +35,8 @@ namespace Koralium.WebTests
 
         public Dictionary<long, Customer> CustomerKeyIndex { get; set; }
 
+        public Dictionary<long, Order> OrderIndex { get; set; }
+
         public TpchData(string testDataLocation)
         {
             LoadTables(testDataLocation);
@@ -45,6 +47,7 @@ namespace Koralium.WebTests
         private void BuildIndices()
         {
             CustomerKeyIndex = Customers.ToDictionary(x => x.Custkey);
+            OrderIndex = Orders.ToDictionary(x => x.Orderkey);
         }
 
         private void LoadTables(string testDataLocation)

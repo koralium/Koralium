@@ -112,6 +112,16 @@ namespace Koralium.WebTests
                 //Specific
                 opt.AddTableResolver<AutoMapperCustomerResolver, AutoMapperCustomer>();
                 opt.AddTableResolver<EmptyResolver, Empty>();
+
+                opt.AddTableResolver<CustomerIndexResolver, Customer>(o =>
+                {
+                    o.TableName = "customerindex";
+                });
+
+                opt.AddTableResolver<IndexTestResolver, IndexTest>(o =>
+                {
+                    o.TableName = "indextest";
+                });
             });
             
             var tpchDataPath = Path.Join(Configuration.GetValue<string>(WebHostDefaults.ContentRootKey), Configuration.GetValue<string>("TestDataLocation"));

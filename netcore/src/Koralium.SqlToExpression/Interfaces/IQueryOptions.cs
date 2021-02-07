@@ -13,6 +13,7 @@
  */
 using Koralium.Shared;
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace Koralium
@@ -95,5 +96,7 @@ namespace Koralium
         bool ContainsFullTextSearch { get; }
 
         IReadSqlParameters Parameters { get; }
+
+        bool TryGetEqualFiltersForProperty<TProp>(Expression<Func<Entity, TProp>> propertySelection, out IReadOnlyList<TProp> equalValues);
     }
 }

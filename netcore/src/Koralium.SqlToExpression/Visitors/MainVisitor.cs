@@ -196,6 +196,10 @@ namespace Koralium.SqlToExpression.Visitors
                     var decodedString = Encoding.UTF8.GetString(Convert.FromBase64String(base64Literal.Value));
                     _visitorMetadata.Parameters.Add(SqlParameter.Create(setVariableStatement.VariableReference.Name, decodedString));
                 }
+                else if (setVariableStatement.ScalarExpression is BooleanLiteral booleanLiteral)
+                {
+                    _visitorMetadata.Parameters.Add(SqlParameter.Create(setVariableStatement.VariableReference.Name, booleanLiteral.Value));
+                }
                 else
                 {
                     throw new NotImplementedException($"The parameter type: {setVariableStatement.ScalarExpression.GetType().Name} is not implemented");
