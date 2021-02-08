@@ -8,5 +8,7 @@ namespace Koralium.WebTests.Entities
     public class IndexTest
     {
         public long Key { get; set; }
+
+        public string StringKey { get; set; }
     }
 }
