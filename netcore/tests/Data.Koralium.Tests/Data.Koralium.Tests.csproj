@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Data.Koralium\Data.Koralium.csproj" />
+    <ProjectReference Include="..\..\src\Koralium.Data.ArrowFlight\Koralium.Data.ArrowFlight.csproj" />
     <ProjectReference Include="..\Koralium.WebTests\Koralium.WebTests.csproj" />
   </ItemGroup>
 

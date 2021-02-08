@@ -12,9 +12,9 @@
  * limitations under the License.
  */
 using Data.Koralium.Tests;
-using EntityFrameworkCore.Koralium.Extensions;
 using EntityFrameworkCore.Koralium.Tests.Db;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using System;
 using System.Linq;
