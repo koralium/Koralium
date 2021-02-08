@@ -121,6 +121,7 @@ namespace Koralium.WebTests
                 opt.AddTableResolver<IndexTestResolver, IndexTest>(o =>
                 {
                     o.TableName = "indextest";
+                    o.UseInMemoryCaseInsensitiveStringOperations();
                 });
             });
             

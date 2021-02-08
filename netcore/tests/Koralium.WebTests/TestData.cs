@@ -35,7 +35,8 @@ namespace Koralium.WebTests
                 {
                     var obj = new IndexTest()
                     {
-                        Key = i
+                        Key = i,
+                        StringKey = i.ToString()
                     };
                     indexTestData.Add(obj);
                     indexTestIndex.Add(i, obj);

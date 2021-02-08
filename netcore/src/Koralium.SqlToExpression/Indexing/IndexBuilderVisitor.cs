@@ -107,10 +107,15 @@ namespace Koralium.SqlToExpression.Indexing
                     constantExpression = constantLeft;
                 }
 
-                if (memberExpression != null)
-                {
-                    AddFilter(memberExpression, constantExpression.Value);
-                }
+                HandleBooleanComparision(memberExpression, constantExpression);
+            }
+        }
+
+        private void HandleBooleanComparision(MemberExpression memberExpression, ConstantExpression constantExpression)
+        {
+            if (memberExpression != null && constantExpression != null)
+            {
+                AddFilter(memberExpression, constantExpression.Value);
             }
         }
 
@@ -122,6 +127,14 @@ namespace Koralium.SqlToExpression.Indexing
                 {
                     return node;
                 }
+            }
+            // In memory case insensitive string equals
+            else if (node.Method.Name == "InternalStringEquals" &&
+                node.Arguments.Count == 2 &&
+                node.Arguments[0] is MemberExpression memberExpression &&
+                node.Arguments[1] is ConstantExpression constantExpression)
+            {
+                HandleBooleanComparision(memberExpression, constantExpression);
             }
 
             return node;
