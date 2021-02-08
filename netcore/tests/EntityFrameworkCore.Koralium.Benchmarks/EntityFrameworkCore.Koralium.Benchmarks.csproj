@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\EntityFrameworkCore.Koralium\EntityFrameworkCore.Koralium.csproj" />
+    <ProjectReference Include="..\..\src\Koralium.EntityFrameworkCore.ArrowFlight\Koralium.EntityFrameworkCore.ArrowFlight.csproj" />
     <ProjectReference Include="..\Koralium.WebTests\Koralium.WebTests.csproj" />
   </ItemGroup>
 

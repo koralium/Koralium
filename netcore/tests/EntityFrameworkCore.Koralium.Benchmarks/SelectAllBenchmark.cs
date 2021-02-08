@@ -14,8 +14,8 @@
 using BenchmarkDotNet.Attributes;
 using EntityFrameworkCore.Koralium.Tests.Db;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 using System;
-using EntityFrameworkCore.Koralium.Extensions;
 using System.Linq;
 
 namespace EntityFrameworkCore.Koralium.Benchmarks

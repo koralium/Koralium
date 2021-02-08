@@ -11,8 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using EntityFrameworkCore.Koralium.Extensions;
+
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Koralium.TestFramework
 {
@@ -28,7 +29,7 @@ namespace Koralium.TestFramework
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            Data.Koralium.KoraliumConnectionStringBuilder koraliumConnectionStringBuilder = new Data.Koralium.KoraliumConnectionStringBuilder();
+            Data.ArrowFlight.KoraliumConnectionStringBuilder koraliumConnectionStringBuilder = new Data.ArrowFlight.KoraliumConnectionStringBuilder();
             koraliumConnectionStringBuilder.DataSource = _testContextSettings.Url;
             if(_testContextSettings.AccessToken != null)
             {
