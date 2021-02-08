@@ -211,3 +211,22 @@ jobs:
         NUGET_KEY: ${{ secrets.NUGET_KEY }}
         TAG_COMMIT: false
         VERSION_STATIC: ${{ steps.tag.outputs.VERSION }}
+    - name: publish Data Arrow Flight
+      id: publish_nuget_koralium_data_arrowflight
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: netcore/src/Koralium.Data.ArrowFlight/Koralium.Data.ArrowFlight.csproj
+        PACKAGE_NAME: Koralium.Data.ArrowFlight
+        NUGET_KEY: ${{ secrets.NUGET_KEY }}
+        TAG_COMMIT: false
+        VERSION_STATIC: ${{ steps.tag.outputs.VERSION }}
+    - name: publish EntityFrameworkCore Arrow Flight
+      id: publish_nuget_koralium_entityframeworkcore_arrowflight
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: netcore/src/Koralium.EntityFrameworkCore.ArrowFlight/Koralium.EntityFrameworkCore.ArrowFlight.csproj
+        PACKAGE_NAME: Koralium.EntityFrameworkCore.ArrowFlight
+        NUGET_KEY: ${{ secrets.NUGET_KEY }}
+        TAG_COMMIT: false
+        VERSION_STATIC: ${{ steps.tag.outputs.VERSION }}
+
