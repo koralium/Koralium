@@ -2,6 +2,7 @@
 using Koralium.Shared;
 using Koralium.SqlParser;
 using Koralium.SqlParser.Expressions;
+using Koralium.Transport.Exceptions;
 using Koralium.Transport.RowLevelSecurity.FormatConverters;
 using Koralium.Transport.RowLevelSecurity.FormatConverters.Cubejs;
 using System;
@@ -55,6 +56,10 @@ namespace Koralium.Transport.RowLevelSecurity.Services
             catch(SqlErrorException error)
             {
                 throw new RpcException(new Status(StatusCode.InvalidArgument, error.Message));
+            }
+            catch(AuthorizationFailedException authError)
+            {
+                throw new RpcException(new Status(StatusCode.Unauthenticated, authError.Message));
             }
             catch(Exception)
             {

@@ -89,5 +89,28 @@ namespace Koralium.Transport.RowLevelSecurity.Tests
 
             Assert.AreEqual("{\"and\":[{\"member\":\"orders.custkey\",\"operator\":\"gt\",\"values\":[\"10\"]},{\"member\":\"orders.custkey\",\"operator\":\"lt\",\"values\":[\"100\"]}]}", filter.Filter);
         }
+
+        [Test]
+        public async Task TestUnauthorized()
+        {
+            Metadata headers = new Metadata();
+
+            var ex = Assert.ThrowsAsync<RpcException>(async () =>
+            {
+                await client.GetRowLevelSecurityFilterAsync(new RowLevelSecurityRequest()
+                {
+                    TableName = "secure",
+                    Format = Format.Cubejs,
+                    CubejsOptions = new CubeJsOptions()
+                    {
+                        CubeName = "orders",
+                        LowerCaseFirstMemberCharacter = true
+                    }
+                }, headers);
+            });
+
+            Assert.That(ex.StatusCode, Is.EqualTo(StatusCode.Unauthenticated));
+            Assert.That(ex.Status.Detail, Is.EqualTo("Authorization failed"));
+        }
     }
 }

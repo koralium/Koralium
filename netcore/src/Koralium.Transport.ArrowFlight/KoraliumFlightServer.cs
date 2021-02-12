@@ -19,6 +19,7 @@ using Grpc.Core;
 using Koralium.Shared;
 using Koralium.Transport.ArrowFlight.Encoders;
 using Koralium.Transport.ArrowFlight.Utils;
+using Koralium.Transport.Exceptions;
 using Koralium.Transport.Extensions;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -51,6 +52,7 @@ namespace Koralium.Transport.ArrowFlight
                     maxBatchSize = parsedMaxBatchSize;
                 }
 
+                
                 var queryResult = await _koraliumTransportService.Execute(ticket.Ticket.ToStringUtf8(), new Shared.SqlParameters(), context.GetHttpContext());
 
                 //Get the resulting schema
@@ -95,7 +97,11 @@ namespace Koralium.Transport.ArrowFlight
             {
                 throw new RpcException(new Status(StatusCode.InvalidArgument, error.Message));
             }
-            catch(Exception e)
+            catch (AuthorizationFailedException authFailed)
+            {
+                throw new RpcException(new Status(StatusCode.Unauthenticated, authFailed.Message));
+            }
+            catch (Exception e)
             {
                 throw new RpcException(new Status(StatusCode.Internal, "Internal error"));
             }

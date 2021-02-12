@@ -14,6 +14,7 @@
 using Grpc.Core;
 using Koralium.Grpc;
 using Koralium.Shared;
+using Koralium.Transport.Exceptions;
 using Koralium.Transport.Extensions;
 using Koralium.Transport.LegacyGrpc.Decoders;
 using Koralium.Transport.LegacyGrpc.Encoders;
@@ -86,7 +87,16 @@ namespace Koralium.Transport.LegacyGrpc
         public async Task Query(QueryRequest request, ChannelWriter<Page> channelWriter, ServerCallContext context)
         {
             var parameters = ParameterDecoder.DecodeParameters(request.Parameters);
-            var queryResult = await _koraliumExecutor.Execute(request.Query, parameters, context.GetHttpContext());
+
+            QueryResult queryResult;
+            try
+            {
+                queryResult = await _koraliumExecutor.Execute(request.Query, parameters, context.GetHttpContext());
+            }
+            catch (AuthorizationFailedException authFailed)
+            {
+                throw new RpcException(new Status(StatusCode.Unauthenticated, authFailed.Message));
+            }
 
             var enumerator = queryResult.Result.GetEnumerator();
 
