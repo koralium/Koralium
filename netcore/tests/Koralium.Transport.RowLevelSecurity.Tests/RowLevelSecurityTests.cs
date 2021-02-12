@@ -91,7 +91,7 @@ namespace Koralium.Transport.RowLevelSecurity.Tests
         }
 
         [Test]
-        public async Task TestUnauthorized()
+        public void TestUnauthorized()
         {
             Metadata headers = new Metadata();
 
