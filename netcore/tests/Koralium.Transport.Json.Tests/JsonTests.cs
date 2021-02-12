@@ -89,5 +89,15 @@ namespace Koralium.Transport.Json.Tests
             responseContent.Should().Be("Only one parameter named 'query' can be sent in");
         }
 
+        [Test]
+        public async Task TestUnauthorized()
+        {
+            var response = await httpClient.GetAsync($"{url}?query=select * from secure");
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            responseContent.Should().Be("Authorization failed");
+        }
+
     }
 }

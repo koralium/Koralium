@@ -171,5 +171,15 @@ namespace Koralium.Transport.ArrowFlight.Tests
 
             }
         }
+
+        [Test]
+        public void TestUnauthorized()
+        {
+            var getStream = client.GetStream(new FlightTicket("select * from secure"));
+
+            var exception = Assert.ThrowsAsync<RpcException>(async () => await getStream.ResponseStream.MoveNext());
+            Assert.That(exception.StatusCode, Is.EqualTo(StatusCode.Unauthenticated));
+            Assert.That(exception.Status.Detail, Is.EqualTo("Authorization failed"));
+        }
     }
 }

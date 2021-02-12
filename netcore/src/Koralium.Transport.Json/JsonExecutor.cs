@@ -20,6 +20,7 @@ using Koralium.Transport.Json.Encoders;
 using System.Text.Json;
 using Koralium.Shared;
 using Microsoft.Extensions.Logging;
+using Koralium.Transport.Exceptions;
 
 namespace Koralium.Transport.Json
 {
@@ -74,6 +75,12 @@ namespace Koralium.Transport.Json
             {
                 logger.LogWarning(error.Message);
                 await WriteError(context, 400, error.Message);
+                return;
+            }
+            catch(AuthorizationFailedException authFailed)
+            {
+                logger.LogWarning(authFailed.Message, authFailed);
+                await WriteError(context, 401, authFailed.Message);
                 return;
             }
             catch(Exception e)

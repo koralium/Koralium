@@ -1,4 +1,5 @@
 ﻿using Grpc.Core;
+using Koralium.Transport.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,7 +38,7 @@ namespace Koralium.Core.Utils
                 }
                 if (!authContext.HasSucceeded)
                 {
-                    throw new RpcException(new Status(StatusCode.Unauthenticated, "Authorization failed"));
+                    throw new AuthorizationFailedException("Authorization failed");
                 }
             }
         }
