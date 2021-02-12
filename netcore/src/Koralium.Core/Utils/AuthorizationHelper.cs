@@ -39,7 +39,6 @@ namespace Koralium.Core.Utils
                 if (!authContext.HasSucceeded)
                 {
                     throw new AuthorizationFailedException("Authorization failed");
-                    throw new RpcException(new Status(StatusCode.Unauthenticated, "Authorization failed"));
                 }
             }
         }
