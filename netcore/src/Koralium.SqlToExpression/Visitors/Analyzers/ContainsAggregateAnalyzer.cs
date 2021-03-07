@@ -13,7 +13,6 @@
  */
 using Koralium.SqlParser.Expressions;
 using Koralium.SqlParser.Visitor;
-using System;
 
 namespace Koralium.SqlToExpression.Visitors.Analyzers
 {

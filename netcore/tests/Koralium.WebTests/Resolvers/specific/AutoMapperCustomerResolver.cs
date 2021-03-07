@@ -12,8 +12,6 @@
  * limitations under the License.
  */
 using AutoMapper;
-using Koralium.Interfaces;
-using Koralium.SqlToExpression;
 using Koralium.WebTests.Database;
 using Koralium.WebTests.Entities.specific;
 using Koralium.WebTests.Entities.tpch;

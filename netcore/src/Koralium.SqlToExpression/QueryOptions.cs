@@ -12,7 +12,6 @@
  * limitations under the License.
  */
 using Koralium.Shared;
-using Koralium.SqlToExpression;
 using Koralium.SqlToExpression.Indexing;
 using System;
 using System.Linq.Expressions;

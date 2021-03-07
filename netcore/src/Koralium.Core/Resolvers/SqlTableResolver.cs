@@ -11,13 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Grpc.Core;
 using Koralium.Core.Utils;
 using Koralium.Interfaces;
 using Koralium.Models;
 using Koralium.Shared;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;

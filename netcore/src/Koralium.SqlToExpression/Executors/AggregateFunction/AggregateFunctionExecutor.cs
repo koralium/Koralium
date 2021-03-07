@@ -13,7 +13,6 @@
  */
 using Koralium.SqlToExpression.Executors.Select;
 using Koralium.SqlToExpression.Generated;
-using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages.ExecuteStages;
 using Koralium.SqlToExpression.Utils;
 using System;

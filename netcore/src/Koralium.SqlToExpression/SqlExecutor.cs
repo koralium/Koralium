@@ -22,9 +22,7 @@ using Koralium.SqlToExpression.Stages;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Koralium.SqlToExpression.Utils;
 using Koralium.SqlToExpression.Visitors;
-using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 

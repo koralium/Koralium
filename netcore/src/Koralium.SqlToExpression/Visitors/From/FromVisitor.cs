@@ -18,7 +18,6 @@ using Koralium.SqlParser.Visitor;
 using Koralium.SqlToExpression.Metadata;
 using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages.CompileStages;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 

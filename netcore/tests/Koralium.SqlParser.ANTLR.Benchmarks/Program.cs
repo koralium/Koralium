@@ -13,7 +13,6 @@
  */
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
-using System;
 
 namespace Koralium.SqlParser.ANTLR.Benchmarks
 {

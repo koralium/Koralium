@@ -12,9 +12,7 @@
  * limitations under the License.
  */
 using Grpc.Core;
-using Koralium.WebTests;
 using NUnit.Framework;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Koralium.Transport.RowLevelSecurity.Tests

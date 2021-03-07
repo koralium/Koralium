@@ -13,7 +13,6 @@
  */
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
-using Microsoft.EntityFrameworkCore.Storage;
 using System.Linq.Expressions;
 
 namespace Koralium.EntityFrameworkCore.ArrowFlight.Query.Internal

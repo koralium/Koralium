@@ -16,14 +16,12 @@ using Apache.Arrow.Flight;
 using Apache.Arrow.Flight.Client;
 using Apache.Arrow.Types;
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Jobs;
 using Grpc.Net.Client;
 using Koralium.WebTests.Entities.tpch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Koralium.Transport.Benchmarks

@@ -18,8 +18,6 @@ using Koralium.SqlParser.Statements;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Koralium.Core.RowLevelSecurity

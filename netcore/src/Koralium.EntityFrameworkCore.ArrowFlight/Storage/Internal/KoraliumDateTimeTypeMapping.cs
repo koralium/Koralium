@@ -12,11 +12,8 @@
  * limitations under the License.
  */
 using Microsoft.EntityFrameworkCore.Storage;
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 
 namespace Koralium.EntityFrameworkCore.ArrowFlight.Storage.Internal
 {

@@ -12,7 +12,6 @@
  * limitations under the License.
  */
 using Koralium.SqlToExpression.Stages.CompileStages;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Expressions;

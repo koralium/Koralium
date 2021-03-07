@@ -12,7 +12,6 @@
  * limitations under the License.
  */
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Koralium.TestFramework
 {

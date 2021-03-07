@@ -14,9 +14,6 @@
 using Grpc.AspNetCore.Server;
 using Koralium.Transport.ArrowFlight;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Koralium.Transport.Json.Extensions
 {

@@ -13,8 +13,6 @@
  */
 using Koralium.Transport.ArrowFlight.Encoders;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Koralium.Transport.ArrowFlight.Utils
 {

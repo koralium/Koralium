@@ -13,7 +13,6 @@
  */
 using Koralium.EntityFrameworkCore.ArrowFlight.Infrastructure;
 using Koralium.EntityFrameworkCore.ArrowFlight.Infrastructure.Internal;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
 

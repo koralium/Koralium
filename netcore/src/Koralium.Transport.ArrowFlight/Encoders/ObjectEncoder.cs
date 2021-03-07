@@ -15,11 +15,8 @@ using Apache.Arrow;
 using Apache.Arrow.Types;
 using Koralium.Transport.ArrowFlight.Utils;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 
 namespace Koralium.Transport.ArrowFlight.Encoders
 {

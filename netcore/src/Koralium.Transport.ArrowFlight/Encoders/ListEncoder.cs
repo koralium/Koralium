@@ -19,7 +19,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 
 namespace Koralium.Transport.ArrowFlight.Encoders
 {
