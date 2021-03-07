@@ -12,9 +12,7 @@
  * limitations under the License.
  */
 using Koralium.Transport.RowLevelSecurity.FormatConverters.Elasticsearch.Models;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Koralium.Transport.RowLevelSecurity.FormatConverters.Elasticsearch.Optimizers
 {

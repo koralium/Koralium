@@ -13,9 +13,6 @@
  */
 using Apache.Arrow.Flight;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Koralium.Transport.ArrowFlight.Tests
 {

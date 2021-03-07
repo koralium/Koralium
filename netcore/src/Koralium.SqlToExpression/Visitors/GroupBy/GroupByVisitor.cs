@@ -15,7 +15,6 @@ using Koralium.SqlParser.Expressions;
 using Koralium.SqlParser.Visitor;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Koralium.SqlToExpression.Utils;
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 

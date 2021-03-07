@@ -12,9 +12,6 @@
  * limitations under the License.
  */
 using Apache.Arrow;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Koralium.Transport.ArrowFlight.Encoders
 {

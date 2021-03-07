@@ -14,9 +14,6 @@
 using Koralium.SqlParser.Expressions;
 using Koralium.Transport.RowLevelSecurity.FormatConverters.Cubejs.Converter;
 using Koralium.Transport.RowLevelSecurity.FormatConverters.Cubejs.Serializers;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json;
 
 namespace Koralium.Transport.RowLevelSecurity.FormatConverters.Cubejs

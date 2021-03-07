@@ -11,7 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Koralium.Transport.RowLevelSecurity.FormatConverters.Elasticsearch.Models;
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;

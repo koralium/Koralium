@@ -15,9 +15,6 @@ using Koralium.SqlParser;
 using Koralium.SqlParser.Clauses;
 using Koralium.SqlParser.Expressions;
 using Koralium.SqlParser.Visitor;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Koralium.Partitions
 {

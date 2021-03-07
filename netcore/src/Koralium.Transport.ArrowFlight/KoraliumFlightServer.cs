@@ -14,14 +14,11 @@
 using Apache.Arrow;
 using Apache.Arrow.Flight;
 using Apache.Arrow.Flight.Server;
-using Google.Protobuf;
 using Grpc.Core;
 using Koralium.Shared;
-using Koralium.Transport.ArrowFlight.Encoders;
 using Koralium.Transport.ArrowFlight.Utils;
 using Koralium.Transport.Exceptions;
 using Koralium.Transport.Extensions;
-using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;

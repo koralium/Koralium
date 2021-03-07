@@ -13,7 +13,6 @@
  */
 using Koralium.Interfaces;
 using Koralium.Models;
-using Koralium.Resolvers;
 using Koralium.Shared;
 using Koralium.SqlParser;
 using Koralium.SqlToExpression;

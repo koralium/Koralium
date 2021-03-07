@@ -13,10 +13,7 @@
  */
 using Apache.Arrow.Types;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
 namespace Koralium.Transport.ArrowFlight.Tests
 {

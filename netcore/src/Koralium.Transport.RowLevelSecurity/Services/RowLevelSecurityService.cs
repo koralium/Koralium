@@ -13,7 +13,6 @@
  */
 using Grpc.Core;
 using Koralium.Shared;
-using Koralium.SqlParser;
 using Koralium.SqlParser.Expressions;
 using Koralium.Transport.Exceptions;
 using Koralium.Transport.RowLevelSecurity.FormatConverters;

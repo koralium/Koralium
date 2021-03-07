@@ -13,9 +13,7 @@
  */
 using Koralium.Interfaces;
 using Koralium.SqlParser.Expressions;
-using Koralium.SqlToExpression;
 using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 

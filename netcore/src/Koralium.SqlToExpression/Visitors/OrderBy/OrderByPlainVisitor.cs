@@ -16,7 +16,6 @@ using Koralium.SqlParser.OrderBy;
 using Koralium.SqlToExpression.Extensions;
 using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages.CompileStages;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Expressions;

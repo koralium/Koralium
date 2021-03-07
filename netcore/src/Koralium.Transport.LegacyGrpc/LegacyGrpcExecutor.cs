@@ -20,7 +20,6 @@ using Koralium.Transport.LegacyGrpc.Decoders;
 using Koralium.Transport.LegacyGrpc.Encoders;
 using Koralium.Transport.LegacyGrpc.Interfaces;
 using Koralium.Transport.LegacyGrpc.Utils;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;

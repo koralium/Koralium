@@ -18,7 +18,6 @@ using Koralium.SqlParser.Visitor;
 using Koralium.Transport.RowLevelSecurity.FormatConverters.Cubejs.Models;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Koralium.Transport.RowLevelSecurity.FormatConverters.Cubejs.Converter
 {

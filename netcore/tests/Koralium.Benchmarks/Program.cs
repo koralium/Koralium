@@ -12,7 +12,6 @@
  * limitations under the License.
  */
 using BenchmarkDotNet.Running;
-using System;
 
 namespace Koralium.Benchmarks
 {

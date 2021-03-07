@@ -12,7 +12,6 @@
  * limitations under the License.
  */
 using Antlr4.Runtime;
-using Antlr4.Runtime.Tree;
 using Koralium.SqlParser.Errors;
 using Koralium.SqlParser.Expressions;
 using Koralium.SqlParser.Statements;

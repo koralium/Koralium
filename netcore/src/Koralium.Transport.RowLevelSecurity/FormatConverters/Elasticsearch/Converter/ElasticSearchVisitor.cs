@@ -17,7 +17,6 @@ using Koralium.SqlParser.Literals;
 using Koralium.SqlParser.Visitor;
 using Koralium.Transport.RowLevelSecurity.FormatConverters.Elasticsearch.Models;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Koralium.Transport.RowLevelSecurity.FormatConverters.Elasticsearch
 {

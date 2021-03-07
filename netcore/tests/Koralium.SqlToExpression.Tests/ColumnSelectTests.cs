@@ -14,7 +14,6 @@
 using Koralium.SqlToExpression.Generated;
 using Koralium.SqlToExpression.Tests.Helpers;
 using Koralium.SqlToExpression.Tests.Models;
-using Koralium.SqlToExpression.Utils;
 using NUnit.Framework;
 using System;
 using System.Collections;

@@ -11,12 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Koralium.WebTests;
 using Koralium.WebTests.Entities;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Koralium.TestFramework.Tests
 {

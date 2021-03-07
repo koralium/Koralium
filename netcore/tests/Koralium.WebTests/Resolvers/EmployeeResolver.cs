@@ -12,8 +12,6 @@
  * limitations under the License.
  */
 using Koralium;
-using Koralium.Interfaces;
-using Koralium.SqlToExpression;
 using Koralium.WebTests;
 using Koralium.WebTests.Entities;
 using System.Linq;

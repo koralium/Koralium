@@ -17,7 +17,6 @@ using Apache.Arrow.Flight.Client;
 using Apache.Arrow.Types;
 using NUnit.Framework;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 
