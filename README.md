@@ -1,7 +1,7 @@
 
 <br />
 <p align="center">
-  <h3 align="center">Koralium, .NET SQL API</h3>
+  <h1 align="center">Koralium, .NET SQL API</h1>
 
   <p align="center">
     .NET SQL Data Service & Apache Arrow Flight API Framework
