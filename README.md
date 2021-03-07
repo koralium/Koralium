@@ -5,6 +5,8 @@
 
   <p align="center">
     .NET SQL Data Service & Apache Arrow Flight API Framework
+  <br />
+    <a href="https://koralium.readthedocs.io/en/latest/"><strong>Explore the docs »</strong></a>
   </p>
 </p>
 
