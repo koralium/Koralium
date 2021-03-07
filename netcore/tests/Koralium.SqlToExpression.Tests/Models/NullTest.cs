@@ -11,7 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 namespace Koralium.SqlToExpression.Tests.Models
 {
     public class NullTest

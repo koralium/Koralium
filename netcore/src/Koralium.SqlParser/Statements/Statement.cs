@@ -11,7 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 namespace Koralium.SqlParser.Statements
 {
     public abstract class Statement : SqlNode
