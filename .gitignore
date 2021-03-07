@@ -6,6 +6,9 @@
 # docs
 build/
 
+# antlr
+.antlr
+
 #typescript
 lib/
 
