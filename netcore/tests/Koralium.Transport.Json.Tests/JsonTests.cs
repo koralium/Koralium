@@ -13,9 +13,12 @@
  */
 using FluentAssertions;
 using Koralium.WebTests;
+using Koralium.WebTests.Entities;
 using Koralium.WebTests.Entities.tpch;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -97,6 +100,19 @@ namespace Koralium.Transport.Json.Tests
 
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             responseContent.Should().Be("Authorization failed");
+        }
+
+        [Test]
+        public async Task TestTypes()
+        {
+            var response = await httpClient.GetAsync($"{url}?query=select * from typetest");
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            var actual = JsonConvert.DeserializeObject<Response<TypeTest>>(responseContent).Values;
+
+
+            var expected = TestData.GetTypeTests().ToList();
+            actual.Should().BeEquivalentTo(expected);
         }
 
     }
