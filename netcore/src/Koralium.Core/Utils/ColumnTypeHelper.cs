@@ -14,6 +14,7 @@
 using Koralium.Shared;
 using Koralium.Transport;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Koralium.Utils
@@ -23,7 +24,7 @@ namespace Koralium.Utils
 
         internal static bool IsArray(Type type)
         {
-            return type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(List<>));
+            return typeof(IEnumerable).IsAssignableFrom(type);
         }
 
         internal static bool IsBaseType(Type type)
