@@ -91,7 +91,7 @@ namespace Koralium.SqlToExpression.Visitors
             var identifiers = columnReference.Identifiers;
 
             identifiers = MemberUtils.RemoveAlias(_previousStage, identifiers);
-            var memberAccess = MemberUtils.GetMember(_previousStage, identifiers, out var property);
+            var memberAccess = MemberUtils.GetMember(_previousStage, identifiers, _visitorMetadata.OperationsProvider, out var property);
             AddUsedProperty(property);
             AddExpressionToStack(memberAccess);
             AddNameToStack(string.Join(".", identifiers));
@@ -201,7 +201,7 @@ namespace Koralium.SqlToExpression.Visitors
                 leftExpression,
                 rightExpression,
                 booleanComparisonExpression.Type,
-                _visitorMetadata.StringOperationsProvider);
+                _visitorMetadata.OperationsProvider);
 
             AddExpressionToStack(expression);
         }

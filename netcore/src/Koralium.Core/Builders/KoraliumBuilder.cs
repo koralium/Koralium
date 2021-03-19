@@ -76,7 +76,7 @@ namespace Koralium.Builders
                 columns, 
                 securityPolicy, 
                 opt.Indicies,
-                opt.StringOperationsProvider,
+                opt.OperationsProvider,
                 partitionResolver));
 
             return this;

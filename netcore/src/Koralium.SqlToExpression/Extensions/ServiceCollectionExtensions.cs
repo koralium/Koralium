@@ -38,7 +38,7 @@ namespace Koralium.SqlToExpression.Extensions
             services.AddSingleton<IOffsetExecutorFactory, DefaultOffsetExecutorFactory>();
             services.AddSingleton<IDistinctExecutorFactory, DefaultDistinctExecutorFactory>();
             services.AddSingleton<ISearchExpressionProvider, DefaultSearchExpressionProvider>();
-            services.AddSingleton<IStringOperationsProvider, DefaultStringOperationsProvider>();
+            services.AddSingleton<IOperationsProvider, DefaultOperationsProvider>();
             services.AddSingleton<IAggregateFunctionExecutorFactory, DefaultAggregateFunctionFactory>();
 
             services.AddScoped<SqlExecutor>();

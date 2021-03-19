@@ -11,32 +11,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Running;
 using Koralium.SqlParser.ANTLR;
 using Koralium.SqlToExpression.Executors;
 using Koralium.SqlToExpression.Executors.AggregateFunction;
 using Koralium.SqlToExpression.Executors.Offset;
 using Koralium.SqlToExpression.Metadata;
 using Koralium.SqlToExpression.Providers;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
-using System.IO;
+using Koralium.WebTests.Entities;
+using NUnit.Framework;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace Koralium.SqlToExpression.Benchmark
+namespace Koralium.SqlToExpression.Tests.Helpers
 {
-
-    public class SqlToExpressionParsing
+    class TypeTestBase
     {
         private SqlExecutor sqlExecutor;
-        private TSql150Parser sql150Parser;
+        private TpchData tpchData;
 
-        public SqlToExpressionParsing()
+        protected SqlExecutor SqlExecutor => sqlExecutor;
+
+        protected TpchData TpchData => tpchData;
+
+        private class TypeTestTableResolver : ISqlTableResolver
         {
+            public ValueTask<IQueryable> ResolveTableName(string name, object additionalData, IQueryOptions queryOptions)
+            {
+                return new ValueTask<IQueryable>(WebTests.TestData.GetTypeTests());
+            }
+        }
+
+        [OneTimeSetUp]
+        public void Setup()
+        {
+            tpchData = new TpchData();
             TablesMetadata tablesMetadata = new TablesMetadata();
-            tablesMetadata.AddTable(new TableMetadata("project", typeof(Project)));
+            tablesMetadata.AddTable(new TableMetadata("typetest", typeof(TypeTest), new InMemoryOperationsProvider()));
 
             var queryExecutor = new QueryExecutor(
-                new TableResolver(),
+                new TypeTestTableResolver(),
                 new DefaultFromTableExecutorFactory(),
                 new DefaultWhereExecutorFactory(),
                 new DefaultGroupByExecutorFactory(),
@@ -48,34 +61,15 @@ namespace Koralium.SqlToExpression.Benchmark
 
             sqlExecutor = new SqlExecutor(
                 new AntlrSqlParser(),
-                tablesMetadata, 
-                queryExecutor, 
+                tablesMetadata,
+                queryExecutor,
                 new DefaultSearchExpressionProvider(),
                 new DefaultOperationsProvider());
-
-            sql150Parser = new TSql150Parser(true);
         }
 
-        [Benchmark]
-        public void MicrosoftSQLParser()
+        protected void AssertAreEqual(IQueryable expected, IQueryable actual)
         {
-            string expr = @"select sum(p.id), p.name from project p where p.name = 'alex' and (p.id = 1 OR p.id = 2) group by name";
-            sql150Parser.Parse(new StringReader(expr), out var errors).Accept(new Visitor());
-        }
-
-        [Benchmark]
-        public void SimpleSelect() => sqlExecutor.Execute("select name from project");
-
-        [Benchmark]
-        public void AdvancedSelect() => sqlExecutor.Execute("select sum(p.id), p.name from project p where p.name = 'alex' and (p.id = 1 OR p.id = 2) group by name");
-    }
-
-
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            var summary = BenchmarkRunner.Run(typeof(Program).Assembly);
+            Assert.That(actual, Is.EqualTo(expected).Using(new QueryComparer()));
         }
     }
 }

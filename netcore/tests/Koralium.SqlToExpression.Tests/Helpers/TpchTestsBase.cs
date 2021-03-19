@@ -41,13 +41,13 @@ namespace Koralium.SqlToExpression.Tests
             tablesMetadata.AddTable(new TableMetadata("customer", typeof(Customer)));
             tablesMetadata.AddTable(new TableMetadata("lineitem", typeof(LineItem)));
             tablesMetadata.AddTable(new TableMetadata("nation", typeof(Nation)));
-            tablesMetadata.AddTable(new TableMetadata("order", typeof(Order), new CaseInsensitiveStringOperationsProvider()));
+            tablesMetadata.AddTable(new TableMetadata("order", typeof(Order), new InMemoryOperationsProvider()));
             tablesMetadata.AddTable(new TableMetadata("part", typeof(Part)));
             tablesMetadata.AddTable(new TableMetadata("partsupp", typeof(Partsupp)));
             tablesMetadata.AddTable(new TableMetadata("region", typeof(Region)));
             tablesMetadata.AddTable(new TableMetadata("supplier", typeof(Supplier)));
             tablesMetadata.AddTable(new TableMetadata("columntest", typeof(ColumnTest)));
-            tablesMetadata.AddTable(new TableMetadata("nulltest", typeof(NullTest), new CaseInsensitiveStringOperationsProvider()));
+            tablesMetadata.AddTable(new TableMetadata("nulltest", typeof(NullTest), new InMemoryOperationsProvider()));
 
             var queryExecutor = new QueryExecutor(
                 new TableResolver(tpchData),
@@ -65,7 +65,7 @@ namespace Koralium.SqlToExpression.Tests
                 tablesMetadata, 
                 queryExecutor, 
                 new DefaultSearchExpressionProvider(),
-                new DefaultStringOperationsProvider());
+                new DefaultOperationsProvider());
         }
 
         protected void AssertAreEqual(IQueryable expected, IQueryable actual)

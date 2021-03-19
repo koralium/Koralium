@@ -34,7 +34,7 @@ namespace Koralium.SqlToExpression
         private readonly StageConverter _stageConverter;
         private readonly IQueryExecutor _queryExecutor;
         private readonly ISearchExpressionProvider _searchExpressionProvider;
-        private readonly IStringOperationsProvider _stringOperationsProvider;
+        private readonly IOperationsProvider _operationsProvider;
 
         private readonly ISqlParser _sqlParser;
         public SqlExecutor(
@@ -42,21 +42,21 @@ namespace Koralium.SqlToExpression
             TablesMetadata tablesMetadata,
             IQueryExecutor queryExecutor,
             ISearchExpressionProvider searchExpressionProvider,
-            IStringOperationsProvider stringOperationsProvider)
+            IOperationsProvider operationsProvider)
         {
             _sqlParser = sqlParser;
             _tablesMetadata = tablesMetadata;
             _queryExecutor = queryExecutor;
             _stageConverter = new StageConverter();
             _searchExpressionProvider = searchExpressionProvider;
-            _stringOperationsProvider = stringOperationsProvider;
+            _operationsProvider = operationsProvider;
         }
 
         public async ValueTask<object> ExecuteScalar(string sql, SqlParameters parameters = null, object data = null)
         {
             sql = OffsetLimitUtils.TransformQuery(sql);
             var tree = _sqlParser.Parse(sql);
-            var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata, _searchExpressionProvider, _stringOperationsProvider));
+            var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata, _searchExpressionProvider, _operationsProvider));
             tree.Accept(mainVisitor);
 
             //Convert into execute stages
@@ -91,7 +91,7 @@ namespace Koralium.SqlToExpression
                 throw new SqlErrorException(firstError.Message);
             }
 
-            var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata, _searchExpressionProvider, _stringOperationsProvider));
+            var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata, _searchExpressionProvider, _operationsProvider));
             tree.Accept(mainVisitor);
 
             return mainVisitor.Stages;
@@ -99,7 +99,7 @@ namespace Koralium.SqlToExpression
 
         private IReadOnlyList<IQueryStage> GetStages(StatementList tree, SqlParameters parameters)
         {
-            var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata, _searchExpressionProvider, _stringOperationsProvider));
+            var mainVisitor = new MainVisitor(new VisitorMetadata(parameters, _tablesMetadata, _searchExpressionProvider, _operationsProvider));
             tree.Accept(mainVisitor);
 
             return mainVisitor.Stages;

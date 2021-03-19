@@ -26,13 +26,13 @@ namespace Koralium.SqlToExpression.Visitors
 
         public ISearchExpressionProvider SearchExpressionProvider { get; }
 
-        public IStringOperationsProvider StringOperationsProvider { get; set; }
+        public IOperationsProvider OperationsProvider { get; set; }
 
         public VisitorMetadata(
             SqlParameters sqlParameters, 
             TablesMetadata tablesMetadata, 
             ISearchExpressionProvider searchExpressionProvider,
-            IStringOperationsProvider stringOperationsProvider)
+            IOperationsProvider operationsProvider)
         {
             Debug.Assert(tablesMetadata != null);
 
@@ -46,7 +46,7 @@ namespace Koralium.SqlToExpression.Visitors
             }
             TablesMetadata = tablesMetadata;
             SearchExpressionProvider = searchExpressionProvider;
-            StringOperationsProvider = stringOperationsProvider;
+            OperationsProvider = operationsProvider;
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Koralium.Interfaces
     {
         string TableName { get; set; }
 
-        ITableResolverBuilder<T> SetStringOperationsProvider(IStringOperationsProvider stringOperationsProvider);
+        ITableResolverBuilder<T> SetOperationsProvider(IOperationsProvider operationsProvider);
 
         ITableResolverBuilder<T> SetPartitionResolver(PartitionResolver partitionResolver);
     }

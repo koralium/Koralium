@@ -11,23 +11,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Koralium.SqlToExpression.Interfaces;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Koralium.SqlToExpression.Providers
 {
-    public class CaseInsensitiveStringOperationsProvider : IStringOperationsProvider
+    public class InMemoryOperationsProvider : DefaultOperationsProvider
     {
+        #region String handling
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Only used in this class")]
-        private static readonly MethodInfo StringContains = typeof(CaseInsensitiveStringOperationsProvider).GetMethod("InternalStringContains", BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly MethodInfo StringContains = typeof(InMemoryOperationsProvider).GetMethod("InternalStringContains", BindingFlags.NonPublic | BindingFlags.Static);
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Only used in this class")]
-        private static readonly MethodInfo StringStartsWith = typeof(CaseInsensitiveStringOperationsProvider).GetMethod("InternalStringStartsWith", BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly MethodInfo StringStartsWith = typeof(InMemoryOperationsProvider).GetMethod("InternalStringStartsWith", BindingFlags.NonPublic | BindingFlags.Static);
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Only used in this class")]
-        private static readonly MethodInfo StringEndsWith = typeof(CaseInsensitiveStringOperationsProvider).GetMethod("InternalStringEndsWith", BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly MethodInfo StringEndsWith = typeof(InMemoryOperationsProvider).GetMethod("InternalStringEndsWith", BindingFlags.NonPublic | BindingFlags.Static);
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Only used in this class")]
-        private static readonly MethodInfo StringEquals = typeof(CaseInsensitiveStringOperationsProvider).GetMethod("InternalStringEquals", BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly MethodInfo StringEquals = typeof(InMemoryOperationsProvider).GetMethod("InternalStringEquals", BindingFlags.NonPublic | BindingFlags.Static);
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1144:Unused private types or members should be removed", Justification = "Used in reflection")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Used in reflection")]
@@ -78,35 +78,65 @@ namespace Koralium.SqlToExpression.Providers
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Used in reflection")]
         private static bool InternalStringEquals(string left, string right)
         {
-            if(left == null && right == null)
+            if (left == null && right == null)
             {
                 return true;
             }
-            if(left == null)
+            if (left == null)
             {
                 return false;
             }
             return left.Equals(right, StringComparison.OrdinalIgnoreCase);
         }
 
-        public Expression GetContainsExpression(Expression left, Expression right)
+        public override Expression GetStringContainsExpression(in Expression left, in Expression right)
         {
             return Expression.Call(instance: null, method: StringContains, arguments: new[] { left, right });
         }
 
-        public Expression GetEndsWithExpression(Expression left, Expression right)
+        public override Expression GetStringEndsWithExpression(in Expression left, in Expression right)
         {
             return Expression.Call(instance: null, method: StringEndsWith, arguments: new[] { left, right });
         }
 
-        public Expression GetEqualsExpressions(Expression left, Expression right)
+        public override Expression GetStringEqualsExpressions(in Expression left, in Expression right)
         {
             return Expression.Call(instance: null, method: StringEquals, arguments: new[] { left, right });
         }
 
-        public Expression GetStartsWithExpression(Expression left, Expression right)
+        public override Expression GetStringStartsWithExpression(in Expression left, in Expression right)
         {
             return Expression.Call(instance: null, method: StringStartsWith, arguments: new[] { left, right });
         }
+
+        #endregion
+
+        #region Object subfield select
+
+        private static readonly Expression NullConstant = Expression.Constant(null);
+
+        public override Expression MakeSubfieldMemberAccessExpression(in Expression expression, PropertyInfo propertyInfo)
+        {
+            BinaryExpression nullCheck = Expression.NotEqual(expression, Expression.Constant(null, typeof(object)));
+
+            Expression nullValue = NullConstant;
+
+            var memberAccess = base.MakeSubfieldMemberAccessExpression(expression, propertyInfo);
+
+            if (propertyInfo.PropertyType.IsPrimitive)
+            {
+                var nullableType = typeof(Nullable<>).MakeGenericType(propertyInfo.PropertyType);
+                nullValue = Expression.Constant(null, nullableType);
+                memberAccess = Expression.Convert(memberAccess, nullableType);
+            }
+            else
+            {
+                nullValue = Expression.Constant(null, propertyInfo.PropertyType);
+            }
+
+            return Expression.Condition(nullCheck, memberAccess, nullValue);
+        }
+
+        #endregion
     }
 }

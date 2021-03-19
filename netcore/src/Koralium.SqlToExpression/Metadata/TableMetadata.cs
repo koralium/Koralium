@@ -22,16 +22,16 @@ namespace Koralium.SqlToExpression.Metadata
 
         public Type Type { get; }
 
-        public IStringOperationsProvider StringOperationsProvider { get; }
+        public IOperationsProvider OperationsProvider { get; }
 
         public TableMetadata(
             string name, 
             Type type,
-            IStringOperationsProvider stringOperationsProvider = null)
+            IOperationsProvider operationsProvider = null)
         {
             Name = name;
             Type = type;
-            StringOperationsProvider = stringOperationsProvider;
+            OperationsProvider = operationsProvider;
         }
     }
 }

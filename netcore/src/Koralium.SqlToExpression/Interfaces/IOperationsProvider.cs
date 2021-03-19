@@ -12,17 +12,20 @@
  * limitations under the License.
  */
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Koralium.SqlToExpression.Interfaces
 {
-    public interface IStringOperationsProvider
+    public interface IOperationsProvider
     {
-        Expression GetEqualsExpressions(Expression left, Expression right);
+        Expression GetStringEqualsExpressions(in Expression left, in Expression right);
 
-        Expression GetStartsWithExpression(Expression left, Expression right);
+        Expression GetStringStartsWithExpression(in Expression left, in Expression right);
 
-        Expression GetEndsWithExpression(Expression left, Expression right);
+        Expression GetStringEndsWithExpression(in Expression left, in Expression right);
 
-        Expression GetContainsExpression(Expression left, Expression right);
+        Expression GetStringContainsExpression(in Expression left, in Expression right);
+
+        Expression MakeSubfieldMemberAccessExpression(in Expression expression, PropertyInfo propertyInfo);
     }
 }

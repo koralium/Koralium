@@ -75,7 +75,7 @@ namespace Koralium.WebTests.Entities
         public TypeTestInnerObject Object { get; set; }
 
         //Lists
-        public List<int> IntList { get; set; }
+        public IEnumerable<int> IntList { get; set; }
 
         public List<int?> IntListNullable { get; set; }
 

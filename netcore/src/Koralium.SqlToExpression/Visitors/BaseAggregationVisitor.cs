@@ -24,9 +24,11 @@ namespace Koralium.SqlToExpression.Visitors
     {
         private bool _inAggregateFunction = false;
         private readonly GroupedStage _previousStage;
+        private readonly VisitorMetadata _visitorMetadata;
         public BaseAggregationVisitor(GroupedStage previousStage, VisitorMetadata visitorMetadata) : base(previousStage, visitorMetadata)
         {
             _previousStage = previousStage;
+            _visitorMetadata = visitorMetadata;
         }
 
         public override void VisitFunctionCall(FunctionCall functionCall)
@@ -55,12 +57,12 @@ namespace Koralium.SqlToExpression.Visitors
             Expression expression;
             if (_inAggregateFunction)
             {
-                expression = MemberUtils.GetMemberGroupByInValue(_previousStage, identifiers, out var property);
+                expression = MemberUtils.GetMemberGroupByInValue(_previousStage, identifiers, _visitorMetadata.OperationsProvider, out var property);
                 AddUsedProperty(property);
             }
             else
             {
-                expression = MemberUtils.GetMemberGroupByInKey(_previousStage, identifiers, out var property);
+                expression = MemberUtils.GetMemberGroupByInKey(_previousStage, identifiers, _visitorMetadata.OperationsProvider, out var property);
                 AddUsedProperty(property);
             }
 

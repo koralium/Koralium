@@ -13,14 +13,21 @@
  */
 using Koralium.Interfaces;
 using Koralium.SqlToExpression.Providers;
+using System;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class TableResolverBuilderExtensions
     {
+        [Obsolete("Use 'UseInMemoryOperations' instead.")]
         public static ITableResolverBuilder<T> UseInMemoryCaseInsensitiveStringOperations<T>(this ITableResolverBuilder<T> tableResolverBuilder)
         {
-            tableResolverBuilder.SetStringOperationsProvider(new CaseInsensitiveStringOperationsProvider());
+            return tableResolverBuilder.UseInMemoryOperations();
+        }
+
+        public static ITableResolverBuilder<T> UseInMemoryOperations<T>(this ITableResolverBuilder<T> tableResolverBuilder)
+        {
+            tableResolverBuilder.SetOperationsProvider(new InMemoryOperationsProvider());
             return tableResolverBuilder;
         }
     }
