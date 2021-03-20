@@ -112,14 +112,11 @@ namespace Koralium.SqlToExpression.Providers
         #endregion
 
         #region Object subfield select
-
-        private static readonly Expression NullConstant = Expression.Constant(null);
-
         public override Expression MakeSubfieldMemberAccessExpression(in Expression expression, PropertyInfo propertyInfo)
         {
             BinaryExpression nullCheck = Expression.NotEqual(expression, Expression.Constant(null, typeof(object)));
 
-            Expression nullValue = NullConstant;
+            Expression nullValue;
 
             var memberAccess = base.MakeSubfieldMemberAccessExpression(expression, propertyInfo);
 
