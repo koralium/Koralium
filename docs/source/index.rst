@@ -19,5 +19,6 @@ Koralium SQL API
    datatypes
    indexsupport
    trinoconnector
+   inmemorydata
    contributordocs
 
