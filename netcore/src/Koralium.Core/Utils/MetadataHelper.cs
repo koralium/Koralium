@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.Transport;
 using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
@@ -121,9 +122,10 @@ namespace Koralium.Utils
 
         private static IEnumerable<TableColumn> CollectColumnMetadata(string name, Type propertyType, Func<object, object> getDelegate, ref int globalIndex, Dictionary<Type, IReadOnlyList<TableColumn>> typeLookup, MemberInfo memberInfo = null)
         {
-            if (!IsBaseType(propertyType))
+            var (columnType, _) = ColumnTypeHelper.GetKoraliumType(propertyType);
+            if (columnType == ColumnType.Object || columnType == ColumnType.List)
             {
-                if (IsArray(propertyType))
+                if (columnType == ColumnType.List)
                 {
                     return CollectArrayMetadata(name, propertyType, getDelegate, memberInfo, ref globalIndex, typeLookup);
                 }
@@ -143,11 +145,6 @@ namespace Koralium.Utils
                 return Enumerable.Empty<TableColumn>();
             }
             return CollectColumnMetadata(propertyInfo.Name, propertyInfo.PropertyType, CreateGetDelegate(objectType, propertyInfo.GetGetMethod()), ref globalIndex, typeLookup, propertyInfo);
-        }
-
-        private static bool IsArray(Type type)
-        {
-            return type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(List<>));
         }
 
         private static bool IsBaseType(Type type)

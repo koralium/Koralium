@@ -274,6 +274,15 @@ namespace Koralium.WebTests
             new List<int>(),
             null);
 
+            SetTypeTestValue(arr, (t, x) => t.EnumerableList = x, new List<int>()
+            {
+                1,
+                2,
+                3
+            },
+            new List<int>(),
+            null);
+
             SetTypeTestValue(arr, (t, x) => t.IntListNullable = x, new List<int?>()
             {
                 1,
