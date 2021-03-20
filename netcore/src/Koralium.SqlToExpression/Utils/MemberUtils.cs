@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.Shared;
+using Koralium.SqlToExpression.Interfaces;
 using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using System;
@@ -24,31 +25,31 @@ namespace Koralium.SqlToExpression.Utils
 {
     internal static class MemberUtils
     {
-        public static Expression GetMember(IQueryStage previousStage, List<string> identifiers, out PropertyInfo firstProperty)
+        public static Expression GetMember(IQueryStage previousStage, List<string> identifiers, in IOperationsProvider operationsProvider, out PropertyInfo firstProperty)
         {
             Debug.Assert(previousStage != null, $"{nameof(previousStage)} was null");
             Debug.Assert(identifiers != null, $"{nameof(identifiers)} was null");
             Debug.Assert(identifiers.Count > 0, $"{nameof(identifiers)} was empty");
 
-            return GetMember_Internal(identifiers, previousStage.FromAliases, previousStage.TypeInfo, previousStage.ParameterExpression, out firstProperty);
+            return GetMember_Internal(identifiers, previousStage.FromAliases, previousStage.TypeInfo, previousStage.ParameterExpression, operationsProvider, out firstProperty);
         }
 
-        public static Expression GetMemberGroupByInValue(GroupedStage previousStage, List<string> identifiers, out PropertyInfo firstProperty)
+        public static Expression GetMemberGroupByInValue(GroupedStage previousStage, List<string> identifiers, in IOperationsProvider operationsProvider, out PropertyInfo firstProperty)
         {
             Debug.Assert(previousStage != null, $"{nameof(previousStage)} was null");
             Debug.Assert(identifiers != null, $"{nameof(identifiers)} was null");
             Debug.Assert(identifiers.Count > 0, $"{nameof(identifiers)} was empty");
 
-            return GetMember_Internal(identifiers, previousStage.FromAliases, previousStage.TypeInfo, previousStage.ValueParameterExpression, out firstProperty);
+            return GetMember_Internal(identifiers, previousStage.FromAliases, previousStage.TypeInfo, previousStage.ValueParameterExpression, operationsProvider, out firstProperty);
         }
 
-        public static Expression GetMemberGroupByInKey(GroupedStage previousStage, List<string> identifiers, out PropertyInfo firstProperty)
+        public static Expression GetMemberGroupByInKey(GroupedStage previousStage, List<string> identifiers, in IOperationsProvider operationsProvider, out PropertyInfo firstProperty)
         {
             Debug.Assert(previousStage != null, $"{nameof(previousStage)} was null");
             Debug.Assert(identifiers != null, $"{nameof(identifiers)} was null");
             Debug.Assert(identifiers.Count > 0, $"{nameof(identifiers)} was empty");
 
-            return GetMember_Internal(identifiers, previousStage.FromAliases, previousStage.KeyTypeInfo, previousStage.KeyParameterExpression, out firstProperty);
+            return GetMember_Internal(identifiers, previousStage.FromAliases, previousStage.KeyTypeInfo, previousStage.KeyParameterExpression, operationsProvider, out firstProperty);
         }
 
         public static List<string> RemoveAlias(IQueryStage previousStage, List<string> identifiers)
@@ -69,6 +70,7 @@ namespace Koralium.SqlToExpression.Utils
             in FromAliases fromAliases,
             in SqlTypeInfo typeInfo,
             in Expression parameterExpression,
+            in IOperationsProvider operationsProvider,
             out PropertyInfo firstProperty)
         {
             if (!typeInfo.TryGetProperty(identifiers[0], out var property))
@@ -82,11 +84,11 @@ namespace Koralium.SqlToExpression.Utils
             //Set the original property, used to create a list of all used columns
             typeInfo.TryGetOriginalProperty(identifiers[0], out firstProperty);
 
-            var memberAccess = Expression.MakeMemberAccess(parameterExpression, property);
+            Expression memberAccess = Expression.MakeMemberAccess(parameterExpression, property);
 
             for (int i = 1; i < identifiers.Count; i++)
             {
-                memberAccess = Expression.MakeMemberAccess(memberAccess, GetTypeProperty(memberAccess.Type, identifiers[i]));
+                memberAccess = operationsProvider.MakeSubfieldMemberAccessExpression(memberAccess, GetTypeProperty(memberAccess.Type, identifiers[i]));
             }
             return memberAccess;
         }

@@ -27,9 +27,10 @@ namespace Koralium.SqlToExpression.Visitors.GroupBy
         public static GroupByStage GetGroupByStage(
             IQueryStage previousStage,
             GroupByClause groupByClause,
-            HashSet<PropertyInfo> usedProperties)
+            HashSet<PropertyInfo> usedProperties,
+            VisitorMetadata visitorMetadata)
         {
-            GroupByVisitor groupByVisitor = new GroupByVisitor(previousStage);
+            GroupByVisitor groupByVisitor = new GroupByVisitor(previousStage, visitorMetadata);
             groupByClause.Accept(groupByVisitor);
 
             foreach (var property in groupByVisitor.UsedProperties)

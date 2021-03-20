@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Koralium.SqlToExpression\Koralium.SqlToExpression.csproj" />
+    <ProjectReference Include="..\Koralium.WebTests\Koralium.WebTests.csproj" />
   </ItemGroup>
 
   <ItemGroup>

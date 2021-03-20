@@ -143,31 +143,31 @@ namespace Koralium.SqlToExpression.Utils
         public static Expression CallContains(
             Expression left, 
             Expression value,
-            IStringOperationsProvider stringOperationsProvider)
+            IOperationsProvider operationsProvider)
         {
             ConvertExpressionTypes(ref left, ref value);
-            return stringOperationsProvider.GetContainsExpression(left, value);
+            return operationsProvider.GetStringContainsExpression(left, value);
         }
 
         public static Expression CallStartsWith(
             Expression left, 
             Expression value,
-            IStringOperationsProvider stringOperationsProvider)
+            IOperationsProvider operationsProvider)
         {
             ConvertExpressionTypes(ref left, ref value);
-            return stringOperationsProvider.GetStartsWithExpression(left, value);
+            return operationsProvider.GetStringStartsWithExpression(left, value);
         }
         
         public static Expression CallEndsWith(
             Expression left, 
             Expression value,
-            IStringOperationsProvider stringOperationsProvider)
+            IOperationsProvider operationsProviders)
         {
             ConvertExpressionTypes(ref left, ref value);
-            return stringOperationsProvider.GetEndsWithExpression(left, value);
+            return operationsProviders.GetStringEndsWithExpression(left, value);
         }
 
-        private static Expression HandleEquals(Expression leftExpression, Expression rightExpression, IStringOperationsProvider stringOperationsProvider)
+        private static Expression HandleEquals(Expression leftExpression, Expression rightExpression, IOperationsProvider operationsProviders)
         {
             //Null equal primitive cant be done, automatic false
             if ((IsConstantNull(leftExpression) && rightExpression.Type.IsPrimitive) || (IsConstantNull(rightExpression) && leftExpression.Type.IsPrimitive))
@@ -177,7 +177,7 @@ namespace Koralium.SqlToExpression.Utils
             //String is a special case since one might want to do case insensitive comparisions
             if (leftExpression.Type.Equals(typeof(string)))
             {
-                return stringOperationsProvider.GetEqualsExpressions(leftExpression, rightExpression);
+                return operationsProviders.GetStringEqualsExpressions(leftExpression, rightExpression);
             }
             else
             {
@@ -234,14 +234,14 @@ namespace Koralium.SqlToExpression.Utils
             Expression leftExpression,
             Expression rightExpression,
             BooleanComparisonType comparisonType,
-            IStringOperationsProvider stringOperationsProvider)
+            IOperationsProvider operationsProvider)
         {
             ConvertExpressionTypes(ref leftExpression, ref rightExpression);
 
             switch (comparisonType)
             {
                 case BooleanComparisonType.Equals:
-                    return HandleEquals(leftExpression, rightExpression, stringOperationsProvider);
+                    return HandleEquals(leftExpression, rightExpression, operationsProvider);
                 case BooleanComparisonType.GreaterThan:
                     return HandleGreaterThan(leftExpression, rightExpression);
                 case BooleanComparisonType.GreaterThanOrEqualTo:

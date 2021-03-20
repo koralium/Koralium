@@ -218,6 +218,7 @@ namespace Koralium.WebTests
                         2,
                         3
                     },
+                    IntValue = 321,
                     Object = new TypeTestInnerInnerObject()
                     {
                         StringValue = "test"

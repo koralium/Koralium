@@ -96,7 +96,7 @@ namespace Koralium.SqlToExpression.Visitors
         {
             if (selectStatement.GroupByClause != null)
             {
-                _stages.Add(GroupByHelper.GetGroupByStage(LastStage, selectStatement.GroupByClause, _usedProperties));
+                _stages.Add(GroupByHelper.GetGroupByStage(LastStage, selectStatement.GroupByClause, _usedProperties, _visitorMetadata));
             }
             else if (containsAggregates && !IsSimpleAggregate(selectStatement))
             {

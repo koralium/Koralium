@@ -128,7 +128,7 @@ namespace Koralium.SqlToExpression.Visitors.Where
                 var identifiers = columnReferenceExpression.Identifiers;
 
                 identifiers = MemberUtils.RemoveAlias(_previousStage, identifiers);
-                memberExpression = MemberUtils.GetMember(_previousStage, identifiers, out var property);
+                memberExpression = MemberUtils.GetMember(_previousStage, identifiers, _visitorMetadata.OperationsProvider, out var property);
                 AddUsedProperty(property);
                 AddNameToStack(string.Join(".", identifiers));
             }

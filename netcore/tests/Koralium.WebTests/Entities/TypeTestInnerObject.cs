@@ -22,5 +22,7 @@ namespace Koralium.WebTests.Entities
         public List<int> IntList { get; set; }
 
         public TypeTestInnerInnerObject Object { get; set; }
+
+        public int IntValue { get; set; }
     }
 }

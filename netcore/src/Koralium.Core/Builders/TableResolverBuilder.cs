@@ -21,7 +21,7 @@ namespace Koralium.Builders
     {
         private readonly List<TableColumn> _columns;
         private readonly List<TableIndex> indicies = new List<TableIndex>();
-        private IStringOperationsProvider _stringOperationsProvider;
+        private IOperationsProvider _operationsProvider;
         public string TableName { get; set; }
         
         internal PartitionResolver PartitionResolver { get; private set; }
@@ -34,11 +34,11 @@ namespace Koralium.Builders
             }
         }
 
-        internal IStringOperationsProvider StringOperationsProvider
+        internal IOperationsProvider OperationsProvider
         {
             get
             {
-                return _stringOperationsProvider;
+                return _operationsProvider;
             }
         }
 
@@ -47,9 +47,9 @@ namespace Koralium.Builders
             _columns = columns;
         }
 
-        public ITableResolverBuilder<Entity> SetStringOperationsProvider(IStringOperationsProvider stringOperationsProvider)
+        public ITableResolverBuilder<Entity> SetOperationsProvider(IOperationsProvider operationsProvider)
         {
-            _stringOperationsProvider = stringOperationsProvider;
+            _operationsProvider = operationsProvider;
             return this;
         }
 

@@ -25,14 +25,16 @@ namespace Koralium.SqlToExpression.Visitors.GroupBy
         private readonly IQueryStage _previousStage;
         private readonly List<GroupByExpression> _groupByExpressions = new List<GroupByExpression>();
         private readonly List<PropertyInfo> _usedProperties = new List<PropertyInfo>();
+        private readonly VisitorMetadata _visitorMetadata;
 
         public IEnumerable<PropertyInfo> UsedProperties => _usedProperties;
 
         public IReadOnlyList<GroupByExpression> GroupByExpressions => _groupByExpressions;
 
-        public GroupByVisitor(IQueryStage previousStage)
+        public GroupByVisitor(IQueryStage previousStage, VisitorMetadata visitorMetadata)
         {
             _previousStage = previousStage;
+            _visitorMetadata = visitorMetadata;
         }
 
         public override void VisitColumnReference(ColumnReference columnReference)
@@ -40,7 +42,7 @@ namespace Koralium.SqlToExpression.Visitors.GroupBy
             var identifiers = columnReference.Identifiers;
 
             identifiers = MemberUtils.RemoveAlias(_previousStage, identifiers);
-            var memberAccess = MemberUtils.GetMember(_previousStage, identifiers, out var property);
+            var memberAccess = MemberUtils.GetMember(_previousStage, identifiers, _visitorMetadata.OperationsProvider, out var property);
             _usedProperties.Add(property);
 
             _groupByExpressions.Add(new GroupByExpression(memberAccess, string.Join(".", identifiers), property));

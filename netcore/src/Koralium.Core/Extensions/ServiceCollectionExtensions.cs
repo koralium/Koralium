@@ -42,7 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 tablesMetadata.AddTable(new TableMetadata(
                     table.Name, 
                     table.EntityType,
-                    table.StringOperationsProvider));
+                    table.OperationsProvider));
             }
 
             services.AddSqlToExpression(tablesMetadata);

@@ -92,7 +92,7 @@ namespace Koralium.WebTests
                 opt.AddTableResolver<OrderResolver, Order>(t =>
                 {
                     t.TableName = "orders";
-                    t.UseInMemoryCaseInsensitiveStringOperations();
+                    t.UseInMemoryOperations();
                 });
                 opt.AddTableResolver<PartResolver, Part>();
                 opt.AddTableResolver<PartsuppResolver, Partsupp>();
@@ -105,7 +105,10 @@ namespace Koralium.WebTests
                     t.TableName = "efcustomer";
                 });
 
-                opt.AddTableResolver<TypeTestResolver, TypeTest>();
+                opt.AddTableResolver<TypeTestResolver, TypeTest>(o =>
+                {
+                    o.UseInMemoryOperations();
+                });
 
                 //Specific
                 opt.AddTableResolver<AutoMapperCustomerResolver, AutoMapperCustomer>();
@@ -119,7 +122,7 @@ namespace Koralium.WebTests
                 opt.AddTableResolver<IndexTestResolver, IndexTest>(o =>
                 {
                     o.TableName = "indextest";
-                    o.UseInMemoryCaseInsensitiveStringOperations();
+                    o.UseInMemoryOperations();
                 });
             });
             

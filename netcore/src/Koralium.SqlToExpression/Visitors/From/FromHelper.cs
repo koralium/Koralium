@@ -44,9 +44,9 @@ namespace Koralium.SqlToExpression.Visitors.From
             {
                 var type = fromVisitor.Table.Type;
 
-                if (fromVisitor.Table.StringOperationsProvider != null)
+                if (fromVisitor.Table.OperationsProvider != null)
                 {
-                    visitorMetadata.StringOperationsProvider = fromVisitor.Table.StringOperationsProvider;
+                    visitorMetadata.OperationsProvider = fromVisitor.Table.OperationsProvider;
                 }
 
                 stages.Add(new FromTableStage(

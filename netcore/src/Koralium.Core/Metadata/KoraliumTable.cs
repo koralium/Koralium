@@ -32,7 +32,7 @@ namespace Koralium
 
         public IReadOnlyList<TableIndex> Indices { get; }
 
-        public IStringOperationsProvider StringOperationsProvider { get; }
+        public IOperationsProvider OperationsProvider { get; }
 
         public PartitionResolver PartitionResolver { get; }
 
@@ -43,7 +43,7 @@ namespace Koralium
             IReadOnlyList<TableColumn> columns,
             string securityPolicy,
             IReadOnlyList<TableIndex> indices,
-            IStringOperationsProvider stringOperationsProvider,
+            IOperationsProvider operationsProvider,
             PartitionResolver partitionResolver)
         {
             Name = name;
@@ -52,7 +52,7 @@ namespace Koralium
             Columns = columns;
             SecurityPolicy = securityPolicy;
             Indices = indices;
-            StringOperationsProvider = stringOperationsProvider;
+            OperationsProvider = operationsProvider;
             PartitionResolver = partitionResolver;
         }
     }

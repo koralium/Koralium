@@ -182,7 +182,7 @@ namespace Koralium.SqlToExpression.Visitors.Where
             var identifiers = columnReference.Identifiers;
 
             identifiers = MemberUtils.RemoveAlias(_previousStage, identifiers);
-            var memberAccess = MemberUtils.GetMember(_previousStage, identifiers, out var property);
+            var memberAccess = MemberUtils.GetMember(_previousStage, identifiers, _visitorMetadata.OperationsProvider, out var property);
             AddUsedProperty(property);
             return new VisitResult()
             {
@@ -228,7 +228,7 @@ namespace Koralium.SqlToExpression.Visitors.Where
                 expression = PredicateUtils.CallContains(
                     leftExpression,
                     visitResult.Expression,
-                    _visitorMetadata.StringOperationsProvider);
+                    _visitorMetadata.OperationsProvider);
             }
             //Starts with
             else if (visitResult.StartsWith)
@@ -236,7 +236,7 @@ namespace Koralium.SqlToExpression.Visitors.Where
                 expression = PredicateUtils.CallStartsWith(
                     leftExpression,
                     visitResult.Expression,
-                    _visitorMetadata.StringOperationsProvider);
+                    _visitorMetadata.OperationsProvider);
             }
             //Ends with
             else if (visitResult.EndsWith)
@@ -244,7 +244,7 @@ namespace Koralium.SqlToExpression.Visitors.Where
                 expression = PredicateUtils.CallEndsWith(
                     leftExpression,
                     visitResult.Expression,
-                    _visitorMetadata.StringOperationsProvider);
+                    _visitorMetadata.OperationsProvider);
             }
             else
             {
@@ -252,7 +252,7 @@ namespace Koralium.SqlToExpression.Visitors.Where
                     leftExpression,
                     visitResult.Expression,
                     BooleanComparisonType.Equals,
-                    _visitorMetadata.StringOperationsProvider);
+                    _visitorMetadata.OperationsProvider);
             }
 
             if (likeExpression.Not)
