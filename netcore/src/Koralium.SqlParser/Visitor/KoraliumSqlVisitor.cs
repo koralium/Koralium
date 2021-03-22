@@ -269,5 +269,17 @@ namespace Koralium.SqlParser.Visitor
             Visit(betweenExpression.To);
             //DONE
         }
+
+        public virtual void VisitNewObjectExpression(NewObjectExpression newObjectExpression)
+        {
+            Visit(newObjectExpression.Fields);
+            //DONE
+        }
+
+        public virtual void VisitScalarExpressionWithAlias(ScalarExpressionWithAlias scalarExpressionWithAlias)
+        {
+            Visit(scalarExpressionWithAlias.ScalarExpression);
+            //DONE
+        }
     }
 }

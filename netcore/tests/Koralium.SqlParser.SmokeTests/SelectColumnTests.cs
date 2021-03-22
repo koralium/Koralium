@@ -212,5 +212,49 @@ namespace Koralium.SqlParser.SmokeTests
 
             actual.Should().BeEquivalentTo(expected, x => x.RespectingRuntimeTypes());
         }
+
+        //[Test]
+        //public void TestSelectNewObject()
+        //{
+        //    var actual = Parser.Parse("SELECT {c1, c2} FROM test").Statements;
+        //    var expected = new List<Statement>()
+        //    {
+        //        new SelectStatement()
+        //        {
+        //            FromClause = new Clauses.FromClause()
+        //            {
+        //                TableReference = new FromTableReference()
+        //                {
+        //                    TableName = "test"
+        //                }
+        //            },
+        //            SelectElements = new List<SelectExpression>()
+        //            {
+        //                new SelectObjectExpression()
+        //                {
+        //                    Fields = new List<SelectColumnExpression>()
+        //                    {
+        //                        new SelectScalarExpression()
+        //                        {
+        //                            Expression = new ColumnReference()
+        //                            {
+        //                                Identifiers = new List<string>(){ "c1" }
+        //                            }
+        //                        },
+        //                        new SelectScalarExpression()
+        //                        {
+        //                            Expression = new ColumnReference()
+        //                            {
+        //                                Identifiers = new List<string>(){ "c1" }
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    };
+
+        //    actual.Should().BeEquivalentTo(expected, x => x.RespectingRuntimeTypes());
+        //}
     }
 }

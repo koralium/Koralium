@@ -277,7 +277,7 @@ namespace Koralium.SqlParser.ANTLR
             };
         }
 
-        private object VisitCast([NotNull] KoraliumParser.Scalar_expressionContext context)
+        private object VisitCast([NotNull] KoraliumParser.Scalar_expression_primitiveContext context)
         {
             var innerScalar = Visit(context.casted) as ScalarExpression;
 
@@ -290,7 +290,7 @@ namespace Koralium.SqlParser.ANTLR
             };
         }
 
-        public override object VisitScalar_expression([NotNull] KoraliumParser.Scalar_expressionContext context)
+        public override object VisitScalar_expression_primitive([NotNull] KoraliumParser.Scalar_expression_primitiveContext context)
         {
             if(context.casted != null)
             {
@@ -368,6 +368,55 @@ namespace Koralium.SqlParser.ANTLR
             }
 
             throw new NotImplementedException();
+        }
+
+        public override object VisitScalar_expression_with_alias([NotNull] KoraliumParser.Scalar_expression_with_aliasContext context)
+        {
+            var scalarExpression = Visit(context.scalar_expression_primitive()) as ScalarExpression;
+
+            string alias = null;
+            var aliasNode = context.column_alias();
+
+            if (aliasNode != null)
+            {
+                alias = aliasNode.GetText();
+            }
+
+            return new ScalarExpressionWithAlias()
+            {
+                Alias = alias,
+                ScalarExpression = scalarExpression
+            };
+        }
+
+        public override object VisitScalar_expression([NotNull] KoraliumParser.Scalar_expressionContext context)
+        {
+            var fields = context.scalar_expression_with_alias();
+
+            if (fields != null && fields.Length > 0)
+            {
+                List<ScalarExpressionWithAlias> objectFields = new List<ScalarExpressionWithAlias>();
+
+                foreach(var field in fields)
+                {
+                    var expression = Visit(field) as ScalarExpressionWithAlias;
+
+                    if (expression == null)
+                    {
+                        throw new SqlParserException("Could not parse a scalar expression in an object");
+                    }
+                    objectFields.Add(expression);
+                }
+
+                return new NewObjectExpression()
+                {
+                    Fields = objectFields
+                };
+            }
+            else
+            {
+                return Visit(context.scalar_expression_primitive());
+            }
         }
 
         public override object VisitLiteral_value([NotNull] KoraliumParser.Literal_valueContext context)

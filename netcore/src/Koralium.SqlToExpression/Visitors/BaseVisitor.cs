@@ -15,10 +15,13 @@ using Koralium.Shared;
 using Koralium.SqlParser.Expressions;
 using Koralium.SqlParser.Literals;
 using Koralium.SqlParser.Visitor;
+using Koralium.SqlToExpression.Generated;
 using Koralium.SqlToExpression.Stages.CompileStages;
 using Koralium.SqlToExpression.Utils;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -269,5 +272,46 @@ namespace Koralium.SqlToExpression.Visitors
 
             AddExpressionToStack(Expression.Convert(expression, toType));
         }
+
+        public override void VisitNewObjectExpression(NewObjectExpression newObjectExpression)
+        {
+            List<Expression> expressions = new List<Expression>();
+            List<string> aliases = new List<string>();
+            foreach (var field in newObjectExpression.Fields)
+            {
+                Visit(field);
+                expressions.Add(PopStack());
+                aliases.Add(PopNameStack());
+            }
+
+            var anonType = AnonType.GetAnonType(expressions.Select(x => x.Type).ToArray());
+            var getDelegates = AnonTypeUtils.GetDelegates(anonType);
+            NewExpression newExpression = Expression.New(anonType);
+
+            List<MemberAssignment> assignments = new List<MemberAssignment>();
+            var columnsBuilder = ImmutableList.CreateBuilder<ColumnMetadata>();
+            for (int i = 0; i < expressions.Count; i++)
+            {
+                var propertyInfo = anonType.GetProperty($"P{i}");
+                var assignment = Expression.Bind(propertyInfo, expressions[i]);
+                assignments.Add(assignment);
+            }
+
+            var memberInit = Expression.MemberInit(newExpression, assignments);
+
+            AddExpressionToStack(memberInit);
+        }
+
+        //public override void VisitSelectObjectExpression(SelectObjectExpression selectObjectExpression)
+        //{
+        //    List<Expression> expressions = new List<Expression>();
+        //    foreach(var field in selectObjectExpression.Fields)
+        //    {
+        //        Visit(field);
+        //        expressions.Add(PopStack());
+        //    }
+
+        //    base.VisitSelectObjectExpression(selectObjectExpression);
+        //}
     }
 }

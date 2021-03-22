@@ -28,6 +28,8 @@ NLT: '!<';
 NGT: '!>';
 XOR: '^';
 EXCLAMATION: '!';
+LEFTCURLY: '{';
+RIGHTCURLY: '}';
 
 SELECT: 'SELECT';
 DISTINCT: 'DISTINCT';

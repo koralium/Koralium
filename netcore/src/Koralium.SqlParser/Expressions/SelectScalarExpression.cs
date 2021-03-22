@@ -16,7 +16,7 @@ using System;
 
 namespace Koralium.SqlParser.Expressions
 {
-    public class SelectScalarExpression : SelectExpression
+    public class SelectScalarExpression : SelectColumnExpression
     {
         public ScalarExpression Expression { get; set; }
 

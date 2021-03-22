@@ -129,13 +129,22 @@ scalar_expression2:
 	| variable_reference
 	;
 
-scalar_expression
-	: CAST '(' casted=scalar_expression AS castedidentifier=IDENTIFIER ')'
+scalar_expression_primitive
+	: CAST '(' casted=scalar_expression_primitive AS castedidentifier=IDENTIFIER ')'
 	| literal_value
 	| column_reference
-	| left=scalar_expression binary_operation_type right=scalar_expression
+	| left=scalar_expression_primitive binary_operation_type right=scalar_expression_primitive
 	| function_call
 	| variable_reference
+	;
+
+scalar_expression_with_alias
+	: scalar_expression_primitive ( AS? column_alias)?
+	;
+
+scalar_expression
+	: '{' scalar_expression_with_alias (',' scalar_expression_with_alias)* '}'
+	| scalar_expression_primitive
 	;
 
 error: ;
