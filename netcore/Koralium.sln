@@ -75,6 +75,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Koralium.Data.ArrowFlight",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Koralium.EntityFrameworkCore.ArrowFlight", "src\Koralium.EntityFrameworkCore.ArrowFlight\Koralium.EntityFrameworkCore.ArrowFlight.csproj", "{4160912D-5780-44D3-A919-36A5CCD4F853}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Koralium.Core.Tests", "tests\Koralium.Core.Tests\Koralium.Core.Tests.csproj", "{62204D94-18BC-4B19-9442-D8F4723109C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -205,6 +207,10 @@ Global
 		{4160912D-5780-44D3-A919-36A5CCD4F853}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4160912D-5780-44D3-A919-36A5CCD4F853}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4160912D-5780-44D3-A919-36A5CCD4F853}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62204D94-18BC-4B19-9442-D8F4723109C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62204D94-18BC-4B19-9442-D8F4723109C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62204D94-18BC-4B19-9442-D8F4723109C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62204D94-18BC-4B19-9442-D8F4723109C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -244,6 +250,7 @@ Global
 		{B290B3B6-69DF-45E7-AF1F-FCDE387D0B4B} = {F7D6319E-DD32-4366-9FE5-D9FFA602CD72}
 		{275FBD77-ECC1-4BCE-A5D7-E8BC29F78B5D} = {7A029340-0EB8-43ED-B5D3-EB6C23EDD65C}
 		{4160912D-5780-44D3-A919-36A5CCD4F853} = {7A029340-0EB8-43ED-B5D3-EB6C23EDD65C}
+		{62204D94-18BC-4B19-9442-D8F4723109C5} = {F7D6319E-DD32-4366-9FE5-D9FFA602CD72}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {370182A4-5D02-471D-9AC0-8A745D2E3299}
