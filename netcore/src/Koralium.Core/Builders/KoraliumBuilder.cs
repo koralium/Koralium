@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using Koralium.SqlToExpression;
 using Koralium.Resolvers;
+using Koralium.Core.Utils;
 
 namespace Koralium.Builders
 {
@@ -44,6 +45,7 @@ namespace Koralium.Builders
         public IKoraliumBuilder AddTableResolver<Resolver, T>(Action<ITableResolverBuilder<T>> options = null) 
             where Resolver : TableResolver<T>
         {
+            CircularDependencyHelper.CheckCircularDependency(typeof(T));
             var columns = MetadataHelper.CollectMetadata(typeof(T), typeLookup);
 
             TableResolverBuilder<T> opt = new TableResolverBuilder<T>(columns);
