@@ -68,6 +68,7 @@ namespace Data.Koralium.Tests
         public void Stop()
         {
             host.StopAsync().Wait();
+            host.Dispose();
         }
 
         public void Dispose()
