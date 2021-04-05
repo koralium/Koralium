@@ -492,7 +492,6 @@ namespace Koralium.SqlParser.Visitor
 
             string output = $"CASE {whenExpressions}";
 
-            string elseExpr = null;
             if (caseExpression.ElseExpression != null)
             {
                 output += $" ELSE {VisitPop(caseExpression.ElseExpression)}";

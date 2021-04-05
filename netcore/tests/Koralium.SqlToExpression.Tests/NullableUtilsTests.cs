@@ -22,7 +22,6 @@ namespace Koralium.SqlToExpression.Tests
 
         struct TestStruct
         {
-            int value;
         }
 
         [Test]
