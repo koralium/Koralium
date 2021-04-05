@@ -20,8 +20,8 @@ namespace Koralium.SqlParser.Expressions
         {
             return new WhenExpression()
             {
-                BooleanExpression = BooleanExpression.Clone() as BooleanExpression,
-                ScalarExpression = ScalarExpression.Clone() as ScalarExpression
+                BooleanExpression = BooleanExpression?.Clone() as BooleanExpression,
+                ScalarExpression = ScalarExpression?.Clone() as ScalarExpression
             };
         }
 
