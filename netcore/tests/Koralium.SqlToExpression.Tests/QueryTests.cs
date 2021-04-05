@@ -1091,6 +1091,33 @@ namespace Koralium.SqlToExpression.Tests
             AssertAreEqual(expected, result.Result);
         }
 
+        [Test]
+        public async Task TestSelectCaseWhenNullableType()
+        {
+            var result = await SqlExecutor.Execute("select CASE WHEN Orderpriority = '5-LOW' THEN Orderpriority END from \"order\"");
+            var expected = TpchData.Orders.Select(x => new { Orderpriority = x.Orderpriority == "5-LOW" ? x.Orderpriority : null }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestSelectCaseWhenElseNullableType()
+        {
+            var result = await SqlExecutor.Execute("select CASE WHEN Orderpriority = '5-LOW' THEN Orderpriority ELSE 'NO' END from \"order\"");
+            var expected = TpchData.Orders.Select(x => new { Orderpriority = x.Orderpriority == "5-LOW" ? x.Orderpriority : "NO" }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestSelectCaseWhenNonNullableType()
+        {
+            var result = await SqlExecutor.Execute("select CASE WHEN Orderkey = 1 THEN Orderkey END from \"order\"");
+            var expected = TpchData.Orders.Select(x => new { Orderkey = x.Orderkey == 1 ? (long?)x.Orderkey : null }).AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
         //select name from customer where name > 'customer#000001500'
         //Gives the wrong results
     }

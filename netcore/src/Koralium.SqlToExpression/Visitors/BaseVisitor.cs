@@ -269,5 +269,70 @@ namespace Koralium.SqlToExpression.Visitors
 
             AddExpressionToStack(Expression.Convert(expression, toType));
         }
+
+        public override void VisitCaseExpression(CaseExpression caseExpression)
+        {
+            if (caseExpression.WhenExpressions.Count < 1)
+            {
+                throw new SqlErrorException("A CASE expression must have a WHEN ... THEN");
+            }
+
+            //First when is collected since the data type must be known for the ELSE null.
+            caseExpression.WhenExpressions[0].BooleanExpression.Accept(this);
+            var initialBooleanExpr = PopStack();
+            caseExpression.WhenExpressions[0].ScalarExpression.Accept(this);
+            var initialScalarExpr = PopStack();
+
+            var nullableType = NullableUtils.ToNullable(initialScalarExpr.Type);
+            bool conversionRequired = false;
+
+            //Create the else expression
+            Expression previousExpr;
+            if (caseExpression.ElseExpression != null)
+            {
+                caseExpression.ElseExpression.Accept(this);
+                previousExpr = PopStack();
+
+                //Check if the else expression requires conversion on the type
+                if (previousExpr.Type != initialScalarExpr.Type && previousExpr.Type == nullableType)
+                {
+                    conversionRequired = true;
+                }
+            }
+            else
+            {
+                previousExpr = Expression.Constant(null, nullableType);
+
+                if (nullableType != initialScalarExpr.Type)
+                {
+                    conversionRequired = true;
+                }
+            }
+
+            //Go through the other when expressions, start from the bottom and go up
+            for (int i = caseExpression.WhenExpressions.Count - 1; i > 0; i--)
+            {
+                caseExpression.WhenExpressions[i].BooleanExpression.Accept(this);
+                var booleanExpr = PopStack();
+                caseExpression.WhenExpressions[i].ScalarExpression.Accept(this);
+                var scalarExpr = PopStack();
+
+                //Check if any conversion is required
+                if (conversionRequired && scalarExpr.Type != nullableType)
+                {
+                    scalarExpr = Expression.Convert(scalarExpr, nullableType);
+                }
+                previousExpr = Expression.Condition(booleanExpr, scalarExpr, previousExpr);
+            }
+
+            if (conversionRequired)
+            {
+                initialScalarExpr = Expression.Convert(initialScalarExpr, nullableType);
+            }
+
+            //Add the initial when expression
+            var expression = Expression.Condition(initialBooleanExpr, initialScalarExpr, previousExpr);
+            AddExpressionToStack(expression);
+        }
     }
 }

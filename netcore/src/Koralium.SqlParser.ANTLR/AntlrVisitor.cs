@@ -290,8 +290,43 @@ namespace Koralium.SqlParser.ANTLR
             };
         }
 
+        private object VisitCaseWhen([NotNull] KoraliumParser.Scalar_expressionContext context)
+        {
+            var booleanExpressions = context.boolean_expression();
+            var scalarExpressions = context.scalar_expression();
+
+            List<WhenExpression> whenExpressions = new List<WhenExpression>();
+            for (int i = 0; i < booleanExpressions.Length; i++)
+            {
+                var booleanExpression = Visit(booleanExpressions[i]) as BooleanExpression;
+                var scalarExpression = Visit(scalarExpressions[i]) as ScalarExpression;
+                whenExpressions.Add(new WhenExpression()
+                {
+                    BooleanExpression = booleanExpression,
+                    ScalarExpression = scalarExpression
+                });
+            }
+
+            ScalarExpression elseExpression = null;
+            if (context.else_expression != null)
+            {
+                elseExpression = Visit(context.else_expression) as ScalarExpression;
+            }
+
+            return new CaseExpression()
+            {
+                WhenExpressions = whenExpressions,
+                ElseExpression = elseExpression
+            };
+        }
+
         public override object VisitScalar_expression([NotNull] KoraliumParser.Scalar_expressionContext context)
         {
+            if (context.CASE() != null)
+            {
+                return VisitCaseWhen(context);
+            }
+
             if(context.casted != null)
             {
                 return VisitCast(context);

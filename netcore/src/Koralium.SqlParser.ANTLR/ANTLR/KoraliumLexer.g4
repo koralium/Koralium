@@ -55,6 +55,11 @@ SET: 'SET';
 CONTAINS: 'CONTAINS';
 CAST: 'CAST';
 BETWEEN: 'BETWEEN';
+CASE: 'CASE';
+WHEN: 'WHEN';
+ELSE: 'ELSE';
+END: 'END';
+THEN: 'THEN';
 
 SPACES: [ \u000B\t\r\n] -> channel(HIDDEN);
 
