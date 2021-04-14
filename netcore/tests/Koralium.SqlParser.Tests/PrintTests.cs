@@ -1234,5 +1234,74 @@ namespace Koralium.SqlParser.Tests
 
             actual.Should().Be(expected);
         }
+
+        [Test]
+        public void TestCaseWhen()
+        {
+            var actual = new CaseExpression()
+            {
+                WhenExpressions = new List<WhenExpression>()
+                {
+                    new WhenExpression()
+                    {
+                        BooleanExpression = new BooleanComparisonExpression()
+                        {
+                            Type = BooleanComparisonType.Equals,
+                            Left = new ColumnReference(){ Identifiers = new List<string>() { "c1" }},
+                            Right = new StringLiteral(){ Value = "test" }
+                        },
+                        ScalarExpression = new StringLiteral(){ Value = "val1" }
+                    },
+                    new WhenExpression()
+                    {
+                        BooleanExpression = new BooleanComparisonExpression()
+                        {
+                            Type = BooleanComparisonType.Equals,
+                            Left = new ColumnReference(){ Identifiers = new List<string>() { "c2" }},
+                            Right = new StringLiteral(){ Value = "test" }
+                        },
+                        ScalarExpression = new StringLiteral(){ Value = "val2" }
+                    }
+                }
+            }.Print();
+            var expected = "CASE WHEN c1 = 'test' THEN 'val1' WHEN c2 = 'test' THEN 'val2' END";
+
+            actual.Should().Be(expected);
+        }
+
+        [Test]
+        public void TestCaseWhenElse()
+        {
+            var actual = new CaseExpression()
+            {
+                WhenExpressions = new List<WhenExpression>()
+                {
+                    new WhenExpression()
+                    {
+                        BooleanExpression = new BooleanComparisonExpression()
+                        {
+                            Type = BooleanComparisonType.Equals,
+                            Left = new ColumnReference(){ Identifiers = new List<string>() { "c1" }},
+                            Right = new StringLiteral(){ Value = "test" }
+                        },
+                        ScalarExpression = new StringLiteral(){ Value = "val1" }
+                    },
+                    new WhenExpression()
+                    {
+                        BooleanExpression = new BooleanComparisonExpression()
+                        {
+                            Type = BooleanComparisonType.Equals,
+                            Left = new ColumnReference(){ Identifiers = new List<string>() { "c2" }},
+                            Right = new StringLiteral(){ Value = "test" }
+                        },
+                        ScalarExpression = new StringLiteral(){ Value = "val2" }
+                    }
+                },
+                ElseExpression = new StringLiteral() { Value = "val3" }
+            }.Print();
+            var expected = "CASE WHEN c1 = 'test' THEN 'val1' WHEN c2 = 'test' THEN 'val2' ELSE 'val3' END";
+
+            actual.Should().Be(expected);
+        }
     }
 }

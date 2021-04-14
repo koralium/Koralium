@@ -485,5 +485,29 @@ namespace Koralium.SqlParser.Visitor
             var to = VisitPop(betweenExpression.To);
             Push($"{reference} BETWEEN {from} AND {to}");
         }
+
+        public override void VisitCaseExpression(CaseExpression caseExpression)
+        {
+            var whenExpressions = string.Join(' ', caseExpression.WhenExpressions.Select(x => VisitPop(x)));
+
+            string output = $"CASE {whenExpressions}";
+
+            if (caseExpression.ElseExpression != null)
+            {
+                output += $" ELSE {VisitPop(caseExpression.ElseExpression)}";
+            }
+
+            output += " END";
+
+            Push(output);
+        }
+
+        public override void VisitWhenExpression(WhenExpression whenExpression)
+        {
+            var boolexpr = VisitPop(whenExpression.BooleanExpression);
+            var scalarexpr = VisitPop(whenExpression.ScalarExpression);
+
+            Push($"WHEN {boolexpr} THEN {scalarexpr}");
+        }
     }
 }

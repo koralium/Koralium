@@ -136,6 +136,7 @@ scalar_expression
 	| left=scalar_expression binary_operation_type right=scalar_expression
 	| function_call
 	| variable_reference
+	| CASE WHEN boolean_expression THEN scalar_expression (WHEN boolean_expression THEN scalar_expression)* (ELSE else_expression=scalar_expression)? END
 	;
 
 error: ;

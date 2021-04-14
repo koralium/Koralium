@@ -269,5 +269,19 @@ namespace Koralium.SqlParser.Visitor
             Visit(betweenExpression.To);
             //DONE
         }
+
+        public virtual void VisitCaseExpression(CaseExpression caseExpression)
+        {
+            Visit(caseExpression.WhenExpressions);
+            Visit(caseExpression.ElseExpression);
+            //DONE
+        }
+
+        public virtual void VisitWhenExpression(WhenExpression whenExpression)
+        {
+            Visit(whenExpression.BooleanExpression);
+            Visit(whenExpression.ScalarExpression);
+            //DONE
+        }
     }
 }
