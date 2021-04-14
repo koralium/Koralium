@@ -98,6 +98,11 @@ namespace Koralium.Shared
             }
             try
             {
+                if ( type.IsEnum && Value is string stringValue)
+                {
+                    value = Enum.Parse(type, stringValue);
+                    return true;
+                }
                 value = Convert.ChangeType(Value, type);
                 return true;
             }

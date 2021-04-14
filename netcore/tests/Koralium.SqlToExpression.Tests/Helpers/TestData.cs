@@ -31,6 +31,17 @@ namespace Koralium.SqlToExpression.Tests.Helpers
             }.AsQueryable();
         }
 
+        public static IQueryable<EnumTest> GetEnumTestData()
+        {
+            return new List<EnumTest>()
+            {
+                new EnumTest()
+                {
+                    Enum = Enum.testval
+                }
+            }.AsQueryable();
+        }
+
         public static IQueryable<ColumnTest> GetColumnTestData()
         {
             return new List<ColumnTest>()
