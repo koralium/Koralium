@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.Shared.Utils;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -98,9 +99,9 @@ namespace Koralium.Shared
             }
             try
             {
-                if ( type.IsEnum && Value is string stringValue)
+                if ( type.IsEnum)
                 {
-                    value = Enum.Parse(type, stringValue);
+                    value = EnumUtils.ConvertToEnum(Value, type);
                     return true;
                 }
                 value = Convert.ChangeType(Value, type);
