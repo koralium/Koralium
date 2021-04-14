@@ -949,6 +949,36 @@ namespace Koralium.SqlToExpression.Tests
         }
 
         [Test]
+        public async Task TestWhereEnumEqualsStringParameter()
+        {
+            var parameters = new SqlParameters()
+               .Add(SqlParameter.Create("Parameter", "testval"));
+            var result = await SqlExecutor.Execute("SELECT enum FROM \"enumtable\" WHERE enum = @Parameter", parameters);
+
+            var expected = TestData.GetEnumTestData()
+                .Where(x => x.Enum == Models.Enum.testval)
+                .Select(x => new { x.Enum })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestWhereEnumEqualsIntParameter()
+        {
+            var parameters = new SqlParameters()
+               .Add(SqlParameter.Create("Parameter", 0));
+            var result = await SqlExecutor.Execute("SELECT enum FROM \"enumtable\" WHERE enum = @Parameter", parameters);
+
+            var expected = TestData.GetEnumTestData()
+                .Where(x => x.Enum == Models.Enum.testval)
+                .Select(x => new { x.Enum })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
         public async Task TestStringLikeContainsParameterNotSelectingWhereParameter()
         {
             var parameters = new SqlParameters()
