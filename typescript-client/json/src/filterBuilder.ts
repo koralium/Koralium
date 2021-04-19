@@ -22,6 +22,10 @@ function isNumber(val: any): val is number {
   return typeof (val) === "number";
 }
 
+function isBoolean(val: any): val is boolean {
+  return typeof (val) === 'boolean';
+}
+
 //Check if the value is a FieldQuery type
 function isFieldQuery(val: any): val is FieldQuery {
   return val.eq !== undefined ||
@@ -35,13 +39,16 @@ function isFieldQuery(val: any): val is FieldQuery {
 }
 
 
-function writeSingleValue(arr: Array<string>, parameters: ParameterBuilder, val: string | number | undefined, operation: (string: string) => string): void {
+function writeSingleValue(arr: Array<string>, parameters: ParameterBuilder, val: string | number | boolean | undefined, operation: (string: string) => string): void {
   if (val !== undefined) {
       if (isString(val)) {
           const parameterName = parameters.getParameterName(val);
           arr.push(operation(`@${parameterName}`));
       }
       if (isNumber(val)) {
+          arr.push(operation(`${val}`));
+      }
+      if (isBoolean(val)) {
           arr.push(operation(`${val}`));
       }
   }
@@ -153,7 +160,7 @@ export class FilterResult {
 }
 
 export class FieldQuery {
-  eq: string | number | undefined;
+  eq: string | number | boolean | undefined;
 
   lt: string | number | undefined;
   lte: string | number | undefined;

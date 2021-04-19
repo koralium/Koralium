@@ -246,3 +246,15 @@ test("Search filter two fields", () => {
   expect(queryResult).toEqual(expectedQuery);
   expect(parametersResult).toEqual(expectedParameters);
 })
+
+test.only("Boolean filter", () => {
+  const expected = "SELECT count(*) FROM testtable WHERE (name = true)"
+  const result = new QueryBuilder("testtable")
+    .addSelectElement("count(*)")
+    .addFilter({
+      name: {eq: true}
+    })
+    .buildQuery();
+
+    expect(result).toEqual(expected);
+});
