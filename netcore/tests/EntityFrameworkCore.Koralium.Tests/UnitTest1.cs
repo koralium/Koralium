@@ -18,6 +18,8 @@ using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using System;
 using System.Linq;
+using Koralium.WebTests;
+using FluentAssertions;
 
 namespace EntityFrameworkCore.Koralium.Tests
 {
@@ -113,6 +115,16 @@ namespace EntityFrameworkCore.Koralium.Tests
             var count = db.AutoMapperCustomers.Count();
 
             Assert.That(count, Is.EqualTo(1500));
+        }
+
+        [Test]
+        public void TestWhereArrayAny()
+        {
+            var db = serviceProvider.GetService<TestDbContext>();
+            var actual = db.TypeTests.Where(x => x.IntList.Any(y => y == 1)).ToList();
+            var expected = TestData.GetTypeTests().Where(x => x.IntList != null && x.IntList.Any(y => y == 1)).ToList();
+
+            actual.Should().BeEquivalentTo(expected);
         }
     }
 }

@@ -47,7 +47,7 @@ namespace EntityFrameworkCore.Koralium.Benchmarks
         public void SelecAllOrders()
         {
             var context = serviceProvider.GetRequiredService<TestDbContext>();
-
+            
             _ = context.Orders.ToList();
         }
 
@@ -57,6 +57,14 @@ namespace EntityFrameworkCore.Koralium.Benchmarks
             var context = serviceProvider.GetRequiredService<TestDbContext>();
 
             _ = context.Customers.ToList();
+        }
+
+        [Benchmark]
+        public void SelectWithWhereAnyMatch()
+        {
+            var context = serviceProvider.GetRequiredService<TestDbContext>();
+
+            _ = context.TypeTests.Select(x => new { x.IntValue }).ToList();
         }
     }
 }

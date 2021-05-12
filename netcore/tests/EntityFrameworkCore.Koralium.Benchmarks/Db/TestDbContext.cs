@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.WebTests;
+using Koralium.WebTests.Entities;
 using Koralium.WebTests.Entities.specific;
 using Koralium.WebTests.Entities.tpch;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,8 @@ namespace EntityFrameworkCore.Koralium.Tests.Db
         public DbSet<Order> Orders { get; set; }
 
         public DbSet<AutoMapperCustomer> AutoMapperCustomers { get; set; }
+
+        public DbSet<TypeTest> TypeTests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -64,6 +67,12 @@ namespace EntityFrameworkCore.Koralium.Tests.Db
                     .HasKey(x => x.Orderkey);
 
                 opt.Ignore(x => x.Customer);
+            });
+
+            modelBuilder.Entity<TypeTest>(opt =>
+            {
+                opt.ToTable("typetest")
+                    .HasKey(x => x.IntValue);
             });
 
             base.OnModelCreating(modelBuilder);

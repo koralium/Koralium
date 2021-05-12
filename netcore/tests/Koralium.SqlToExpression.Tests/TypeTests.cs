@@ -34,5 +34,14 @@ namespace Koralium.SqlToExpression.Tests
 
             AssertAreEqual(expectedInt, actualInt.Result);
         }
+
+        [Test]
+        public async Task TestSelectAnyMatch()
+        {
+            var actual = (await SqlExecutor.Execute("SELECT any_match(IntList, x -> x = 1) FROM typetest"));
+            var expected = WebTests.TestData.GetTypeTests().Select(x => new { P0 = (x.IntList != null) && x.IntList.Any(y => y == 1) });
+
+            AssertAreEqual(expected, actual.Result);
+        }
     }
 }

@@ -84,7 +84,7 @@ namespace Koralium.SqlToExpression.Utils
             //Set the original property, used to create a list of all used columns
             typeInfo.TryGetOriginalProperty(identifiers[0], out firstProperty);
 
-            Expression memberAccess = Expression.MakeMemberAccess(parameterExpression, property);
+             Expression memberAccess = Expression.MakeMemberAccess(parameterExpression, property);
 
             for (int i = 1; i < identifiers.Count; i++)
             {

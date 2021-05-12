@@ -34,6 +34,7 @@ namespace Koralium.EntityFrameworkCore.ArrowFlight.Query.Internal
 
         public RelationalSqlTranslatingExpressionVisitor Create(IModel model, QueryableMethodTranslatingExpressionVisitor queryableMethodTranslatingExpressionVisitor)
         {
+            
             return new KoraliumSqlTranslatingExpressionVisitor(_dependencies, model, queryableMethodTranslatingExpressionVisitor);
         }
     }

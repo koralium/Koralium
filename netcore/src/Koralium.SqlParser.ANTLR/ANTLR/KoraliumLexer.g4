@@ -55,6 +55,7 @@ SET: 'SET';
 CONTAINS: 'CONTAINS';
 CAST: 'CAST';
 BETWEEN: 'BETWEEN';
+LAMBDA_ARROW: '->';
 
 SPACES: [ \u000B\t\r\n] -> channel(HIDDEN);
 

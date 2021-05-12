@@ -12,6 +12,8 @@
  * limitations under the License.
  */
 
+using System.Collections.Generic;
+
 namespace Koralium.SqlParser.Tests
 {
     public class TestClass
@@ -19,5 +21,7 @@ namespace Koralium.SqlParser.Tests
         public string String { get; set; }
 
         public long Long { get; set; }
+
+        public List<int> IntList { get; set; }
     }
 }

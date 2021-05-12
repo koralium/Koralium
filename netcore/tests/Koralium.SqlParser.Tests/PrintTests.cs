@@ -590,7 +590,7 @@ namespace Koralium.SqlParser.Tests
         {
             var actual = new FunctionCall() { 
                 FunctionName = "test",
-                Parameters = new List<ScalarExpression>()
+                Parameters = new List<SqlExpression>()
                 {
                     new ColumnReference()
                     {
@@ -609,7 +609,7 @@ namespace Koralium.SqlParser.Tests
             var actual = new FunctionCall()
             {
                 FunctionName = "test",
-                Parameters = new List<ScalarExpression>()
+                Parameters = new List<SqlExpression>()
                 {
                     new ColumnReference()
                     {
@@ -1231,6 +1231,30 @@ namespace Koralium.SqlParser.Tests
                 To = new IntegerLiteral() { Value = 10 }
             }.Print();
             var expected = "c1 BETWEEN 1 AND 10";
+
+            actual.Should().Be(expected);
+        }
+
+        [Test]
+        public void TestLambdaExpression()
+        {
+            var actual = new LambdaExpression()
+            {
+                Parameters = new List<string>() { "x" },
+                Expression = new BooleanComparisonExpression()
+                {
+                    Type = BooleanComparisonType.Equals,
+                    Left = new ColumnReference()
+                    {
+                        Identifiers = new List<string>() { "x" }
+                    },
+                    Right = new StringLiteral()
+                    {
+                        Value = "test"
+                    }
+                }
+            }.Print();
+            var expected = "x -> x = 'test'";
 
             actual.Should().Be(expected);
         }

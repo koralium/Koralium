@@ -27,11 +27,11 @@ namespace Koralium.SqlParser.Expressions
         /// </summary>
         public bool Wildcard { get; set; }
 
-        public List<ScalarExpression> Parameters { get; set; }
+        public List<SqlExpression> Parameters { get; set; }
 
         public FunctionCall()
         {
-            Parameters = new List<ScalarExpression>();
+            Parameters = new List<SqlExpression>();
         }
 
         public override void Accept(KoraliumSqlVisitor visitor)
@@ -44,7 +44,7 @@ namespace Koralium.SqlParser.Expressions
             return new FunctionCall()
             {
                 FunctionName = FunctionName,
-                Parameters = Parameters.Select(x => x.Clone() as ScalarExpression).ToList(),
+                Parameters = Parameters.Select(x => x.Clone() as SqlExpression).ToList(),
                 Wildcard = Wildcard
             };
         }

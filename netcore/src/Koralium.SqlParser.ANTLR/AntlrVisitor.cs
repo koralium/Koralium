@@ -292,6 +292,11 @@ namespace Koralium.SqlParser.ANTLR
 
         public override object VisitScalar_expression([NotNull] KoraliumParser.Scalar_expressionContext context)
         {
+            if (context.inner != null)
+            {
+                return Visit(context.inner) as ScalarExpression;
+            }
+
             if(context.casted != null)
             {
                 return VisitCast(context);
@@ -518,12 +523,62 @@ namespace Koralium.SqlParser.ANTLR
                 return Visit(predicateNode) as BooleanExpression;
             }
 
+            var scalarExpression = context.scalar_expression();
+
+            if (scalarExpression != null)
+            {
+                var scalar = Visit(scalarExpression) as ScalarExpression;
+                return new BooleanScalarExpression()
+                {
+                    ScalarExpression = scalar
+                };
+            }
+
+
             throw new NotImplementedException();
         }
 
+        public override object VisitFunction_parameter([NotNull] KoraliumParser.Function_parameterContext context)
+        {
+            if (context.scalar != null)
+            {
+                return Visit(context.scalar);
+            }
+            if (context.lambda != null)
+            {
+                return Visit(context.lambda);
+            }
+            throw new NotImplementedException();
+        }
+
+        public override object VisitLambda_function([NotNull] KoraliumParser.Lambda_functionContext context)
+        {
+            var parameter = context.parameter.Text;
+
+            SqlExpression expr = null;
+
+            if (context.scalar != null)
+            {
+                expr = Visit(context.scalar) as ScalarExpression;
+            }
+            if (context.boolexpr != null)
+            {
+                expr = Visit(context.boolexpr) as BooleanExpression;
+            }
+
+            return new LambdaExpression()
+            {
+                Parameters = new List<string>()
+                {
+                    parameter
+                },
+                Expression = expr
+            };
+        } 
+
         public override object VisitFunction_call([NotNull] KoraliumParser.Function_callContext context)
         {
-            var parameterNodes = context.scalar_expression();
+            var parameterNodes = context.function_parameter();
 
             var functionNameNode = context.function_name();
             if (functionNameNode != null)
@@ -542,13 +597,13 @@ namespace Koralium.SqlParser.ANTLR
                 {
                     var result = Visit(functionParameterExpression);
 
-                    if (result is ScalarExpression scalarExpression)
+                    if (result is SqlExpression sqlExpression)
                     {
-                        functionCall.Parameters.Add(scalarExpression);
+                        functionCall.Parameters.Add(sqlExpression);
                     }
                     else
                     {
-                        throw new SqlParserException("Could not parse scalar expression");
+                        throw new SqlParserException("Could not parse sql expression");
                     }
                 }
                 return functionCall;

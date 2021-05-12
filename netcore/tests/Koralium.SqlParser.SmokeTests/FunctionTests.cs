@@ -14,6 +14,7 @@
 using FluentAssertions;
 using Koralium.SqlParser.Expressions;
 using Koralium.SqlParser.From;
+using Koralium.SqlParser.Literals;
 using Koralium.SqlParser.Statements;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -44,7 +45,7 @@ namespace Koralium.SqlParser.SmokeTests
                             Expression = new FunctionCall()
                             {
                                 FunctionName = "sum",
-                                Parameters = new List<ScalarExpression>()
+                                Parameters = new List<SqlExpression>()
                                 {
                                     new ColumnReference()
                                     {
@@ -82,7 +83,7 @@ namespace Koralium.SqlParser.SmokeTests
                             Expression = new FunctionCall()
                             {
                                 FunctionName = "sum",
-                                Parameters = new List<ScalarExpression>()
+                                Parameters = new List<SqlExpression>()
                                 {
                                     new ColumnReference()
                                     {
@@ -121,6 +122,120 @@ namespace Koralium.SqlParser.SmokeTests
                             {
                                 FunctionName = "count",
                                 Wildcard = true
+                            }
+                        }
+                    }
+                }
+            };
+
+            actual.Should().BeEquivalentTo(expected, x => x.RespectingRuntimeTypes());
+        }
+
+        [Test]
+        public void TestFunctionCallWithLambda()
+        {
+            var actual = Parser.Parse("SELECT any_match(arr, x -> x = 'test') FROM test").Statements;
+            var expected = new List<Statement>()
+            {
+                new SelectStatement()
+                {
+                    FromClause = new Clauses.FromClause()
+                    {
+                        TableReference = new FromTableReference()
+                        {
+                            TableName = "test"
+                        }
+                    },
+                    SelectElements = new List<SelectExpression>()
+                    {
+                        new SelectScalarExpression()
+                        {
+                            Expression = new FunctionCall()
+                            {
+                                FunctionName = "any_match",
+                                Wildcard = false,
+                                Parameters = new List<SqlExpression>()
+                                {
+                                    new ColumnReference()
+                                    {
+                                        Identifiers = new List<string>() { "arr" }
+                                    },
+                                    new LambdaExpression()
+                                    {
+                                        Parameters = new List<string>() { "x" },
+                                        Expression = new BooleanComparisonExpression()
+                                        {
+                                            Type = BooleanComparisonType.Equals,
+                                            Left = new ColumnReference()
+                                            {
+                                                Identifiers = new List<string>() { "x" }
+                                            },
+                                            Right = new StringLiteral()
+                                            {
+                                                Value = "test"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            actual.Should().BeEquivalentTo(expected, x => x.RespectingRuntimeTypes());
+        }
+
+        [Test]
+        public void TestFunctionCallInWhere()
+        {
+            var actual = Parser.Parse("SELECT * FROM test WHERE any_match(arr, x -> x = 'test')").Statements;
+            var expected = new List<Statement>()
+            {
+                new SelectStatement()
+                {
+                    FromClause = new Clauses.FromClause()
+                    {
+                        TableReference = new FromTableReference()
+                        {
+                            TableName = "test"
+                        }
+                    },
+                    SelectElements = new List<SelectExpression>()
+                    {
+                        new SelectStarExpression()
+                    },
+                    WhereClause = new Clauses.WhereClause()
+                    {
+                        Expression = new BooleanScalarExpression()
+                        {
+                            ScalarExpression = new FunctionCall()
+                            {
+                                FunctionName = "any_match",
+                                Wildcard = false,
+                                Parameters = new List<SqlExpression>()
+                                {
+                                    new ColumnReference()
+                                    {
+                                        Identifiers = new List<string>() { "arr" }
+                                    },
+                                    new LambdaExpression()
+                                    {
+                                        Parameters = new List<string>() { "x" },
+                                        Expression = new BooleanComparisonExpression()
+                                        {
+                                            Type = BooleanComparisonType.Equals,
+                                            Left = new ColumnReference()
+                                            {
+                                                Identifiers = new List<string>() { "x" }
+                                            },
+                                            Right = new StringLiteral()
+                                            {
+                                                Value = "test"
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
