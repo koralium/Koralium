@@ -24,46 +24,5 @@ namespace Koralium.EntityFrameworkCore.ArrowFlight.Query.Internal
             : base(dependencies, relationalDependencies, model)
         {
         }
-
-        protected override ShapedQueryExpression TranslateAny(ShapedQueryExpression source, LambdaExpression predicate)
-        {
-            return base.TranslateAny(source, predicate);
-        }
-
-        protected override Expression VisitBinary(BinaryExpression node)
-        {
-            return base.VisitBinary(node);
-        }
-
-        protected override Expression VisitUnary(UnaryExpression node)
-        {
-            return base.VisitUnary(node);
-        }
-
-        protected override Expression VisitConditional(ConditionalExpression node)
-        {
-            return base.VisitConditional(node);
-        }
-
-        protected override Expression VisitConstant(ConstantExpression constantExpression)
-        {
-            return base.VisitConstant(constantExpression);
-        }
-
-        protected override Expression VisitLambda<T>(Expression<T> node)
-        {
-            return base.VisitLambda(node);
-        }
-
-        protected override ShapedQueryExpression TranslateWhere(ShapedQueryExpression source, LambdaExpression predicate)
-        {
-            return base.TranslateWhere(source, predicate);
-        }
-
-        protected override Expression VisitMethodCall(MethodCallExpression methodCallExpression)
-        {
-            
-            return base.VisitMethodCall(methodCallExpression);
-        }
     }
 }
