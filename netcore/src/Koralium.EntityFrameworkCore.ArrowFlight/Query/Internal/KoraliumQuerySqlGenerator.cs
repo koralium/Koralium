@@ -37,7 +37,7 @@ namespace Koralium.EntityFrameworkCore.ArrowFlight.Query.Internal
 
         protected virtual void GenerateLambda(SqlLambdaExpression lambdaExpression)
         {
-            Visit(lambdaExpression.Parameter);
+            Visit(lambdaExpression.LambdaParameter);
             Sql.Append(" -> ");
             Visit(lambdaExpression.Inner);
         }

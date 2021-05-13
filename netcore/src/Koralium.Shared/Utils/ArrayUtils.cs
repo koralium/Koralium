@@ -21,16 +21,12 @@ namespace Koralium.Shared.Utils
         {
             //From: https://stackoverflow.com/questions/906499/getting-type-t-from-ienumerablet
 
-            // Type is Array
-            // short-circuit if you expect lots of arrays 
             if (type.IsArray)
                 return type.GetElementType();
 
-            // type is IEnumerable<T>;
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                 return type.GetGenericArguments()[0];
 
-            // type implements/extends IEnumerable<T>;
             var enumType = type.GetInterfaces()
                                     .Where(t => t.IsGenericType &&
                                            t.GetGenericTypeDefinition() == typeof(IEnumerable<>))

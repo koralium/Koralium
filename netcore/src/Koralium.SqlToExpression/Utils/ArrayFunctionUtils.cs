@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Koralium.SqlToExpression.Utils
 {
-    internal class ArrayFunctionUtils
+    internal static class ArrayFunctionUtils
     {
         private static readonly MethodInfo anyMethod = GetAnyMethod();
 

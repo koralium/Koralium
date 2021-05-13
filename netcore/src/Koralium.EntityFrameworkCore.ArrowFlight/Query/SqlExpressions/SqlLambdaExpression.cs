@@ -10,30 +10,26 @@ namespace Koralium.EntityFrameworkCore.ArrowFlight.Query.SqlExpressions
 {
     public class SqlLambdaExpression : SqlExpression
     {
-        public SqlExpression Parameter { get; }
+        public SqlExpression LambdaParameter { get; }
 
         public SqlExpression Inner { get; }
 
         public SqlLambdaExpression(SqlExpression parameter, SqlExpression inner, Type type, RelationalTypeMapping typeMapping) : base(type, typeMapping)
         {
-            Parameter = parameter;
+            LambdaParameter = parameter;
             Inner = inner;
-        }
-
-        public SqlLambdaExpression(Type type, RelationalTypeMapping typeMapping) : base(type, typeMapping)
-        {
         }
 
         public override void Print(ExpressionPrinter expressionPrinter)
         {
-            expressionPrinter.Visit(Parameter);
+            expressionPrinter.Visit(LambdaParameter);
             expressionPrinter.Append(" -> ");
             expressionPrinter.Visit(Inner);
         }
 
         protected override Expression VisitChildren(ExpressionVisitor visitor)
         {
-            var parameter = (SqlExpression)visitor.Visit(Parameter);
+            var parameter = (SqlExpression)visitor.Visit(LambdaParameter);
             var inner = (SqlExpression)visitor.Visit(Inner);
 
             return this.Update(parameter, inner);
@@ -41,7 +37,7 @@ namespace Koralium.EntityFrameworkCore.ArrowFlight.Query.SqlExpressions
 
         public virtual SqlLambdaExpression Update(SqlExpression parameter, SqlExpression inner)
         {
-            return parameter != Parameter || inner != Inner
+            return parameter != LambdaParameter || inner != Inner
                 ? new SqlLambdaExpression(parameter, inner, Type, TypeMapping)
                 : this;
         }

@@ -250,12 +250,10 @@ namespace Koralium.SqlParser
                     return node;
                 }
             }
-            else if (node.Method.Name == "Any")
+            else if (node.Method.Name == "Any" &&
+                TryListAny(node))
             {
-                if (TryListAny(node))
-                {
-                    return node;
-                }
+                return node;
             }
 
             throw new NotImplementedException($"The method {node.Method.Name} is not yet supported for type {node.Object.Type.Name}.");
@@ -289,7 +287,7 @@ namespace Koralium.SqlParser
             return expression;
         }
 
-        private Expressions.LambdaExpression VisitLambda(LambdaExpression lambdaExpression)
+        private Expressions.LambdaExpression VisitLambdaExpression(LambdaExpression lambdaExpression)
         {
             List<string> parameters = new List<string>();
             foreach(var parameter in lambdaExpression.Parameters)
@@ -315,7 +313,7 @@ namespace Koralium.SqlParser
                 methodCallExpression.Arguments[1] is LambdaExpression lambdaExpression)
             {
                 var columnRef = VisitPop<Expressions.ColumnReference>(memberExpression);
-                var lambda = VisitLambda(lambdaExpression);
+                var lambda = VisitLambdaExpression(lambdaExpression);
                 _stack.Push(new Expressions.FunctionCall()
                 {
                     FunctionName = "any_match",
