@@ -35,7 +35,13 @@ namespace Koralium.SqlParser.Expressions
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Parameters, Expression);
+            var hashCode = new HashCode();
+            foreach(var v in Parameters)
+            {
+                hashCode.Add(v);
+            }
+            hashCode.Add(Expression);
+            return hashCode.ToHashCode();
         }
     }
 }
