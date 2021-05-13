@@ -21,4 +21,5 @@ Koralium SQL API
    trinoconnector
    inmemorydata
    contributordocs
+   sql
 
