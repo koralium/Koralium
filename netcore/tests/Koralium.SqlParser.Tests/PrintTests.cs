@@ -1236,7 +1236,7 @@ namespace Koralium.SqlParser.Tests
         }
 
         [Test]
-        public void TestLambdaExpression()
+        public void TestLambdaExpressionWithSingleParameter()
         {
             var actual = new LambdaExpression()
             {
@@ -1255,6 +1255,42 @@ namespace Koralium.SqlParser.Tests
                 }
             }.Print();
             var expected = "x -> x = 'test'";
+
+            actual.Should().Be(expected);
+        }
+
+        [Test]
+        public void TestLambdaExpressionWithTwoParameters()
+        {
+            var actual = new LambdaExpression()
+            {
+                Parameters = new List<string>() { "x", "y" },
+                Expression = new BooleanComparisonExpression()
+                {
+                    Type = BooleanComparisonType.Equals,
+                    Left = new ColumnReference()
+                    {
+                        Identifiers = new List<string>() { "x" }
+                    },
+                    Right = new StringLiteral()
+                    {
+                        Value = "test"
+                    }
+                }
+            }.Print();
+            var expected = "(x, y) -> x = 'test'";
+
+            actual.Should().Be(expected);
+        }
+
+        [Test]
+        public void TestBooleanScalarExpression()
+        {
+            var actual = new BooleanScalarExpression()
+            {
+                ScalarExpression = new ColumnReference() { Identifiers = new List<string> { "t" } }
+            }.Print();
+            var expected = "t";
 
             actual.Should().Be(expected);
         }
