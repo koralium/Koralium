@@ -77,5 +77,73 @@ namespace Koralium.SqlParser.Tests
             Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
             Assert.AreNotEqual(first.GetHashCode(), third.GetHashCode());
         }
+
+        [Test]
+        public void TestFunctionCallEquals()
+        {
+            FunctionCall first = new FunctionCall()
+            {
+                FunctionName = "test",
+                Parameters = new List<SqlExpression>()
+                {
+                    new ColumnReference(){ Identifiers = new List<string>() {"c1" }}
+                },
+                Wildcard = false
+            };
+
+            FunctionCall firstClone = new FunctionCall()
+            {
+                FunctionName = "test",
+                Parameters = new List<SqlExpression>()
+                {
+                    new ColumnReference(){ Identifiers = new List<string>() {"c1" }}
+                },
+                Wildcard = false
+            };
+
+            FunctionCall second = new FunctionCall()
+            {
+                FunctionName = "test2",
+                Parameters = new List<SqlExpression>()
+                {
+                    new ColumnReference(){ Identifiers = new List<string>() {"c1" }}
+                },
+                Wildcard = false
+            };
+
+            FunctionCall third = new FunctionCall()
+            {
+                FunctionName = "test",
+                Parameters = new List<SqlExpression>()
+                {
+                    new ColumnReference(){ Identifiers = new List<string>() {"c2" }}
+                },
+                Wildcard = false
+            };
+
+            FunctionCall fourth = new FunctionCall()
+            {
+                FunctionName = "test",
+                Parameters = new List<SqlExpression>()
+                {
+                    new ColumnReference(){ Identifiers = new List<string>() {"c1" }}
+                },
+                Wildcard = true
+            };
+
+            //Equals
+            Assert.IsTrue(Equals(first, firstClone));
+            Assert.IsFalse(Equals(first, null));
+            Assert.IsFalse(Equals(first, second));
+            Assert.IsFalse(Equals(first, third));
+            Assert.IsFalse(Equals(first, fourth));
+            Assert.IsFalse(Equals(first, "other type"));
+
+            //Hash code
+            Assert.AreEqual(first.GetHashCode(), firstClone.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), third.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), fourth.GetHashCode());
+        }
     }
 }

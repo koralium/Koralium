@@ -40,5 +40,29 @@ namespace Koralium.SqlParser.Tests
             Assert.IsFalse(ReferenceEquals(lambdaExpression.Parameters, clone.Parameters));
             Assert.AreEqual(lambdaExpression, clone);
         }
+
+        [Test]
+        public void TestCloneFunctionCall()
+        {
+            FunctionCall functionCall = new FunctionCall()
+            {
+                FunctionName = "test",
+                Parameters = new List<SqlExpression>()
+                {
+                    new ColumnReference(){ Identifiers = new List<string>() {"c1" }}
+                },
+                Wildcard = false
+            };
+
+            var clone = functionCall.Clone() as FunctionCall;
+
+            Assert.AreEqual(functionCall, clone);
+            Assert.IsFalse(ReferenceEquals(functionCall, clone));
+            Assert.IsFalse(ReferenceEquals(functionCall.Parameters, clone.Parameters));
+            for(int i = 0; i < functionCall.Parameters.Count; i++)
+            {
+                Assert.IsFalse(ReferenceEquals(functionCall.Parameters[i], clone.Parameters[i]));
+            }
+        }
     }
 }
