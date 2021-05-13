@@ -455,6 +455,18 @@ public partial class KoraliumParserBaseListener : IKoraliumParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitBinary_operation_type([NotNull] KoraliumParser.Binary_operation_typeContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="KoraliumParser.lambda_parameter"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterLambda_parameter([NotNull] KoraliumParser.Lambda_parameterContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="KoraliumParser.lambda_parameter"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitLambda_parameter([NotNull] KoraliumParser.Lambda_parameterContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="KoraliumParser.lambda_function"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

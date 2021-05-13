@@ -333,13 +333,13 @@ namespace Koralium.SqlToExpression.Visitors
                 lambdaExpression.Accept(this);
                 var lambda = PopStack();
 
-                //Create an expression that calls Any() on the array with the lambda.
-                var anyCall = ArrayFunctionUtils.CallAny(elementType, column, lambda);
-
-                if (anyCall.Type != typeof(bool))
+                if (!(lambda is System.Linq.Expressions.LambdaExpression expr) || expr.ReturnType != typeof(bool))
                 {
                     throw new SqlErrorException("Lambda expression in any_match must return a boolean.");
                 }
+
+                //Create an expression that calls Any() on the array with the lambda.
+                var anyCall = ArrayFunctionUtils.CallAny(elementType, column, lambda);
 
                 var nullCheck = Expression.Condition(Expression.Equal(column, Expression.Constant(null, column.Type)), Expression.Constant(false), anyCall);
 
@@ -347,7 +347,7 @@ namespace Koralium.SqlToExpression.Visitors
                 return;
             }
 
-            throw new NotImplementedException();
+            throw new SqlErrorException($"No function exists named '{functionCall.FunctionName}'.");
         }
 
         public override void VisitLambdaExpression(SqlParser.Expressions.LambdaExpression lambdaExpression)

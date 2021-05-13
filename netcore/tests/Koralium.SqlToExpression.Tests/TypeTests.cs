@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.Shared;
 using Koralium.SqlToExpression.Tests.Helpers;
 using NUnit.Framework;
 using System;
@@ -35,13 +36,6 @@ namespace Koralium.SqlToExpression.Tests
             AssertAreEqual(expectedInt, actualInt.Result);
         }
 
-        [Test]
-        public async Task TestSelectAnyMatch()
-        {
-            var actual = (await SqlExecutor.Execute("SELECT any_match(IntList, x -> x = 1) FROM typetest"));
-            var expected = WebTests.TestData.GetTypeTests().Select(x => new { P0 = (x.IntList != null) && x.IntList.Any(y => y == 1) });
-
-            AssertAreEqual(expected, actual.Result);
-        }
+        
     }
 }

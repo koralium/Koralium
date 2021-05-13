@@ -242,6 +242,12 @@ public interface IKoraliumParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitBinary_operation_type([NotNull] KoraliumParser.Binary_operation_typeContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="KoraliumParser.lambda_parameter"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitLambda_parameter([NotNull] KoraliumParser.Lambda_parameterContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="KoraliumParser.lambda_function"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

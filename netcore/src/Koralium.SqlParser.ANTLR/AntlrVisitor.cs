@@ -551,9 +551,16 @@ namespace Koralium.SqlParser.ANTLR
             throw new NotImplementedException();
         }
 
+        public override object VisitLambda_parameter([NotNull] KoraliumParser.Lambda_parameterContext context)
+        {
+            var parameters = context.IDENTIFIER();
+
+            return parameters.Select(x => x.GetText()).ToList();
+        }
+
         public override object VisitLambda_function([NotNull] KoraliumParser.Lambda_functionContext context)
         {
-            var parameter = context.parameter.Text;
+            var parameters = Visit(context.parameter) as List<string>;
 
             SqlExpression expr = null;
 
@@ -568,10 +575,7 @@ namespace Koralium.SqlParser.ANTLR
 
             return new LambdaExpression()
             {
-                Parameters = new List<string>()
-                {
-                    parameter
-                },
+                Parameters = parameters,
                 Expression = expr
             };
         } 

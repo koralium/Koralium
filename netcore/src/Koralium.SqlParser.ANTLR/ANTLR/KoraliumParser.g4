@@ -155,8 +155,14 @@ binary_operation_type:
 	| '^'
 	;
 
+lambda_parameter
+	: parameter=IDENTIFIER
+	| '(' parameter=IDENTIFIER ( ',' parameter=IDENTIFIER)* ')'
+	;
+
+
 lambda_function
-	: parameter=IDENTIFIER '->' (scalar=scalar_expression | boolexpr=boolean_expression)
+	: parameter=lambda_parameter '->' (scalar=scalar_expression | boolexpr=boolean_expression)
 	;
 
 function_parameter
