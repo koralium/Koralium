@@ -713,5 +713,40 @@ namespace Koralium.SqlParser.Tests
 
             actual.Should().BeEquivalentTo(expected, x => x.RespectingRuntimeTypes());
         }
+
+        [Test]
+        public void TestAnyArrayFunction()
+        {
+            var actual = QueryBuilder.BooleanExpression<TestClass>(x => x.IntList.Any(y => y == 1));
+            var expected = new BooleanScalarExpression()
+            {
+                ScalarExpression = new FunctionCall()
+                {
+                    FunctionName = "any_match",
+                    Parameters = new List<SqlExpression>()
+                    {
+                        new ColumnReference()
+                        {
+                            Identifiers = new List<string>(){ "IntList" }
+                        },
+                        new LambdaExpression()
+                        {
+                            Parameters = new List<string>()
+                            {
+                                "y"
+                            },
+                            Expression = new BooleanComparisonExpression()
+                            {
+                                Left = new ColumnReference(){ Identifiers = new List<string>() { "y" }},
+                                Right = new IntegerLiteral(){ Value = 1 },
+                                Type = BooleanComparisonType.Equals
+                            }
+                        }
+                    }
+                }
+            };
+
+            actual.Should().BeEquivalentTo(expected, x => x.RespectingRuntimeTypes());
+        }
     }
 }

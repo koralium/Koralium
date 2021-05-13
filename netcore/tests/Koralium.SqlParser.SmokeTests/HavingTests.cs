@@ -100,7 +100,7 @@ namespace Koralium.SqlParser.SmokeTests
                             Expression = new FunctionCall()
                             {
                                 FunctionName = "sum",
-                                Parameters = new List<ScalarExpression>()
+                                Parameters = new List<SqlExpression>()
                                 {
                                     new ColumnReference()
                                     {
@@ -137,7 +137,7 @@ namespace Koralium.SqlParser.SmokeTests
                             Left = new FunctionCall()
                             {
                                 FunctionName = "sum",
-                                Parameters = new List<ScalarExpression>()
+                                Parameters = new List<SqlExpression>()
                                 {
                                     new ColumnReference()
                                     {

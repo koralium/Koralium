@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.EntityFrameworkCore.ArrowFlight.Query.SqlExpressions;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using System.Linq.Expressions;
@@ -22,6 +23,23 @@ namespace Koralium.EntityFrameworkCore.ArrowFlight.Query.Internal
         public KoraliumQuerySqlGenerator(QuerySqlGeneratorDependencies dependencies) : base(dependencies)
         {
             //NOP
+        }
+
+        public override Expression Visit(Expression node)
+        {
+            if (node is SqlLambdaExpression lambdaExpression)
+            {
+                GenerateLambda(lambdaExpression);
+                return node;
+            }
+            return base.Visit(node);
+        }
+
+        protected virtual void GenerateLambda(SqlLambdaExpression lambdaExpression)
+        {
+            Visit(lambdaExpression.LambdaParameter);
+            Sql.Append(" -> ");
+            Visit(lambdaExpression.Inner);
         }
 
         protected override void GenerateLimitOffset(SelectExpression selectExpression)

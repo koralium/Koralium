@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.Shared;
+using Koralium.Shared.Utils;
 using Koralium.Transport;
 using System;
 using System.Collections;
@@ -21,12 +22,6 @@ namespace Koralium.Utils
 {
     static class ColumnTypeHelper
     {
-
-        internal static bool IsArray(Type type)
-        {
-            return typeof(IEnumerable).IsAssignableFrom(type);
-        }
-
         internal static bool IsBaseType(Type type)
         {
             if (Nullable.GetUnderlyingType(type) != null)
@@ -99,7 +94,7 @@ namespace Koralium.Utils
             {
                 return (ColumnType.Enum, true);
             }
-            if (IsArray(type))
+            if (ArrayUtils.IsArray(type))
             {
                 return (ColumnType.List, true);
             }

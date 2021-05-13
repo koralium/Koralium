@@ -485,5 +485,26 @@ namespace Koralium.SqlParser.Visitor
             var to = VisitPop(betweenExpression.To);
             Push($"{reference} BETWEEN {from} AND {to}");
         }
+
+        public override void VisitLambdaExpression(LambdaExpression lambdaExpression)
+        {
+            var expr = VisitPop(lambdaExpression.Expression);
+
+            string parameters;
+            if (lambdaExpression.Parameters.Count == 1)
+            {
+                parameters = lambdaExpression.Parameters.First();
+            }
+            else
+            {
+                parameters = $"({string.Join(", ", lambdaExpression.Parameters)})";
+            }
+            Push($"{parameters} -> {expr}");
+        }
+
+        public override void VisitBooleanScalarExpression(BooleanScalarExpression booleanScalarExpression)
+        {
+            Visit(booleanScalarExpression.ScalarExpression);
+        }
     }
 }

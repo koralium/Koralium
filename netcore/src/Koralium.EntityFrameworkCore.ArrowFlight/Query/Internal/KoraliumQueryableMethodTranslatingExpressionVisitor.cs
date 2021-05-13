@@ -13,6 +13,7 @@
  */
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Query;
+using System.Linq.Expressions;
 
 namespace Koralium.EntityFrameworkCore.ArrowFlight.Query.Internal
 {

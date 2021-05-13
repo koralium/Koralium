@@ -71,6 +71,7 @@ boolean_expression
 	| NOT notexpr=boolean_expression
 	| '(' inner=boolean_expression ')'
 	| left=boolean_expression boolean_binary_type right=boolean_expression
+	| scalar_expression
 	| predicate IS NOT isValue=(TRUE | FALSE)
 	| predicate
 ;
@@ -131,6 +132,7 @@ scalar_expression2:
 
 scalar_expression
 	: CAST '(' casted=scalar_expression AS castedidentifier=IDENTIFIER ')'
+	| '(' inner=scalar_expression ')'
 	| literal_value
 	| column_reference
 	| left=scalar_expression binary_operation_type right=scalar_expression
@@ -153,8 +155,23 @@ binary_operation_type:
 	| '^'
 	;
 
+lambda_parameter
+	: parameter=IDENTIFIER
+	| '(' parameter=IDENTIFIER ( ',' parameter=IDENTIFIER)* ')'
+	;
+
+
+lambda_function
+	: parameter=lambda_parameter '->' (scalar=scalar_expression | boolexpr=boolean_expression)
+	;
+
+function_parameter
+	: lambda=lambda_function 
+	| scalar=scalar_expression
+	;
+
 function_call
-	: function_name '(' ((scalar_expression ( ',' scalar_expression)*) | '*')? ')'
+	: function_name '(' ((function_parameter ( ',' function_parameter)*) | '*')? ')'
 	;
 
 column_reference: column_name ('.' column_name)*;

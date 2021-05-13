@@ -17,6 +17,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Koralium.Shared.Utils;
+using System.Reflection;
 
 namespace Koralium.SqlParser
 {
@@ -31,7 +33,23 @@ namespace Koralium.SqlParser
             _tableAlias = tableAlias;
         }
 
-        internal Expressions.BooleanExpression BooleanExpression => _stack.Peek() as Expressions.BooleanExpression;
+        internal Expressions.BooleanExpression BooleanExpression => GetBooleanExpression();
+
+        private Expressions.BooleanExpression GetBooleanExpression()
+        {
+            if (_stack.Peek() is Expressions.BooleanExpression expr)
+            {
+                return expr;
+            }
+            else if (_stack.Peek() is Expressions.ScalarExpression scalarExpr)
+            {
+                return new Expressions.BooleanScalarExpression()
+                {
+                    ScalarExpression = scalarExpr
+                };
+            }
+            return null;
+        }
 
         protected override Expression VisitBinary(BinaryExpression node)
         {
@@ -169,6 +187,13 @@ namespace Koralium.SqlParser
             });
         }
 
+        protected override Expression VisitParameter(ParameterExpression node)
+        {
+            var columnReference = new Expressions.ColumnReference() { Identifiers = new List<string>() { node.Name } };
+            _stack.Push(columnReference);
+            return base.VisitParameter(node);
+        }
+
         private void VisitBooleanComparisonExpression(BinaryExpression binaryExpression)
         {
             //Check if it is a string compareTo
@@ -225,6 +250,11 @@ namespace Koralium.SqlParser
                     return node;
                 }
             }
+            else if (node.Method.Name == "Any" &&
+                TryListAny(node))
+            {
+                return node;
+            }
 
             throw new NotImplementedException($"The method {node.Method.Name} is not yet supported for type {node.Object.Type.Name}.");
         }
@@ -255,6 +285,47 @@ namespace Koralium.SqlParser
                 }
             }
             return expression;
+        }
+
+        private Expressions.LambdaExpression VisitLambdaExpression(LambdaExpression lambdaExpression)
+        {
+            List<string> parameters = new List<string>();
+            foreach(var parameter in lambdaExpression.Parameters)
+            {
+                parameters.Add(parameter.Name);
+            }
+            
+            var body = VisitPop<Expressions.SqlExpression>(lambdaExpression.Body);
+
+            return new Expressions.LambdaExpression()
+            {
+                Parameters = parameters,
+                Expression = body
+            };
+        }
+
+        private bool TryListAny(MethodCallExpression methodCallExpression)
+        {
+            if (methodCallExpression.Arguments.Count == 2 &&
+                methodCallExpression.Arguments[0] is MemberExpression memberExpression &&
+                memberExpression.Member is PropertyInfo propertyInfo &&
+                ArrayUtils.IsArray(propertyInfo.PropertyType) &&
+                methodCallExpression.Arguments[1] is LambdaExpression lambdaExpression)
+            {
+                var columnRef = VisitPop<Expressions.ColumnReference>(memberExpression);
+                var lambda = VisitLambdaExpression(lambdaExpression);
+                _stack.Push(new Expressions.FunctionCall()
+                {
+                    FunctionName = "any_match",
+                    Parameters = new List<Expressions.SqlExpression>()
+                    {
+                        columnRef,
+                        lambda
+                    }
+                });
+                return true;
+            }
+            return false;
         }
 
         private bool TryListContains(MethodCallExpression methodCallExpression)

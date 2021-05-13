@@ -32,9 +32,10 @@ namespace Koralium.SqlParser
         /// <returns></returns>
         public static BooleanExpression BooleanExpression<TEntity>(Expression<Func<TEntity, bool>> expression)
         {
-            var evaluatedExpression = PartialEvaluator.PartialEval(expression);
+            var evaluatedExpression = PartialEvaluator.PartialEval(expression) as System.Linq.Expressions.LambdaExpression;
             var visitor = new FilterExpressionVisitor();
-            visitor.Visit(evaluatedExpression);
+
+            visitor.Visit(evaluatedExpression.Body);
             return visitor.BooleanExpression;
         }
 

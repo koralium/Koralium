@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.Shared;
 using Koralium.SqlToExpression.Tests.Helpers;
 using NUnit.Framework;
 using System;
@@ -34,5 +35,7 @@ namespace Koralium.SqlToExpression.Tests
 
             AssertAreEqual(expectedInt, actualInt.Result);
         }
+
+        
     }
 }
