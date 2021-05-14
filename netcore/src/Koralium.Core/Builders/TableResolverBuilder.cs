@@ -41,9 +41,8 @@ namespace Koralium.Builders
             }
         }
 
-        internal TableResolverBuilder(List<TableColumn> columns)
+        internal TableResolverBuilder()
         {
-            _columns = columns;
         }
 
         public ITableResolverBuilder<Entity> SetOperationsProvider(IOperationsProvider operationsProvider)
