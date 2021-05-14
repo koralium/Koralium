@@ -24,7 +24,6 @@ namespace Koralium.SqlParser
 {
     internal class FilterExpressionVisitor : ExpressionVisitor
     {
-        private readonly string _tableAlias;
         private readonly Stack<SqlNode> _stack = new Stack<SqlNode>();
         private bool _inNot;
 

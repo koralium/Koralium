@@ -55,7 +55,6 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<DefaultPartitionResolver>();
 
             services.AddHostedService<PartitionHostedService>();
-            services.AddScoped<KoraliumExecutor>();
             services.AddScoped<IKoraliumTransportService, KoraliumTransportService>();
             services.AddScoped<Koralium.SqlToExpression.ISqlTableResolver, SqlTableResolver>();
 
