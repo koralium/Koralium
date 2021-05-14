@@ -48,7 +48,7 @@ namespace Koralium.Builders
             CircularDependencyHelper.CheckCircularDependency(typeof(T));
             var columns = MetadataHelper.CollectMetadata(typeof(T), typeLookup);
 
-            TableResolverBuilder<T> opt = new TableResolverBuilder<T>(columns);
+            TableResolverBuilder<T> opt = new TableResolverBuilder<T>();
 
             options?.Invoke(opt);
 

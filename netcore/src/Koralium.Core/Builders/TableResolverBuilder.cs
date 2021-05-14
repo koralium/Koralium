@@ -19,7 +19,6 @@ namespace Koralium.Builders
 {
     public class TableResolverBuilder<Entity>: ITableResolverBuilder<Entity>
     {
-        private readonly List<TableColumn> _columns;
         private readonly List<TableIndex> indicies = new List<TableIndex>();
         private IOperationsProvider _operationsProvider;
         public string TableName { get; set; }
@@ -42,9 +41,8 @@ namespace Koralium.Builders
             }
         }
 
-        internal TableResolverBuilder(List<TableColumn> columns)
+        internal TableResolverBuilder()
         {
-            _columns = columns;
         }
 
         public ITableResolverBuilder<Entity> SetOperationsProvider(IOperationsProvider operationsProvider)
