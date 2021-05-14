@@ -12,7 +12,8 @@ Any_match
 
 Example:
 
-```
-SELECT * FROM test WHERE any_match(arr, x -> x = 'test')
-```
+.. code-block:: sql
+
+  SELECT * FROM test WHERE any_match(arr, x -> x = 'test')
+
 
