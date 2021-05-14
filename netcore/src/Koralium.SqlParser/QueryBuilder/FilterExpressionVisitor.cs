@@ -27,9 +27,8 @@ namespace Koralium.SqlParser
         private readonly Stack<SqlNode> _stack = new Stack<SqlNode>();
         private bool _inNot;
 
-        public FilterExpressionVisitor(string tableAlias = null)
+        public FilterExpressionVisitor()
         {
-            _tableAlias = tableAlias;
         }
 
         internal Expressions.BooleanExpression BooleanExpression => GetBooleanExpression();
