@@ -29,6 +29,7 @@ namespace Koralium.SqlParser.Tests
             //Equals
             Assert.IsTrue(Equals(first, firstClone));
             Assert.IsFalse(Equals(first, null));
+            Assert.IsFalse(Equals(first, "test"));
             Assert.IsFalse(Equals(first, second));
 
             //Hash code
@@ -57,6 +58,7 @@ namespace Koralium.SqlParser.Tests
             //Equals
             Assert.IsTrue(Equals(first, firstClone));
             Assert.IsFalse(Equals(first, null));
+            Assert.IsFalse(Equals(first, "test"));
             Assert.IsFalse(Equals(first, second));
 
             //Hash code
@@ -85,6 +87,7 @@ namespace Koralium.SqlParser.Tests
             //Equals
             Assert.IsTrue(Equals(first, firstClone));
             Assert.IsFalse(Equals(first, null));
+            Assert.IsFalse(Equals(first, "test"));
             Assert.IsFalse(Equals(first, second));
 
             //Hash code
