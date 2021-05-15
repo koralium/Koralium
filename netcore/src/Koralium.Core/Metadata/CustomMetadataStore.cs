@@ -17,7 +17,7 @@ namespace Koralium
 {
     internal class CustomMetadataStore : ICustomMetadata
     {
-        private Dictionary<string, object> values = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> values = new Dictionary<string, object>();
         public void AddMetadata<T>(string name, T value)
         {
             if (values.ContainsKey(name))
