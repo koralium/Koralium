@@ -145,5 +145,33 @@ namespace Koralium.SqlParser.Tests
             Assert.AreNotEqual(first.GetHashCode(), third.GetHashCode());
             Assert.AreNotEqual(first.GetHashCode(), fourth.GetHashCode());
         }
+
+        [Test]
+        public void TestColumnReferenceEquals()
+        {
+            ColumnReference first = new ColumnReference()
+            {
+                Identifiers = new List<string>() { "test" }
+            };
+
+            ColumnReference firstClone = new ColumnReference()
+            {
+                Identifiers = new List<string>() { "test" }
+            };
+
+            ColumnReference second = new ColumnReference()
+            {
+                Identifiers = new List<string>() { "test2" }
+            };
+
+            //Equals
+            Assert.IsTrue(Equals(first, firstClone));
+            Assert.IsFalse(Equals(first, null));
+            Assert.IsFalse(Equals(first, second));
+
+            //Hash code
+            Assert.AreEqual(first.GetHashCode(), firstClone.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
+        }
     }
 }

@@ -64,5 +64,61 @@ namespace Koralium.SqlParser.Tests
                 Assert.IsFalse(ReferenceEquals(functionCall.Parameters[i], clone.Parameters[i]));
             }
         }
+
+        [Test]
+        public void TestCloneColumnReference()
+        {
+            ColumnReference columnReference = new ColumnReference()
+            {
+                Identifiers = new List<string>() { "test" }
+            };
+
+            var clone = columnReference.Clone() as ColumnReference;
+            Assert.AreEqual(columnReference, clone);
+            Assert.IsFalse(ReferenceEquals(columnReference, clone));
+            Assert.IsFalse(ReferenceEquals(columnReference.Identifiers , clone.Identifiers));
+        }
+
+        [Test]
+        public void TestCloneStringLiteral()
+        {
+            StringLiteral stringLiteral = new StringLiteral()
+            {
+                Value = "test"
+            };
+
+            var clone = stringLiteral.Clone() as StringLiteral;
+
+            Assert.AreEqual(stringLiteral, clone);
+            Assert.IsFalse(ReferenceEquals(stringLiteral, clone));
+        }
+
+        [Test]
+        public void TestCloneIntegerLiteral()
+        {
+            IntegerLiteral integerLiteral = new IntegerLiteral()
+            {
+                Value = 3
+            };
+
+            var clone = integerLiteral.Clone() as IntegerLiteral;
+
+            Assert.AreEqual(integerLiteral, clone);
+            Assert.IsFalse(ReferenceEquals(integerLiteral, clone));
+        }
+
+        [Test]
+        public void TestCloneBooleanLiteral()
+        {
+            BooleanLiteral booleanLiteral = new BooleanLiteral()
+            {
+                Value = true
+            };
+
+            var clone = booleanLiteral.Clone() as BooleanLiteral;
+
+            Assert.AreEqual(booleanLiteral, clone);
+            Assert.IsFalse(ReferenceEquals(booleanLiteral, clone));
+        }
     }
 }

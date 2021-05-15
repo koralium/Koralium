@@ -24,7 +24,7 @@ namespace Koralium
 {
     public class PartitionBuilder
     {
-        private StatementList _statementList;
+        private readonly StatementList _statementList;
         private readonly List<BooleanExpression> filters = new List<BooleanExpression>();
         private readonly List<ServiceLoction> serviceLoctions = new List<ServiceLoction>();
         internal PartitionBuilder(StatementList statementList)

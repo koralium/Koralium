@@ -22,8 +22,6 @@ namespace Koralium
 {
     public abstract class PartitionResolver
     {
-        private static readonly List<ServiceLoction> EmptyServieLocation = new List<ServiceLoction>();
-
         /// <summary>
         /// Get the partitions for a specific table
         /// </summary>

@@ -21,7 +21,7 @@ namespace Koralium.Partitions
 
     class PartitionFilterVisitor : KoraliumSqlVisitor
     {
-        private bool filterSet = false;
+        private readonly bool filterSet = false;
         private readonly BooleanExpression _filter;
 
         public PartitionFilterVisitor(BooleanExpression filter)

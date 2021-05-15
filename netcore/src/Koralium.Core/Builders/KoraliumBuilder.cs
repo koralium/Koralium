@@ -27,7 +27,6 @@ namespace Koralium.Builders
     {
         private readonly Dictionary<Type, IReadOnlyList<TableColumn>> typeLookup = new Dictionary<Type, IReadOnlyList<TableColumn>>();
         private readonly ImmutableList<KoraliumTable>.Builder tables = ImmutableList.CreateBuilder<KoraliumTable>();
-        private int tableIdCounter = 0;
 
         public IServiceCollection Services { get; }
 
