@@ -18,19 +18,5 @@ namespace Koralium.SqlParser.Expressions
     public abstract class SelectExpression : SqlExpression
     {
         public string Alias { get; set; }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Alias);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is SelectExpression other)
-            {
-                return Equals(Alias, other.Alias);
-            }
-            return false;
-        }
     }
 }

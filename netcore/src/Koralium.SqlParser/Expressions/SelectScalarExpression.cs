@@ -36,7 +36,7 @@ namespace Koralium.SqlParser.Expressions
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Expression);
+            return HashCode.Combine(Expression, Alias);
         }
 
         public override bool Equals(object obj)

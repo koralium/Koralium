@@ -196,5 +196,221 @@ namespace Koralium.SqlParser.Tests
             Assert.IsFalse(ReferenceEquals(binaryExpression.Left, clone.Left));
             Assert.IsFalse(ReferenceEquals(binaryExpression.Right, clone.Right));
         }
+
+        [Test]
+        public void TestCloneBooleanBinaryExpression()
+        {
+            BooleanBinaryExpression booleanBinaryExpression = new BooleanBinaryExpression()
+            {
+                Type = BooleanBinaryType.AND,
+                Left = new BooleanComparisonExpression()
+                {
+                    Type = BooleanComparisonType.Equals,
+                    Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                    Right = new IntegerLiteral() { Value = 3 }
+                },
+                Right = new BooleanComparisonExpression()
+                {
+                    Type = BooleanComparisonType.GreaterThan,
+                    Left = new ColumnReference() { Identifiers = new List<string>() { "c2" } },
+                    Right = new IntegerLiteral() { Value = 17 }
+                }
+            };
+
+            var clone = booleanBinaryExpression.Clone() as BooleanBinaryExpression;
+
+            Assert.AreEqual(booleanBinaryExpression, clone);
+            Assert.IsFalse(ReferenceEquals(booleanBinaryExpression, clone));
+            Assert.IsFalse(ReferenceEquals(booleanBinaryExpression.Left, clone.Left));
+            Assert.IsFalse(ReferenceEquals(booleanBinaryExpression.Right, clone.Right));
+        }
+
+        [Test]
+        public void TestCloneBooleanComparisonExpression()
+        {
+            BooleanComparisonExpression booleanComparisonExpression = new BooleanComparisonExpression()
+            {
+                Type = BooleanComparisonType.Equals,
+                Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                Right = new IntegerLiteral() { Value = 3 }
+            };
+
+            var clone = booleanComparisonExpression.Clone() as BooleanComparisonExpression;
+
+            Assert.AreEqual(booleanComparisonExpression, clone);
+            Assert.IsFalse(ReferenceEquals(booleanComparisonExpression, clone));
+            Assert.IsFalse(ReferenceEquals(booleanComparisonExpression.Left, clone.Left));
+            Assert.IsFalse(ReferenceEquals(booleanComparisonExpression.Right, clone.Right));
+        }
+
+        [Test]
+        public void TestCloneBooleanIsNullExpression()
+        {
+            BooleanIsNullExpression booleanIsNullExpression = new BooleanIsNullExpression()
+            {
+                IsNot = false,
+                ScalarExpression = new ColumnReference() { Identifiers = new List<string>() { "c1" } }
+            };
+
+            var clone = booleanIsNullExpression.Clone() as BooleanIsNullExpression;
+
+            Assert.AreEqual(booleanIsNullExpression, clone);
+            Assert.IsFalse(ReferenceEquals(booleanIsNullExpression, clone));
+            Assert.IsFalse(ReferenceEquals(booleanIsNullExpression.ScalarExpression, clone.ScalarExpression));
+        }
+
+        [Test]
+        public void TestCloneCastExpression()
+        {
+            CastExpression castExpression = new CastExpression()
+            {
+                ScalarExpression = new StringLiteral() { Value = "test" },
+                ToType = "t"
+            };
+
+            var clone = castExpression.Clone() as CastExpression;
+
+            Assert.AreEqual(castExpression, clone);
+            Assert.IsFalse(ReferenceEquals(castExpression, clone));
+            Assert.IsFalse(ReferenceEquals(castExpression.ScalarExpression, clone.ScalarExpression));
+        }
+
+        [Test]
+        public void TestCloneInExpression()
+        {
+            InExpression inExpression = new InExpression()
+            {
+                Expression = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                Not = false,
+                Values = new List<ScalarExpression>()
+                {
+                    new StringLiteral() { Value = "test" }
+                }
+            };
+
+            var clone = inExpression.Clone() as InExpression;
+
+            Assert.AreEqual(inExpression, clone);
+            Assert.IsFalse(ReferenceEquals(inExpression, clone));
+            Assert.IsFalse(ReferenceEquals(inExpression.Expression, clone.Expression));
+            Assert.IsFalse(ReferenceEquals(inExpression.Values, clone.Values));
+            for (int i = 0; i < inExpression.Values.Count; i++)
+            {
+                Assert.IsFalse(ReferenceEquals(inExpression.Values[i], clone.Values[i]));
+            }
+        }
+
+        [Test]
+        public void TestCloneLikeExpression()
+        {
+            LikeExpression likeExpression = new LikeExpression()
+            {
+                Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                Right = new StringLiteral() { Value = "test" },
+                Not = false
+            };
+
+            var clone = likeExpression.Clone() as LikeExpression;
+
+            Assert.AreEqual(likeExpression, clone);
+            Assert.IsFalse(ReferenceEquals(likeExpression, clone));
+            Assert.IsFalse(ReferenceEquals(likeExpression.Left, clone.Left));
+            Assert.IsFalse(ReferenceEquals(likeExpression.Right, clone.Right));
+        }
+
+        [Test]
+        public void TestCloneNotExpression()
+        {
+            NotExpression notExpression = new NotExpression()
+            {
+                BooleanExpression = new BooleanScalarExpression() { ScalarExpression = new ColumnReference() { Identifiers = new List<string>() { "c1" } } }
+            };
+
+            var clone = notExpression.Clone() as NotExpression;
+
+            Assert.AreEqual(notExpression, clone);
+            Assert.IsFalse(ReferenceEquals(notExpression, clone));
+            Assert.IsFalse(ReferenceEquals(notExpression.BooleanExpression, clone.BooleanExpression));
+        }
+
+        [Test]
+        public void TestCloneSearchExpression()
+        {
+            SearchExpression searchExpression = new SearchExpression()
+            {
+                AllColumns = false,
+                Columns = new List<ColumnReference>() { new ColumnReference() { Identifiers = new List<string>() { "c1" } } },
+                Value = new StringLiteral() { Value = "test" }
+            };
+
+            var clone = searchExpression.Clone() as SearchExpression;
+
+            Assert.AreEqual(searchExpression, clone);
+            Assert.IsFalse(ReferenceEquals(searchExpression, clone));
+            Assert.IsFalse(ReferenceEquals(searchExpression.Value, clone.Value));
+
+            for (int i = 0; i < searchExpression.Columns.Count; i++)
+            {
+                Assert.IsFalse(ReferenceEquals(searchExpression.Columns[i], clone.Columns[i]));
+            }
+        }
+
+        [Test]
+        public void TestCloneSelectNullExpression()
+        {
+            SelectNullExpression selectNullExpression = new SelectNullExpression()
+            {
+                Alias = "test"
+            };
+
+            var clone = selectNullExpression.Clone() as SelectNullExpression;
+
+            Assert.AreEqual(selectNullExpression, clone);
+            Assert.IsFalse(ReferenceEquals(selectNullExpression, clone));
+        }
+
+        [Test]
+        public void TestCloneSelectScalarExpression()
+        {
+            SelectScalarExpression selectScalarExpression = new SelectScalarExpression()
+            {
+                Alias = "test",
+                Expression = new StringLiteral() { Value = "t" }
+            };
+
+            var clone = selectScalarExpression.Clone() as SelectScalarExpression;
+
+            Assert.AreEqual(selectScalarExpression, clone);
+            Assert.IsFalse(ReferenceEquals(selectScalarExpression, clone));
+            Assert.IsFalse(ReferenceEquals(selectScalarExpression.Expression, clone.Expression));
+        }
+
+        [Test]
+        public void TestCloneSelectStarExpression()
+        {
+            SelectStarExpression selectStarExpression = new SelectStarExpression()
+            {
+                Alias = "test"
+            };
+
+            var clone = selectStarExpression.Clone() as SelectStarExpression;
+
+            Assert.AreEqual(selectStarExpression, clone);
+            Assert.IsFalse(ReferenceEquals(selectStarExpression, clone));
+        }
+
+        [Test]
+        public void TestCloneVariableReference()
+        {
+            VariableReference variableReference = new VariableReference()
+            {
+                Name = "test"
+            };
+
+            var clone = variableReference.Clone() as VariableReference;
+
+            Assert.AreEqual(variableReference, clone);
+            Assert.IsFalse(ReferenceEquals(variableReference, clone));
+        }
     }
 }

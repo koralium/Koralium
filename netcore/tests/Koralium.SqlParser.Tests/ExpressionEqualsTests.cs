@@ -167,6 +167,7 @@ namespace Koralium.SqlParser.Tests
             //Equals
             Assert.IsTrue(Equals(first, firstClone));
             Assert.IsFalse(Equals(first, null));
+            Assert.IsFalse(Equals(first, "test"));
             Assert.IsFalse(Equals(first, second));
 
             //Hash code
@@ -278,6 +279,572 @@ namespace Koralium.SqlParser.Tests
             Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
             Assert.AreNotEqual(first.GetHashCode(), third.GetHashCode());
             Assert.AreNotEqual(first.GetHashCode(), fourth.GetHashCode());
+        }
+
+        [Test]
+        public void TestBooleanBinaryExpressionEquals()
+        {
+            BooleanBinaryExpression first = new BooleanBinaryExpression()
+            {
+                Type = BooleanBinaryType.AND,
+                Left = new BooleanComparisonExpression()
+                {
+                    Type = BooleanComparisonType.Equals,
+                    Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                    Right = new IntegerLiteral() { Value = 3 }
+                },
+                Right = new BooleanComparisonExpression()
+                {
+                    Type = BooleanComparisonType.GreaterThan,
+                    Left = new ColumnReference() { Identifiers = new List<string>() { "c2" } },
+                    Right = new IntegerLiteral() { Value = 17 }
+                }
+            };
+
+            BooleanBinaryExpression firstClone = new BooleanBinaryExpression()
+            {
+                Type = BooleanBinaryType.AND,
+                Left = new BooleanComparisonExpression()
+                {
+                    Type = BooleanComparisonType.Equals,
+                    Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                    Right = new IntegerLiteral() { Value = 3 }
+                },
+                Right = new BooleanComparisonExpression()
+                {
+                    Type = BooleanComparisonType.GreaterThan,
+                    Left = new ColumnReference() { Identifiers = new List<string>() { "c2" } },
+                    Right = new IntegerLiteral() { Value = 17 }
+                }
+            };
+
+            BooleanBinaryExpression second = new BooleanBinaryExpression()
+            {
+                Type = BooleanBinaryType.OR,
+                Left = new BooleanComparisonExpression()
+                {
+                    Type = BooleanComparisonType.Equals,
+                    Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                    Right = new IntegerLiteral() { Value = 3 }
+                },
+                Right = new BooleanComparisonExpression()
+                {
+                    Type = BooleanComparisonType.GreaterThan,
+                    Left = new ColumnReference() { Identifiers = new List<string>() { "c2" } },
+                    Right = new IntegerLiteral() { Value = 17 }
+                }
+            };
+
+            BooleanBinaryExpression third = new BooleanBinaryExpression()
+            {
+                Type = BooleanBinaryType.AND,
+                Left = new BooleanComparisonExpression()
+                {
+                    Type = BooleanComparisonType.Equals,
+                    Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                    Right = new IntegerLiteral() { Value = 4 }
+                },
+                Right = new BooleanComparisonExpression()
+                {
+                    Type = BooleanComparisonType.GreaterThan,
+                    Left = new ColumnReference() { Identifiers = new List<string>() { "c2" } },
+                    Right = new IntegerLiteral() { Value = 17 }
+                }
+            };
+
+            BooleanBinaryExpression fourth = new BooleanBinaryExpression()
+            {
+                Type = BooleanBinaryType.AND,
+                Left = new BooleanComparisonExpression()
+                {
+                    Type = BooleanComparisonType.Equals,
+                    Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                    Right = new IntegerLiteral() { Value = 3 }
+                },
+                Right = new BooleanComparisonExpression()
+                {
+                    Type = BooleanComparisonType.GreaterThan,
+                    Left = new ColumnReference() { Identifiers = new List<string>() { "c2" } },
+                    Right = new IntegerLiteral() { Value = 18 }
+                }
+            };
+
+            //Equals
+            Assert.IsTrue(Equals(first, firstClone));
+            Assert.IsFalse(Equals(first, null));
+            Assert.IsFalse(Equals(first, second));
+            Assert.IsFalse(Equals(first, third));
+            Assert.IsFalse(Equals(first, fourth));
+            Assert.IsFalse(Equals(first, "other type"));
+
+            //Hash code
+            Assert.AreEqual(first.GetHashCode(), firstClone.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), third.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), fourth.GetHashCode());
+        }
+
+        [Test]
+        public void TestBooleanComparisonExpressionEquals()
+        {
+            BooleanComparisonExpression first = new BooleanComparisonExpression()
+            {
+                Type = BooleanComparisonType.Equals,
+                Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                Right = new IntegerLiteral() { Value = 3 }
+            };
+
+            BooleanComparisonExpression firstClone = new BooleanComparisonExpression()
+            {
+                Type = BooleanComparisonType.Equals,
+                Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                Right = new IntegerLiteral() { Value = 3 }
+            };
+
+            BooleanComparisonExpression second = new BooleanComparisonExpression()
+            {
+                Type = BooleanComparisonType.GreaterThan,
+                Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                Right = new IntegerLiteral() { Value = 3 }
+            };
+
+            BooleanComparisonExpression third = new BooleanComparisonExpression()
+            {
+                Type = BooleanComparisonType.Equals,
+                Left = new ColumnReference() { Identifiers = new List<string>() { "c2" } },
+                Right = new IntegerLiteral() { Value = 3 }
+            };
+
+            BooleanComparisonExpression fourth = new BooleanComparisonExpression()
+            {
+                Type = BooleanComparisonType.Equals,
+                Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                Right = new IntegerLiteral() { Value = 17 }
+            };
+
+            //Equals
+            Assert.IsTrue(Equals(first, firstClone));
+            Assert.IsFalse(Equals(first, null));
+            Assert.IsFalse(Equals(first, second));
+            Assert.IsFalse(Equals(first, third));
+            Assert.IsFalse(Equals(first, fourth));
+            Assert.IsFalse(Equals(first, "other type"));
+
+            //Hash code
+            Assert.AreEqual(first.GetHashCode(), firstClone.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), third.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), fourth.GetHashCode());
+        }
+
+        [Test]
+        public void TestBooleanIsNullExpressionEquals()
+        {
+            BooleanIsNullExpression first = new BooleanIsNullExpression()
+            {
+                IsNot = false,
+                ScalarExpression = new ColumnReference() { Identifiers = new List<string>() { "c1" } }
+            };
+
+            BooleanIsNullExpression firstClone = new BooleanIsNullExpression()
+            {
+                IsNot = false,
+                ScalarExpression = new ColumnReference() { Identifiers = new List<string>() { "c1" } }
+            };
+
+            BooleanIsNullExpression second = new BooleanIsNullExpression()
+            {
+                IsNot = true,
+                ScalarExpression = new ColumnReference() { Identifiers = new List<string>() { "c1" } }
+            };
+
+            BooleanIsNullExpression third = new BooleanIsNullExpression()
+            {
+                IsNot = false,
+                ScalarExpression = new ColumnReference() { Identifiers = new List<string>() { "c2" } }
+            };
+
+            //Equals
+            Assert.IsTrue(Equals(first, firstClone));
+            Assert.IsFalse(Equals(first, null));
+            Assert.IsFalse(Equals(first, second));
+            Assert.IsFalse(Equals(first, third));
+            Assert.IsFalse(Equals(first, "other type"));
+
+            //Hash code
+            Assert.AreEqual(first.GetHashCode(), firstClone.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), third.GetHashCode());
+        }
+
+        [Test]
+        public void TestCastExpressionEquals()
+        {
+            CastExpression first = new CastExpression()
+            {
+                ScalarExpression = new StringLiteral() { Value = "test" },
+                ToType = "t"
+            };
+
+            CastExpression firstClone = new CastExpression()
+            {
+                ScalarExpression = new StringLiteral() { Value = "test" },
+                ToType = "t"
+            };
+
+            CastExpression second = new CastExpression()
+            {
+                ScalarExpression = new StringLiteral() { Value = "test2" },
+                ToType = "t"
+            };
+
+            CastExpression third = new CastExpression()
+            {
+                ScalarExpression = new StringLiteral() { Value = "test" },
+                ToType = "t2"
+            };
+
+            //Equals
+            Assert.IsTrue(Equals(first, firstClone));
+            Assert.IsFalse(Equals(first, null));
+            Assert.IsFalse(Equals(first, second));
+            Assert.IsFalse(Equals(first, third));
+            Assert.IsFalse(Equals(first, "other type"));
+
+            //Hash code
+            Assert.AreEqual(first.GetHashCode(), firstClone.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), third.GetHashCode());
+        }
+
+        [Test]
+        public void TestInExpressionEquals()
+        {
+            InExpression first = new InExpression()
+            {
+                Expression = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                Not = false,
+                Values = new List<ScalarExpression>()
+                {
+                    new StringLiteral() { Value = "test" }
+                }
+            };
+
+            InExpression firstClone = new InExpression()
+            {
+                Expression = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                Not = false,
+                Values = new List<ScalarExpression>()
+                {
+                    new StringLiteral() { Value = "test" }
+                }
+            };
+
+            InExpression second = new InExpression()
+            {
+                Expression = new ColumnReference() { Identifiers = new List<string>() { "c2" } },
+                Not = false,
+                Values = new List<ScalarExpression>()
+                {
+                    new StringLiteral() { Value = "test" }
+                }
+            };
+
+            InExpression third = new InExpression()
+            {
+                Expression = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                Not = true,
+                Values = new List<ScalarExpression>()
+                {
+                    new StringLiteral() { Value = "test" }
+                }
+            };
+
+            InExpression fourth = new InExpression()
+            {
+                Expression = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                Not = false,
+                Values = new List<ScalarExpression>()
+                {
+                    new StringLiteral() { Value = "test2" }
+                }
+            };
+
+            //Equals
+            Assert.IsTrue(Equals(first, firstClone));
+            Assert.IsFalse(Equals(first, null));
+            Assert.IsFalse(Equals(first, second));
+            Assert.IsFalse(Equals(first, third));
+            Assert.IsFalse(Equals(first, fourth));
+            Assert.IsFalse(Equals(first, "other type"));
+
+            //Hash code
+            Assert.AreEqual(first.GetHashCode(), firstClone.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), third.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), fourth.GetHashCode());
+        }
+
+        [Test]
+        public void TestLikeExpressionEquals()
+        {
+            LikeExpression first = new LikeExpression()
+            {
+                Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                Right = new StringLiteral() { Value = "test" },
+                Not = false
+            };
+
+            LikeExpression firstClone = new LikeExpression()
+            {
+                Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                Right = new StringLiteral() { Value = "test" },
+                Not = false
+            };
+
+            LikeExpression second = new LikeExpression()
+            {
+                Left = new ColumnReference() { Identifiers = new List<string>() { "c2" } },
+                Right = new StringLiteral() { Value = "test" },
+                Not = false
+            };
+
+            LikeExpression third = new LikeExpression()
+            {
+                Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                Right = new StringLiteral() { Value = "test2" },
+                Not = false
+            };
+
+            LikeExpression fourth = new LikeExpression()
+            {
+                Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                Right = new StringLiteral() { Value = "test" },
+                Not = true
+            };
+
+            //Equals
+            Assert.IsTrue(Equals(first, firstClone));
+            Assert.IsFalse(Equals(first, null));
+            Assert.IsFalse(Equals(first, second));
+            Assert.IsFalse(Equals(first, third));
+            Assert.IsFalse(Equals(first, fourth));
+            Assert.IsFalse(Equals(first, "other type"));
+
+            //Hash code
+            Assert.AreEqual(first.GetHashCode(), firstClone.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), third.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), fourth.GetHashCode());
+        }
+
+        [Test]
+        public void TestNotExpressionEquals()
+        {
+            NotExpression first = new NotExpression()
+            {
+                BooleanExpression = new BooleanScalarExpression() { ScalarExpression = new ColumnReference() { Identifiers = new List<string>() { "c1" } } }
+            };
+
+            NotExpression firstClone = new NotExpression()
+            {
+                BooleanExpression = new BooleanScalarExpression() { ScalarExpression = new ColumnReference() { Identifiers = new List<string>() { "c1" } } }
+            };
+
+            NotExpression second = new NotExpression()
+            {
+                BooleanExpression = new BooleanScalarExpression() { ScalarExpression = new ColumnReference() { Identifiers = new List<string>() { "c2" } } }
+            };
+
+            //Equals
+            Assert.IsTrue(Equals(first, firstClone));
+            Assert.IsFalse(Equals(first, null));
+            Assert.IsFalse(Equals(first, second));
+            Assert.IsFalse(Equals(first, "other type"));
+
+            //Hash code
+            Assert.AreEqual(first.GetHashCode(), firstClone.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
+        }
+
+        [Test]
+        public void TestSearchExpressionEquals()
+        {
+            SearchExpression first = new SearchExpression()
+            {
+                AllColumns = false,
+                Columns = new List<ColumnReference>() { new ColumnReference() { Identifiers = new List<string>() { "c1" } } },
+                Value = new StringLiteral() { Value = "test" }
+            };
+
+            SearchExpression firstClone = new SearchExpression()
+            {
+                AllColumns = false,
+                Columns = new List<ColumnReference>() { new ColumnReference() { Identifiers = new List<string>() { "c1" } } },
+                Value = new StringLiteral() { Value = "test" }
+            };
+
+            SearchExpression second = new SearchExpression()
+            {
+                AllColumns = true,
+                Columns = new List<ColumnReference>() { new ColumnReference() { Identifiers = new List<string>() { "c1" } } },
+                Value = new StringLiteral() { Value = "test" }
+            };
+
+            SearchExpression third = new SearchExpression()
+            {
+                AllColumns = false,
+                Columns = new List<ColumnReference>() { new ColumnReference() { Identifiers = new List<string>() { "c2" } } },
+                Value = new StringLiteral() { Value = "test" }
+            };
+
+            SearchExpression fourth = new SearchExpression()
+            {
+                AllColumns = false,
+                Columns = new List<ColumnReference>() { new ColumnReference() { Identifiers = new List<string>() { "c1" } } },
+                Value = new StringLiteral() { Value = "test2" }
+            };
+
+            //Equals
+            Assert.IsTrue(Equals(first, firstClone));
+            Assert.IsFalse(Equals(first, null));
+            Assert.IsFalse(Equals(first, second));
+            Assert.IsFalse(Equals(first, third));
+            Assert.IsFalse(Equals(first, fourth));
+            Assert.IsFalse(Equals(first, "other type"));
+
+            //Hash code
+            Assert.AreEqual(first.GetHashCode(), firstClone.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), third.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), fourth.GetHashCode());
+        }
+
+        [Test]
+        public void TestSelectNullExpressionEquals()
+        {
+            SelectNullExpression first = new SelectNullExpression()
+            {
+                Alias = "test"
+            };
+
+            SelectNullExpression firstClone = new SelectNullExpression()
+            {
+                Alias = "test"
+            };
+
+            SelectNullExpression second = new SelectNullExpression()
+            {
+                Alias = "test2"
+            };
+
+            //Equals
+            Assert.IsTrue(Equals(first, firstClone));
+            Assert.IsFalse(Equals(first, null));
+            Assert.IsFalse(Equals(first, second));
+            Assert.IsFalse(Equals(first, "other type"));
+
+            //Hash code
+            Assert.AreEqual(first.GetHashCode(), firstClone.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
+        }
+
+        [Test]
+        public void TestSelectScalarExpressionEquals()
+        {
+            SelectScalarExpression first = new SelectScalarExpression()
+            {
+                Alias = "test",
+                Expression = new StringLiteral() { Value = "t" }
+            };
+
+            SelectScalarExpression firstClone = new SelectScalarExpression()
+            {
+                Alias = "test",
+                Expression = new StringLiteral() { Value = "t" }
+            };
+
+            SelectScalarExpression second = new SelectScalarExpression()
+            {
+                Alias = "test2",
+                Expression = new StringLiteral() { Value = "t" }
+            };
+
+            SelectScalarExpression third = new SelectScalarExpression()
+            {
+                Alias = "test",
+                Expression = new StringLiteral() { Value = "t2" }
+            };
+
+            //Equals
+            Assert.IsTrue(Equals(first, firstClone));
+            Assert.IsFalse(Equals(first, null));
+            Assert.IsFalse(Equals(first, second));
+            Assert.IsFalse(Equals(first, third));
+            Assert.IsFalse(Equals(first, "other type"));
+
+            //Hash code
+            Assert.AreEqual(first.GetHashCode(), firstClone.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), third.GetHashCode());
+        }
+
+        [Test]
+        public void TestSelectStarExpressionEquals()
+        {
+            SelectStarExpression first = new SelectStarExpression()
+            {
+                Alias = "test"
+            };
+
+            SelectStarExpression firstClone = new SelectStarExpression()
+            {
+                Alias = "test"
+            };
+
+            SelectStarExpression second = new SelectStarExpression()
+            {
+                Alias = "test2"
+            };
+
+            //Equals
+            Assert.IsTrue(Equals(first, firstClone));
+            Assert.IsFalse(Equals(first, null));
+            Assert.IsFalse(Equals(first, second));
+            Assert.IsFalse(Equals(first, "other type"));
+
+            //Hash code
+            Assert.AreEqual(first.GetHashCode(), firstClone.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
+        }
+
+        [Test]
+        public void TestVariableReferenceEquals()
+        {
+            VariableReference first = new VariableReference()
+            {
+                Name = "test"
+            };
+
+            VariableReference firstClone = new VariableReference()
+            {
+                Name = "test"
+            };
+
+            VariableReference second = new VariableReference()
+            {
+                Name = "test2"
+            };
+
+            //Equals
+            Assert.IsTrue(Equals(first, firstClone));
+            Assert.IsFalse(Equals(first, null));
+            Assert.IsFalse(Equals(first, second));
+            Assert.IsFalse(Equals(first, "other type"));
+
+            //Hash code
+            Assert.AreEqual(first.GetHashCode(), firstClone.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
         }
     }
 }
