@@ -159,5 +159,42 @@ namespace Koralium.SqlParser.Tests
             Assert.AreEqual(base64Literal, clone);
             Assert.IsFalse(ReferenceEquals(base64Literal, clone));
         }
+
+        [Test]
+        public void TestCloneBetweenExpression()
+        {
+            BetweenExpression betweenExpression = new BetweenExpression()
+            {
+                Expression = new ColumnReference { Identifiers = new List<string>() { "c1" } },
+                From = new IntegerLiteral() { Value = 3 },
+                To = new IntegerLiteral() { Value = 17 }
+            };
+
+            var clone = betweenExpression.Clone() as BetweenExpression;
+
+            Assert.AreEqual(betweenExpression, clone);
+            Assert.IsFalse(ReferenceEquals(betweenExpression, clone));
+            Assert.IsFalse(ReferenceEquals(betweenExpression.Expression, clone.Expression));
+            Assert.IsFalse(ReferenceEquals(betweenExpression.From, clone.From));
+            Assert.IsFalse(ReferenceEquals(betweenExpression.To, clone.To));
+        }
+
+        [Test]
+        public void TestCloneBinaryExpression()
+        {
+            BinaryExpression binaryExpression = new BinaryExpression()
+            {
+                Type = BinaryType.Add,
+                Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                Right = new IntegerLiteral() { Value = 3 }
+            };
+
+            var clone = binaryExpression.Clone() as BinaryExpression;
+
+            Assert.AreEqual(binaryExpression, clone);
+            Assert.IsFalse(ReferenceEquals(binaryExpression, clone));
+            Assert.IsFalse(ReferenceEquals(binaryExpression.Left, clone.Left));
+            Assert.IsFalse(ReferenceEquals(binaryExpression.Right, clone.Right));
+        }
     }
 }

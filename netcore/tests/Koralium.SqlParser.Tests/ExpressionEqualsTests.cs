@@ -173,5 +173,111 @@ namespace Koralium.SqlParser.Tests
             Assert.AreEqual(first.GetHashCode(), firstClone.GetHashCode());
             Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
         }
+
+        [Test]
+        public void TestBetweenExpressionEquals()
+        {
+            BetweenExpression first = new BetweenExpression()
+            {
+                Expression = new ColumnReference { Identifiers = new List<string>() { "c1" } },
+                From = new IntegerLiteral() { Value = 3 },
+                To = new IntegerLiteral() { Value = 17 }
+            };
+
+            BetweenExpression firstClone = new BetweenExpression()
+            {
+                Expression = new ColumnReference { Identifiers = new List<string>() { "c1" } },
+                From = new IntegerLiteral() { Value = 3 },
+                To = new IntegerLiteral() { Value = 17 }
+            };
+
+            BetweenExpression second = new BetweenExpression()
+            {
+                Expression = new ColumnReference { Identifiers = new List<string>() { "c2" } },
+                From = new IntegerLiteral() { Value = 3 },
+                To = new IntegerLiteral() { Value = 17 }
+            };
+
+            BetweenExpression third = new BetweenExpression()
+            {
+                Expression = new ColumnReference { Identifiers = new List<string>() { "c1" } },
+                From = new IntegerLiteral() { Value = 4 },
+                To = new IntegerLiteral() { Value = 17 }
+            };
+
+            BetweenExpression fourth = new BetweenExpression()
+            {
+                Expression = new ColumnReference { Identifiers = new List<string>() { "c1" } },
+                From = new IntegerLiteral() { Value = 3 },
+                To = new IntegerLiteral() { Value = 19 }
+            };
+
+            //Equals
+            Assert.IsTrue(Equals(first, firstClone));
+            Assert.IsFalse(Equals(first, null));
+            Assert.IsFalse(Equals(first, second));
+            Assert.IsFalse(Equals(first, third));
+            Assert.IsFalse(Equals(first, fourth));
+            Assert.IsFalse(Equals(first, "other type"));
+
+            //Hash code
+            Assert.AreEqual(first.GetHashCode(), firstClone.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), third.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), fourth.GetHashCode());
+        }
+
+        [Test]
+        public void TestBinaryExpressionEquals()
+        {
+            BinaryExpression first = new BinaryExpression()
+            {
+                Type = BinaryType.Add,
+                Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                Right = new IntegerLiteral() { Value = 3 }
+            };
+
+            BinaryExpression firstClone = new BinaryExpression()
+            {
+                Type = BinaryType.Add,
+                Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                Right = new IntegerLiteral() { Value = 3 }
+            };
+
+            BinaryExpression second = new BinaryExpression()
+            {
+                Type = BinaryType.Divide,
+                Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                Right = new IntegerLiteral() { Value = 3 }
+            };
+
+            BinaryExpression third = new BinaryExpression()
+            {
+                Type = BinaryType.Add,
+                Left = new ColumnReference() { Identifiers = new List<string>() { "c2" } },
+                Right = new IntegerLiteral() { Value = 3 }
+            };
+
+            BinaryExpression fourth = new BinaryExpression()
+            {
+                Type = BinaryType.Add,
+                Left = new ColumnReference() { Identifiers = new List<string>() { "c1" } },
+                Right = new IntegerLiteral() { Value = 17 }
+            };
+
+            //Equals
+            Assert.IsTrue(Equals(first, firstClone));
+            Assert.IsFalse(Equals(first, null));
+            Assert.IsFalse(Equals(first, second));
+            Assert.IsFalse(Equals(first, third));
+            Assert.IsFalse(Equals(first, fourth));
+            Assert.IsFalse(Equals(first, "other type"));
+
+            //Hash code
+            Assert.AreEqual(first.GetHashCode(), firstClone.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), third.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), fourth.GetHashCode());
+        }
     }
 }
