@@ -94,5 +94,75 @@ namespace Koralium.SqlParser.Tests
             Assert.AreEqual(first.GetHashCode(), firstClone.GetHashCode());
             Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
         }
+
+        [Test]
+        public void TestBase64LiteralEquals()
+        {
+            Base64Literal first = new Base64Literal()
+            {
+                Value = "test"
+            };
+
+            Base64Literal firstClone = new Base64Literal()
+            {
+                Value = "test"
+            };
+
+            Base64Literal second = new Base64Literal()
+            {
+                Value = "test2"
+            };
+
+            //Equals
+            Assert.IsTrue(Equals(first, firstClone));
+            Assert.IsFalse(Equals(first, null));
+            Assert.IsFalse(Equals(first, "test"));
+            Assert.IsFalse(Equals(first, second));
+
+            //Hash code
+            Assert.AreEqual(first.GetHashCode(), firstClone.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
+        }
+
+        [Test]
+        public void TestNullLiteralEquals()
+        {
+            NullLiteral first = new NullLiteral();
+            NullLiteral second = new NullLiteral();
+
+            Assert.IsTrue(Equals(first, second));
+
+            //Hash code
+            Assert.AreEqual(first.GetHashCode(), second.GetHashCode());
+        }
+
+        [Test]
+        public void TestNumericLiteralEquals()
+        {
+            NumericLiteral first = new NumericLiteral()
+            {
+                Value = 3
+            };
+
+            NumericLiteral firstClone = new NumericLiteral()
+            {
+                Value = 3
+            };
+
+            NumericLiteral second = new NumericLiteral()
+            {
+                Value = 17
+            };
+
+            //Equals
+            Assert.IsTrue(Equals(first, firstClone));
+            Assert.IsFalse(Equals(first, null));
+            Assert.IsFalse(Equals(first, "test"));
+            Assert.IsFalse(Equals(first, second));
+
+            //Hash code
+            Assert.AreEqual(first.GetHashCode(), firstClone.GetHashCode());
+            Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
+        }
     }
 }

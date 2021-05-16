@@ -120,5 +120,44 @@ namespace Koralium.SqlParser.Tests
             Assert.AreEqual(booleanLiteral, clone);
             Assert.IsFalse(ReferenceEquals(booleanLiteral, clone));
         }
+
+        [Test]
+        public void TestCloneNullLiteral()
+        {
+            NullLiteral nullLiteral = new NullLiteral();
+
+            var clone = nullLiteral.Clone();
+
+            Assert.AreEqual(nullLiteral, clone);
+            Assert.IsFalse(ReferenceEquals(nullLiteral, clone));
+        }
+
+        [Test]
+        public void TestCloneNumericLiteral()
+        {
+            NumericLiteral numericLiteral = new NumericLiteral()
+            {
+                Value = 3
+            };
+
+            var clone = numericLiteral.Clone() as NumericLiteral;
+
+            Assert.AreEqual(numericLiteral, clone);
+            Assert.IsFalse(ReferenceEquals(numericLiteral, clone));
+        }
+
+        [Test]
+        public void TestCloneBase64Literal()
+        {
+            Base64Literal base64Literal = new Base64Literal()
+            {
+                Value = "test"
+            };
+
+            var clone = base64Literal.Clone() as Base64Literal;
+
+            Assert.AreEqual(base64Literal, clone);
+            Assert.IsFalse(ReferenceEquals(base64Literal, clone));
+        }
     }
 }
