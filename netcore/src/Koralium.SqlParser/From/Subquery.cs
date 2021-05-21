@@ -36,14 +36,15 @@ namespace Koralium.SqlParser.From
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(SelectStatement);
+            return HashCode.Combine(SelectStatement, Alias);
         }
 
         public override bool Equals(object obj)
         {
             if (obj is Subquery other)
             {
-                return Equals(SelectStatement, other.SelectStatement);
+                return Equals(SelectStatement, other.SelectStatement) &&
+                    Equals(Alias, other.Alias);
             }
             return false;
         }
