@@ -32,14 +32,14 @@ namespace Koralium.SqlParser.Statements
         {
             return new SetVariableStatement()
             {
-                ScalarExpression = ScalarExpression.Clone() as ScalarExpression,
-                VariableReference = VariableReference.Clone() as VariableReference
+                ScalarExpression = ScalarExpression?.Clone() as ScalarExpression,
+                VariableReference = VariableReference?.Clone() as VariableReference
             };
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(VariableReference);
+            return HashCode.Combine(VariableReference, ScalarExpression);
         }
 
         public override bool Equals(object obj)
