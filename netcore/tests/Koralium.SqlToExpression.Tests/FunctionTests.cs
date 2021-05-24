@@ -104,5 +104,72 @@ namespace Koralium.SqlToExpression.Tests
         }
 
         #endregion
+
+        #region filter
+
+        [Test]
+        public async Task TestSelectFilter()
+        {
+            var actual = (await SqlExecutor.Execute("SELECT filter(IntList, x -> x = 1) FROM typetest"));
+            var expected = WebTests.TestData.GetTypeTests().Select(x => new { P0 = (x.IntList == null) ? null : x.IntList.Where(y => y == 1) });
+
+            AssertAreEqual(expected, actual.Result);
+        }
+
+        [Test]
+        public void TestCallFilterSingleParameter()
+        {
+            Assert.That(async () =>
+            {
+                await SqlExecutor.Execute("SELECT filter(arr) FROM typetest");
+            }, Throws.TypeOf<SqlErrorException>().And.Message.EqualTo("filter must contain two parameters"));
+        }
+
+        [Test]
+        public void TestCallFilterWithoutColumnReference()
+        {
+            Assert.That(async () =>
+            {
+                await SqlExecutor.Execute("SELECT filter(1, x -> x = 1) FROM typetest");
+            }, Throws.TypeOf<SqlErrorException>().And.Message.EqualTo("filter first parameter must be a column reference"));
+        }
+
+        [Test]
+        public void TestCallFilterWithoutLambda()
+        {
+            Assert.That(async () =>
+            {
+                await SqlExecutor.Execute("SELECT filter(IntList, 'test') FROM typetest");
+            }, Throws.TypeOf<SqlErrorException>().And.Message.EqualTo("filter second parameter must be a lambda expression"));
+        }
+
+        [Test]
+        public void TestCallFilterWithMultiParameterLambda()
+        {
+            Assert.That(async () =>
+            {
+                await SqlExecutor.Execute("SELECT filter(IntList, (x, y) -> x = 1) FROM typetest");
+            }, Throws.TypeOf<SqlErrorException>().And.Message.EqualTo("filter lambda expression can only have one input parameter"));
+        }
+
+        [Test]
+        public void TestCallFilterWithNonArrayProperty()
+        {
+            Assert.That(async () =>
+            {
+                await SqlExecutor.Execute("SELECT filter(IntValue, x -> x = 1) FROM typetest");
+            }, Throws.TypeOf<SqlErrorException>().And.Message.EqualTo("filter first parameter must be an array/list."));
+        }
+
+        [Test]
+        public void TestCallFilterLambdaReturnsNonBoolean()
+        {
+            Assert.That(async () =>
+            {
+                await SqlExecutor.Execute("SELECT filter(IntList, x -> x) FROM typetest");
+            }, Throws.TypeOf<SqlErrorException>().And.Message.EqualTo("Lambda expression in filter must return a boolean."));
+        }
+
+        #endregion
     }
 }
