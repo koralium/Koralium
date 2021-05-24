@@ -41,6 +41,15 @@ namespace Koralium.SqlToExpression.Tests
         }
 
         [Test]
+        public async Task TestSelectAnyMatchSubfield()
+        {
+            var actual = (await SqlExecutor.Execute("SELECT any_match(objectlist, x -> x.stringvalue = 'test') FROM typetest"));
+            var expected = WebTests.TestData.GetTypeTests().Select(x => new { P0 = (x.ObjectList != null) && x.ObjectList.Any(y => y.StringValue == "test") });
+
+            AssertAreEqual(expected, actual.Result);
+        }
+
+        [Test]
         public void TestCallAnyMatchSingleParameter()
         {
             Assert.That(async () =>
