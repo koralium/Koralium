@@ -11,7 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.Shared.Utils;
+using NUnit.Framework;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -81,7 +84,45 @@ namespace Koralium.SqlToExpression.Tests
                     var left = propertyMethod.Item1.Invoke(expectedObj, null);
                     var right = propertyMethod.Item2.Invoke(actualObj, null);
 
-                    if(!Equals(left, right))
+                    if (left == null && right == null)
+                    {
+                        continue;
+                    }
+                    else if (left == null && right != null)
+                    {
+                        return false;
+                    }
+                    else if (left != null && right == null)
+                    {
+                        return false;
+                    }
+
+                    if (ArrayUtils.IsArray(left.GetType()))
+                    {
+                        var leftEnumerable = (left as IEnumerable).GetEnumerator();
+                        var rightEnumerable = (right as IEnumerable).GetEnumerator();
+
+                        var leftMoved = leftEnumerable.MoveNext();
+                        var rightMoved = rightEnumerable.MoveNext();
+
+
+                        while (leftMoved && rightMoved)
+                        {
+                            if (!Equals(leftEnumerable.Current, rightEnumerable.Current))
+                            {
+                                return false;
+                            }
+
+                            leftMoved = leftEnumerable.MoveNext();
+                            rightMoved = rightEnumerable.MoveNext();
+                        }
+
+                        if (!Equals(leftMoved, rightMoved))
+                        {
+                            return false;
+                        }
+                    }
+                    else if (!Equals(left, right))
                     {
                         return false;
                     }

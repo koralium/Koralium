@@ -97,7 +97,15 @@ namespace Koralium.SqlToExpression.Visitors
                 _lambdaParameters.Count > 0 &&
                 _lambdaParameters.Peek().TryGetValue(identifiers.FirstOrDefault(), out var parameterExpression))
             {
-                AddExpressionToStack(parameterExpression);
+                if (identifiers.Count > 1)
+                {
+                    AddExpressionToStack(MemberUtils.GetSubfieldMember(identifiers, 1, parameterExpression, _visitorMetadata.OperationsProvider));
+                }
+                else
+                {
+                    AddExpressionToStack(parameterExpression);
+                }
+                
                 return;
             }
 
@@ -281,26 +289,26 @@ namespace Koralium.SqlToExpression.Visitors
             AddExpressionToStack(Expression.Convert(expression, toType));
         }
 
-        private void VisitAnyMatch(FunctionCall functionCall)
+        private (Type elementType, Expression column, Expression lambda) HandleArrayFunctionWithPredicate(FunctionCall functionCall, string functionName)
         {
             if (functionCall.Parameters.Count != 2)
             {
-                throw new SqlErrorException("any_match must contain two parameters");
+                throw new SqlErrorException($"{functionName} must contain two parameters");
             }
 
             if (!(functionCall.Parameters[0] is ColumnReference columnReference))
             {
-                throw new SqlErrorException("any_match first parameter must be a column reference");
+                throw new SqlErrorException($"{functionName} first parameter must be a column reference");
             }
 
             if (!(functionCall.Parameters[1] is SqlParser.Expressions.LambdaExpression lambdaExpression))
             {
-                throw new SqlErrorException("any_match second parameter must be a lambda expression");
+                throw new SqlErrorException($"{functionName} second parameter must be a lambda expression");
             }
 
             if (lambdaExpression.Parameters.Count != 1)
             {
-                throw new SqlErrorException("any_match lambda expression can only have one input parameter");
+                throw new SqlErrorException($"{functionName} lambda expression can only have one input parameter");
             }
 
             columnReference.Accept(this);
@@ -309,7 +317,7 @@ namespace Koralium.SqlToExpression.Visitors
             //Check that is in an array (IEnumerable)
             if (!ArrayUtils.IsArray(column.Type))
             {
-                throw new SqlErrorException("any_match first parameter must be an array/list.");
+                throw new SqlErrorException($"{functionName} first parameter must be an array/list.");
             }
 
             //Get the type that the array contains
@@ -332,8 +340,15 @@ namespace Koralium.SqlToExpression.Visitors
 
             if (!(lambda is System.Linq.Expressions.LambdaExpression expr) || expr.ReturnType != typeof(bool))
             {
-                throw new SqlErrorException("Lambda expression in any_match must return a boolean.");
+                throw new SqlErrorException($"Lambda expression in {functionName} must return a boolean.");
             }
+
+            return (elementType, column, lambda);
+        }
+
+        private void VisitAnyMatch(FunctionCall functionCall)
+        {
+            var (elementType, column, lambda) = HandleArrayFunctionWithPredicate(functionCall, "any_match");
 
             //Create an expression that calls Any() on the array with the lambda.
             var anyCall = ArrayFunctionUtils.CallAny(elementType, column, lambda);
@@ -343,11 +358,104 @@ namespace Koralium.SqlToExpression.Visitors
             AddExpressionToStack(nullCheck);
         }
 
+        private void VisitFilter(FunctionCall functionCall)
+        {
+            var (elementType, column, lambda) = HandleArrayFunctionWithPredicate(functionCall, "filter");
+
+            //Create an expression that calls Where() on the array with the lambda.
+            var whereCall = ArrayFunctionUtils.CallWhere(elementType, column, lambda);
+
+            var nullCheck = Expression.Condition(Expression.Equal(column, Expression.Constant(null, column.Type)), Expression.Constant(null, whereCall.Type), whereCall);
+
+            AddExpressionToStack(nullCheck);
+        }
+
+        private void VisitFirst(FunctionCall functionCall)
+        {
+            if (functionCall.Parameters.Count != 1 && functionCall.Parameters.Count != 2)
+            {
+                throw new SqlErrorException("'first' must contain either one or two parameters");
+            }
+
+            if (!(functionCall.Parameters[0] is ScalarExpression scalarExpression))
+            {
+                throw new SqlErrorException("'first' first parameter must be a scalar expression");
+            }
+
+            scalarExpression.Accept(this);
+            var column = PopStack();
+
+            //Check that is in an array (IEnumerable)
+            if (!ArrayUtils.IsArray(column.Type))
+            {
+                throw new SqlErrorException("'first' first parameter must be an array/list.");
+            }
+
+            //Get the type that the array contains
+            var elementType = ArrayUtils.GetArrayElementType(column.Type);
+
+            Expression lambda = null;
+            if (functionCall.Parameters.Count == 2)
+            {
+                if (!(functionCall.Parameters[1] is SqlParser.Expressions.LambdaExpression lambdaExpression))
+                {
+                    throw new SqlErrorException("'first' second parameter must be a lambda expression");
+                }
+
+                if (lambdaExpression.Parameters.Count != 1)
+                {
+                    throw new SqlErrorException("'first' lambda expression can only have one input parameter");
+                }
+
+                //Add the type to the lambda settings in the base visitor
+                if (_lambdaParameters == null)
+                {
+                    _lambdaParameters = new Stack<Dictionary<string, ParameterExpression>>();
+                }
+
+                _lambdaParameters.Push(new Dictionary<string, ParameterExpression>()
+                {
+                    { lambdaExpression.Parameters.First(), Expression.Parameter(elementType) }
+                });
+
+                //Visit the lambda expression
+                lambdaExpression.Accept(this);
+                lambda = PopStack();
+
+                if (!(lambda is System.Linq.Expressions.LambdaExpression expr) || expr.ReturnType != typeof(bool))
+                {
+                    throw new SqlErrorException("Lambda expression in 'first' must return a boolean.");
+                }
+            }
+
+            var whereCall = ArrayFunctionUtils.CallFirstOrDefault(elementType, column, lambda);
+
+            var nullableType = NullableUtils.ToNullable(whereCall.Type);
+            if (nullableType != whereCall.Type)
+            {
+                whereCall = Expression.Convert(whereCall, nullableType);
+            }
+
+            var nullCheck = Expression.Condition(Expression.Equal(column, Expression.Constant(null, column.Type)), Expression.Constant(null, nullableType), whereCall);
+
+            AddExpressionToStack(nullCheck);
+        }
+
         public override void VisitFunctionCall(FunctionCall functionCall)
         {
             if (functionCall.FunctionName.Equals("any_match", StringComparison.OrdinalIgnoreCase))
             {
                 VisitAnyMatch(functionCall);
+                return;
+            }
+            if (functionCall.FunctionName.Equals("filter", StringComparison.OrdinalIgnoreCase))
+            {
+                VisitFilter(functionCall);
+                return;
+            }
+            if (functionCall.FunctionName.Equals("first", StringComparison.OrdinalIgnoreCase))
+            {
+                VisitFirst(functionCall);
                 return;
             }
 

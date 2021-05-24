@@ -93,6 +93,15 @@ namespace Koralium.SqlToExpression.Utils
             return memberAccess;
         }
 
+        internal static Expression GetSubfieldMember(in List<string> identifiers, in int startIndex, Expression parameterExpression, in IOperationsProvider operationsProvider)
+        {
+            for (int i = startIndex; i < identifiers.Count; i++)
+            {
+                parameterExpression = operationsProvider.MakeSubfieldMemberAccessExpression(parameterExpression, GetTypeProperty(parameterExpression.Type, identifiers[i]));
+            }
+            return parameterExpression;
+        }
+
        
 
         public static PropertyInfo GetTypeProperty(Type type, string property)
