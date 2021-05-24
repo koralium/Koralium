@@ -422,7 +422,7 @@ namespace Koralium.SqlToExpression.Visitors
 
             if (!(functionCall.Parameters[0] is ScalarExpression scalarExpression))
             {
-                throw new SqlErrorException("filter first parameter must be a scalar expression");
+                throw new SqlErrorException("'first' first parameter must be a scalar expression");
             }
 
             scalarExpression.Accept(this);
@@ -431,7 +431,7 @@ namespace Koralium.SqlToExpression.Visitors
             //Check that is in an array (IEnumerable)
             if (!ArrayUtils.IsArray(column.Type))
             {
-                throw new SqlErrorException("filter first parameter must be an array/list.");
+                throw new SqlErrorException("'first' first parameter must be an array/list.");
             }
 
             //Get the type that the array contains
@@ -442,12 +442,12 @@ namespace Koralium.SqlToExpression.Visitors
             {
                 if (!(functionCall.Parameters[1] is SqlParser.Expressions.LambdaExpression lambdaExpression))
                 {
-                    throw new SqlErrorException("filter second parameter must be a lambda expression");
+                    throw new SqlErrorException("'first' second parameter must be a lambda expression");
                 }
 
                 if (lambdaExpression.Parameters.Count != 1)
                 {
-                    throw new SqlErrorException("filter lambda expression can only have one input parameter");
+                    throw new SqlErrorException("'first' lambda expression can only have one input parameter");
                 }
 
                 //Add the type to the lambda settings in the base visitor
@@ -467,7 +467,7 @@ namespace Koralium.SqlToExpression.Visitors
 
                 if (!(lambda is System.Linq.Expressions.LambdaExpression expr) || expr.ReturnType != typeof(bool))
                 {
-                    throw new SqlErrorException("Lambda expression in filter must return a boolean.");
+                    throw new SqlErrorException("Lambda expression in 'first' must return a boolean.");
                 }
             }
 
