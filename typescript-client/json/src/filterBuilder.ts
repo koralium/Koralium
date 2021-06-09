@@ -56,7 +56,7 @@ function writeSingleValue(arr: Array<string>, parameters: ParameterBuilder, val:
 }
 
 function writeArrayValue(arr: Array<string>, parameters: ParameterBuilder, val: Array<string | number | boolean> | undefined, operation: (values: Array<string>) => string) {
-  if (val !== undefined && val.length > 0) {
+  if (!!val && val.length > 0) {
     const arrayvalues: Array<string> = [];
     for(let v of val) {
       if (isString(v)) {
