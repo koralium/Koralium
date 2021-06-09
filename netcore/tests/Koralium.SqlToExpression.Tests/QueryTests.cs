@@ -1023,6 +1023,49 @@ namespace Koralium.SqlToExpression.Tests
         }
 
         [Test]
+        public async Task TestInPredicateParameters()
+        {
+            var parameters = new SqlParameters().Add(SqlParameter.Create("P0", "5-LOW"));
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority in (@P0)", parameters);
+
+            var expectedList = new List<string> { "5-LOW" };
+            var expected = TpchData.Orders
+                .Where(x => expectedList.Contains(x.Orderpriority))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public void TestInPredicateParameterMissing()
+        {
+            Assert.That(async () =>
+            {
+                await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority in (@P0)");
+            }, Throws.InstanceOf<SqlErrorException>().With.Message.EqualTo("Could not find a parameter named: '@P0'"));
+        }
+
+        [Test]
+        public void TestInPredicateCantConvertTypeToEnum()
+        {
+            Assert.That(async () =>
+            {
+                await SqlExecutor.Execute("SELECT * FROM \"enumtable\" WHERE enum in ('test')");
+            }, Throws.InstanceOf<SqlErrorException>().With.Message.EqualTo("Could not find a value in enum 'Enum' that matched: 'test'"));
+        }
+
+        [Test]
+        public void TestInPredicateCantConvertTypeWithParameters()
+        {
+            Assert.That(async () =>
+            {
+                var parameters = new SqlParameters().Add(SqlParameter.Create("P0", "test"));
+                await SqlExecutor.Execute("SELECT * FROM \"enumtable\" WHERE enum in (@P0)", parameters);
+            }, Throws.InstanceOf<SqlErrorException>().With.Message.EqualTo("Value 'test' could not be converted to type: 'Koralium.SqlToExpression.Tests.Models.Enum'"));
+        }
+
+        [Test]
         public void TestSearchFunction()
         {
             Assert.That(async () =>

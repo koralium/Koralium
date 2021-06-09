@@ -97,21 +97,7 @@ namespace Koralium.Shared
                 value = Value;
                 return true;
             }
-            try
-            {
-                if ( type.IsEnum)
-                {
-                    value = EnumUtils.ConvertToEnum(Value, type);
-                    return true;
-                }
-                value = Convert.ChangeType(Value, type);
-                return true;
-            }
-            catch (FormatException)
-            {
-                value = default;
-                return false;
-            }
+            return TypeConvertUtils.TryConvertToType(Value, type, out value);
         }
     }
 }

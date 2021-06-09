@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.Shared;
+using Koralium.Shared.Utils;
 using Koralium.SqlParser.Clauses;
 using Koralium.SqlParser.Expressions;
 using Koralium.SqlParser.Literals;
@@ -142,11 +143,29 @@ namespace Koralium.SqlToExpression.Visitors.Where
             {
                 if (value is Literal literal)
                 {
-                    list.Add(Convert.ChangeType(literal.GetValue(), memberExpression.Type));
+                    list.Add(TypeConvertUtils.ConvertToType(literal.GetValue(), memberExpression.Type));
+                }
+                else if (value is VariableReference variableReference)
+                {
+                    if (_visitorMetadata.Parameters.TryGetParameter(variableReference.Name, out var sqlParameter))
+                    {
+                        if (sqlParameter.TryGetValue(memberExpression.Type, out var variableValue))
+                        {
+                            list.Add(variableValue);
+                        }
+                        else
+                        {
+                            throw new SqlErrorException($"Value '{sqlParameter.GetValue()}' could not be converted to type: '{memberExpression.Type}'");
+                        }
+                    }
+                    else
+                    {
+                        throw new SqlErrorException($"Could not find a parameter named: '{variableReference.Name}'");
+                    }
                 }
                 else
                 {
-                    throw new SqlErrorException("IN predicate only supports literal values.");
+                    throw new SqlErrorException("IN predicate only supports literal or parameter values.");
                 }
             }
             var inPredicate = PredicateUtils.ListContains(memberExpression, memberExpression.Type, list);
