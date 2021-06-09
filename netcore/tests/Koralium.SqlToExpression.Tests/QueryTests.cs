@@ -1040,48 +1040,49 @@ namespace Koralium.SqlToExpression.Tests
         [Test]
         public void TestInPredicateParameterMissing()
         {
-            Assert.That(async () =>
-            {
-                await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority in (@P0)");
-            }, Throws.InstanceOf<SqlErrorException>().With.Message.EqualTo("Could not find a parameter named: '@P0'"));
+            Assert.ThrowsAsync<SqlErrorException>(
+                async () => await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority in (@P0)"),
+                "Could not find a parameter named: '@P0'"
+                );
         }
 
         [Test]
         public void TestInPredicateCantConvertTypeToEnum()
         {
-            Assert.That(async () =>
-            {
-                await SqlExecutor.Execute("SELECT * FROM \"enumtable\" WHERE enum in ('test')");
-            }, Throws.InstanceOf<SqlErrorException>().With.Message.EqualTo("Could not find a value in enum 'Enum' that matched: 'test'"));
+            Assert.ThrowsAsync<SqlErrorException>(
+                async () => await SqlExecutor.Execute("SELECT * FROM \"enumtable\" WHERE enum in ('test')"), 
+                "Could not find a value in enum 'Enum' that matched: 'test"
+                );
         }
 
         [Test]
         public void TestInPredicateCantConvertTypeToObject()
         {
-            Assert.That(async () =>
-            {
-                await SqlExecutor.Execute("SELECT * FROM \"objecttable\" WHERE innerobject in ('test')");
-            }, Throws.InstanceOf<SqlErrorException>().With.Message.EqualTo("Could not convert value: 'test' to type: 'InnerObject'"));
+            Assert.ThrowsAsync<SqlErrorException>(
+                async () => await SqlExecutor.Execute("SELECT * FROM \"objecttable\" WHERE innerobject in ('test')"),
+                "Could not convert value: 'test' to type: 'InnerObject'"
+                );
         }
 
         [Test]
         public void TestInPredicateCantConvertTypeWithParameters()
         {
-            Assert.That(async () =>
-            {
-                var parameters = new SqlParameters().Add(SqlParameter.Create("P0", "test"));
-                await SqlExecutor.Execute("SELECT * FROM \"enumtable\" WHERE enum in (@P0)", parameters);
-            }, Throws.InstanceOf<SqlErrorException>().With.Message.EqualTo("Value 'test' could not be converted to type: 'Koralium.SqlToExpression.Tests.Models.Enum'"));
+            Assert.ThrowsAsync<SqlErrorException>(async () =>
+                {
+                    var parameters = new SqlParameters().Add(SqlParameter.Create("P0", "test"));
+                    await SqlExecutor.Execute("SELECT * FROM \"enumtable\" WHERE enum in (@P0)", parameters);
+                },
+                "Value 'test' could not be converted to type: 'Koralium.SqlToExpression.Tests.Models.Enum'"
+                );
         }
 
         [Test]
         public void TestInPredicateColumnInArrayThrowsError()
         {
-            Assert.That(async () =>
-            {
-                var parameters = new SqlParameters().Add(SqlParameter.Create("P0", "test"));
-                await SqlExecutor.Execute("SELECT * FROM \"enumtable\" WHERE enum in (c1)", parameters);
-            }, Throws.InstanceOf<SqlErrorException>().With.Message.EqualTo("IN predicate only supports literal or parameter values."));
+            Assert.ThrowsAsync<SqlErrorException>(
+                async () => await SqlExecutor.Execute("SELECT * FROM \"enumtable\" WHERE enum in (c1)"),
+                "IN predicate only supports literal or parameter values."
+                );
         }
 
 
