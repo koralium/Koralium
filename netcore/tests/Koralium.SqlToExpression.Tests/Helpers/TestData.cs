@@ -42,6 +42,20 @@ namespace Koralium.SqlToExpression.Tests.Helpers
             }.AsQueryable();
         }
 
+        public static IQueryable<ObjectTest> GetObjectTestData()
+        {
+            return new List<ObjectTest>()
+            {
+                new ObjectTest()
+                {
+                    InnerObject = new InnerObject()
+                    {
+                        Name = "test"
+                    }
+                }
+            }.AsQueryable();
+        }
+
         public static IQueryable<ColumnTest> GetColumnTestData()
         {
             return new List<ColumnTest>()

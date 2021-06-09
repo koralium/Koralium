@@ -49,6 +49,7 @@ namespace Koralium.SqlToExpression.Tests
             tablesMetadata.AddTable(new TableMetadata("columntest", typeof(ColumnTest)));
             tablesMetadata.AddTable(new TableMetadata("nulltest", typeof(NullTest), new InMemoryOperationsProvider()));
             tablesMetadata.AddTable(new TableMetadata("enumtable", typeof(EnumTest)));
+            tablesMetadata.AddTable(new TableMetadata("objecttable", typeof(ObjectTest)));
 
             var queryExecutor = new QueryExecutor(
                 new TableResolver(tpchData),

@@ -41,6 +41,13 @@ namespace Koralium.Shared
 
         public abstract object GetValue();
 
+        /// <summary>
+        /// Throws SqlErrorException if the value cannot be converted to the type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public abstract object GetValue(Type type);
+
         public abstract Type GetValueType();
     }
 
@@ -61,33 +68,41 @@ namespace Koralium.Shared
         private readonly static MemberInfo ValueMemberInfo = typeof(SqlParameter<T>).GetProperty("Value");
         private static Expression GetMemberAccess(Expression parameter) => Expression.MakeMemberAccess(parameter, ValueMemberInfo);
 
-        public override bool TryGetValue<TValue>(out TValue value)
-        {
-            if (!(Value is TValue))
-            {
-                try
-                {
-                    value = (TValue)Convert.ChangeType(Value, typeof(TValue));
-                    return true;
-                }
-                catch (FormatException)
-                {
-                    value = default;
-                    return false;
-                }
-            }
-            value = (TValue)Convert.ChangeType(Value, typeof(TValue));
-            return true;
-        }
+        
 
         public override object GetValue()
         {
             return Value;
         }
 
+        public override object GetValue(Type type)
+        {
+            if (TryGetValue(type, out var value))
+            {
+                return value;
+            }
+            throw new SqlErrorException($"Value '{Value}' could not be converted to type: '{type}'");
+        }
+
         public override Type GetValueType()
         {
             return typeof(T);
+        }
+
+        public override bool TryGetValue<TValue>(out TValue value)
+        {
+            if (Value is TValue convertedValue)
+            {
+                value = convertedValue;
+                return true;
+            }
+            if (TryGetValue(typeof(TValue), out var objectValue))
+            {
+                value = (TValue)objectValue;
+                return true;
+            }
+            value = default;
+            return false;
         }
 
         public override bool TryGetValue(Type type, out object value)
@@ -97,21 +112,7 @@ namespace Koralium.Shared
                 value = Value;
                 return true;
             }
-            try
-            {
-                if ( type.IsEnum)
-                {
-                    value = EnumUtils.ConvertToEnum(Value, type);
-                    return true;
-                }
-                value = Convert.ChangeType(Value, type);
-                return true;
-            }
-            catch (FormatException)
-            {
-                value = default;
-                return false;
-            }
+            return TypeConvertUtils.TryConvertToType(Value, type, out value);
         }
     }
 }
