@@ -147,21 +147,9 @@ namespace Koralium.SqlToExpression.Visitors.Where
                 }
                 else if (value is VariableReference variableReference)
                 {
-                    if (_visitorMetadata.Parameters.TryGetParameter(variableReference.Name, out var sqlParameter))
-                    {
-                        if (sqlParameter.TryGetValue(memberExpression.Type, out var variableValue))
-                        {
-                            list.Add(variableValue);
-                        }
-                        else
-                        {
-                            throw new SqlErrorException($"Value '{sqlParameter.GetValue()}' could not be converted to type: '{memberExpression.Type}'");
-                        }
-                    }
-                    else
-                    {
-                        throw new SqlErrorException($"Could not find a parameter named: '{variableReference.Name}'");
-                    }
+                    var sqlParameter = _visitorMetadata.Parameters.GetParameter(variableReference.Name);
+                    var variableValue = sqlParameter.GetValue(memberExpression.Type);
+                    list.Add(variableValue);
                 }
                 else
                 {

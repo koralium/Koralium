@@ -42,6 +42,20 @@ namespace Koralium.Shared
             return _parameters.GetEnumerator();
         }
 
+        /// <summary>
+        /// Throws SqlErrorException if the parameter is not found
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public SqlParameter GetParameter(string name)
+        {
+            if (TryGetParameter(name, out var parameter))
+            {
+                return parameter;
+            }
+            throw new SqlErrorException($"Could not find a parameter named: '{name}'");
+        }
+
         public bool TryGetParameter(string name, out SqlParameter sqlParameter)
         {
             if (!name.StartsWith("@"))
