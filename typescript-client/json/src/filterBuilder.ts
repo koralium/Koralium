@@ -35,7 +35,8 @@ function isFieldQuery(val: any): val is FieldQuery {
       val.gte !== undefined ||
       val.startsWith !== undefined ||
       val.endsWith !== undefined ||
-      val.contains !== undefined;
+      val.contains !== undefined ||
+      val.in !== undefined;
 }
 
 
@@ -51,6 +52,22 @@ function writeSingleValue(arr: Array<string>, parameters: ParameterBuilder, val:
       if (isBoolean(val)) {
           arr.push(operation(`${val}`));
       }
+  }
+}
+
+function writeArrayValue(arr: Array<string>, parameters: ParameterBuilder, val: Array<string | number | boolean> | undefined, operation: (values: Array<string>) => string) {
+  if (!!val && val.length > 0) {
+    const arrayvalues: Array<string> = [];
+    for(let v of val) {
+      if (isString(v)) {
+        const parameterName = parameters.getParameterName(v);
+        arrayvalues.push(`@${parameterName}`);
+      }
+      if (isNumber(v) || isBoolean(v)) {
+          arrayvalues.push(`${v}`);
+      }
+    }
+    arr.push(operation(arrayvalues));
   }
 }
 
@@ -139,6 +156,8 @@ function writeFilterField(fieldName: string, field: FieldQuery, parameters: Para
   writeSingleValue(basicOperations, parameters, field.lt, c => `${fieldName} < ${c}`);
   writeSingleValue(basicOperations, parameters, field.lte, c => `${fieldName} <= ${c}`);
 
+  writeArrayValue(basicOperations, parameters, field.in, c => `${fieldName} IN (${c.join(', ')})`);
+
   //string specific
   writeSingleValue(basicOperations, parameters, field.contains, c => `${fieldName} LIKE '%' + ${c} + '%'`);
   writeSingleValue(basicOperations, parameters, field.endsWith, c => `${fieldName} LIKE '%' + ${c}`);
@@ -166,6 +185,8 @@ export class FieldQuery {
   lte: string | number | undefined;
   gt: string | number | undefined;
   gte: string | number | undefined;
+
+  in: Array<string | number | boolean> | undefined;
 
   //String specific
   startsWith: string | number | undefined;

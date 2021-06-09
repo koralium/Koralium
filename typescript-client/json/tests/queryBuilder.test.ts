@@ -247,12 +247,61 @@ test("Search filter two fields", () => {
   expect(parametersResult).toEqual(expectedParameters);
 })
 
-test.only("Boolean filter", () => {
+test("Boolean filter", () => {
   const expected = "SELECT count(*) FROM testtable WHERE (name = true)"
   const result = new QueryBuilder("testtable")
     .addSelectElement("count(*)")
     .addFilter({
       name: {eq: true}
+    })
+    .buildQuery();
+
+    expect(result).toEqual(expected);
+});
+
+test("IN filter with strings", () => {
+  const expected = "SELECT count(*) FROM testtable WHERE (name IN (@P0, @P1))"
+
+  const queryBuilder = new QueryBuilder("testtable");
+  const result = queryBuilder
+    .addSelectElement("count(*)")
+    .addFilter({
+      name: {in: ['test1', 'test2']}
+    })
+    .buildQuery();
+
+    expect(result).toEqual(expected);
+    const parametersResult = queryBuilder.getParameters();
+    const expectedParameters = {
+      P0: "test1",
+      P1: "test2"
+    };
+
+    expect(parametersResult).toEqual(expectedParameters);
+});
+
+test("IN filter with numbers", () => {
+  const expected = "SELECT count(*) FROM testtable WHERE (name IN (3, 17))"
+
+  const queryBuilder = new QueryBuilder("testtable");
+  const result = queryBuilder
+    .addSelectElement("count(*)")
+    .addFilter({
+      name: {in: [3, 17]}
+    })
+    .buildQuery();
+
+    expect(result).toEqual(expected);
+});
+
+test("IN filter with booleans", () => {
+  const expected = "SELECT count(*) FROM testtable WHERE (name IN (true, false))"
+
+  const queryBuilder = new QueryBuilder("testtable");
+  const result = queryBuilder
+    .addSelectElement("count(*)")
+    .addFilter({
+      name: {in: [true, false]}
     })
     .buildQuery();
 

@@ -25,17 +25,17 @@ var tpchData: TpchData;
 jest.setTimeout(30000);
 
 beforeAll(async () => {
-  //server = new QueryServer();
-  //await server.start();
+  server = new QueryServer();
+  await server.start();
 
   tpchData = new TpchData();
   await tpchData.load();
 
-  client = new KoraliumClient(`http://127.0.0.1:5015/sql`);//new KoraliumClient(`${server.getIpAddress()}:${server.getPort()}`);
+  client = new KoraliumClient(`${server.getIpAddress()}:${server.getPort()}`);
 });
 
 afterAll(async () => {
-  //await server.stop();
+  await server.stop();
 })
 
 test("Get orders", async () => {
