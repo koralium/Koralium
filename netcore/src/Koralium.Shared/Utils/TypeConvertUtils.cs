@@ -22,7 +22,6 @@ namespace Koralium.Shared.Utils
 
         public static object ConvertToType(object value, Type type)
         {
-           
             if (type.IsEnum)
             {
                 try
@@ -38,9 +37,9 @@ namespace Koralium.Shared.Utils
             {
                 return Convert.ChangeType(value, type);
             }
-            catch (FormatException)
+            catch (Exception e) when (e is FormatException || e is InvalidCastException)
             {
-                throw new SqlErrorException($"Could not convert value: '{value}' to type: '{type.Name}");
+                throw new SqlErrorException($"Could not convert value: '{value}' to type: '{type.Name}'");
             }
         }
     }

@@ -50,6 +50,8 @@ namespace Koralium.SqlToExpression.Tests
                     return TestData.GetNullTestData();
                 case "enumtable":
                     return TestData.GetEnumTestData();
+                case "objecttable":
+                    return TestData.GetObjectTestData();
             }
             throw new NotImplementedException();
         }

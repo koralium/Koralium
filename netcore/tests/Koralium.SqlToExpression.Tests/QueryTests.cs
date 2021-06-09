@@ -1056,6 +1056,15 @@ namespace Koralium.SqlToExpression.Tests
         }
 
         [Test]
+        public void TestInPredicateCantConvertTypeToObject()
+        {
+            Assert.That(async () =>
+            {
+                await SqlExecutor.Execute("SELECT * FROM \"objecttable\" WHERE innerobject in ('test')");
+            }, Throws.InstanceOf<SqlErrorException>().With.Message.EqualTo("Could not convert value: 'test' to type: 'InnerObject'"));
+        }
+
+        [Test]
         public void TestInPredicateCantConvertTypeWithParameters()
         {
             Assert.That(async () =>
@@ -1064,6 +1073,17 @@ namespace Koralium.SqlToExpression.Tests
                 await SqlExecutor.Execute("SELECT * FROM \"enumtable\" WHERE enum in (@P0)", parameters);
             }, Throws.InstanceOf<SqlErrorException>().With.Message.EqualTo("Value 'test' could not be converted to type: 'Koralium.SqlToExpression.Tests.Models.Enum'"));
         }
+
+        [Test]
+        public void TestInPredicateColumnInArrayThrowsError()
+        {
+            Assert.That(async () =>
+            {
+                var parameters = new SqlParameters().Add(SqlParameter.Create("P0", "test"));
+                await SqlExecutor.Execute("SELECT * FROM \"enumtable\" WHERE enum in (c1)", parameters);
+            }, Throws.InstanceOf<SqlErrorException>().With.Message.EqualTo("IN predicate only supports literal or parameter values."));
+        }
+
 
         [Test]
         public void TestSearchFunction()
