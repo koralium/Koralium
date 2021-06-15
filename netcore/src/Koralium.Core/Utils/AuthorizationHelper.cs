@@ -38,6 +38,11 @@ namespace Koralium.Core.Utils
                 else
                 {
                     policy = await authorizationPolicyProvider.GetPolicyAsync(securityPolicy);
+
+                    if (policy == null)
+                    {
+                        throw new InvalidOperationException($"No security policy found named '{securityPolicy}'.");
+                    }
                 }
                 var authContext = new AuthorizationHandlerContext(policy.Requirements, user, null);
                 var authHandlers = await authorizationHandlerProvider.GetHandlersAsync(authContext);
