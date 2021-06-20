@@ -92,7 +92,8 @@ public final class FilterExtractor
 
                                 if (range.isLowInclusive()) {
                                     innerRangeConjucts.add(columnName + " >= " + lowBound);
-                                } else {
+                                }
+                                else {
                                     innerRangeConjucts.add(columnName + " > " + lowBound);
                                 }
                             }
@@ -101,7 +102,8 @@ public final class FilterExtractor
 
                                 if (range.isHighInclusive()) {
                                     innerRangeConjucts.add(columnName + " <= " + highBound);
-                                } else {
+                                }
+                                else {
                                     innerRangeConjucts.add(columnName + " < " + highBound);
                                 }
                             }

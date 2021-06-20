@@ -7,9 +7,9 @@
         <version>358</version>
     </parent>
 
-    <artifactId>presto-koralium</artifactId>
-    <description>Presto - Koralium Connector</description>
-    <packaging>presto-plugin</packaging>
+    <artifactId>trino-koralium</artifactId>
+    <description>Trino - Koralium Connector</description>
+    <packaging>trino-plugin</packaging>
 
     <properties>
         <sonar.projectKey>koralium-presto</sonar.projectKey>
@@ -92,6 +92,12 @@
             <groupId>org.apache.arrow</groupId>
             <artifactId>arrow-vector</artifactId>
             <version>4.0.1</version>
+            <exclusions>
+                <exclusion>  <!-- declare the exclusion here -->
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -191,7 +197,7 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.14.0</version>
+            <version>3.18.1</version>
             <scope>test</scope>
         </dependency>
 

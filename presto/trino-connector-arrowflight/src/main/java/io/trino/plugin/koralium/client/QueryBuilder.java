@@ -44,7 +44,8 @@ public class QueryBuilder
 
             stringBuilder.append(")");
             return stringBuilder.toString();
-        } else {
+        }
+        else {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("SELECT count(*) FROM ");
             stringBuilder.append(tableName);
