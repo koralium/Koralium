@@ -11,11 +11,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.koralium.decoders;
+package io.trino.plugin.koralium.decoders;
 
 import com.google.common.collect.ImmutableList;
-import io.prestosql.plugin.koralium.utils.ArrowPrestoTypeConverter;
-import io.prestosql.plugin.koralium.utils.TypeConvertResult;
+import io.trino.plugin.koralium.utils.ArrowPrestoTypeConverter;
+import io.trino.plugin.koralium.utils.TypeConvertResult;
 import io.trino.spi.block.BlockBuilder;
 import io.trino.spi.connector.ConnectorSession;
 import io.trino.spi.type.Type;

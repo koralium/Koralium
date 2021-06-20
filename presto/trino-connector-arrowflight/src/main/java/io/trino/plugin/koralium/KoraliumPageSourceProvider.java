@@ -11,11 +11,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.koralium;
+package io.trino.plugin.koralium;
 
-import io.prestosql.plugin.koralium.cache.QueryCache;
-import io.prestosql.plugin.koralium.cache.QueryCacheEntry;
-import io.prestosql.plugin.koralium.cache.QueryCacheFactory;
+import io.trino.plugin.koralium.cache.QueryCache;
+import io.trino.plugin.koralium.cache.QueryCacheEntry;
+import io.trino.plugin.koralium.cache.QueryCacheFactory;
 import io.trino.spi.NodeManager;
 import io.trino.spi.connector.ColumnHandle;
 import io.trino.spi.connector.ConnectorPageSource;

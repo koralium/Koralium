@@ -11,9 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.koralium.utils;
+package io.trino.plugin.koralium.utils;
 
-import io.prestosql.plugin.koralium.KoraliumType;
+import io.trino.plugin.koralium.KoraliumType;
 import io.trino.spi.type.BigintType;
 import io.trino.spi.type.BooleanType;
 import io.trino.spi.type.DoubleType;

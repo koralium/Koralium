@@ -11,13 +11,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.koralium.client;
+package io.trino.plugin.koralium.client;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.VerifyException;
 import com.google.common.collect.ImmutableList;
-import io.prestosql.plugin.koralium.KoraliumPrestoColumn;
-import io.prestosql.plugin.koralium.KoraliumType;
+import io.trino.plugin.koralium.KoraliumPrestoColumn;
+import io.trino.plugin.koralium.KoraliumType;
 import io.trino.spi.connector.ConnectorSession;
 import io.trino.spi.predicate.Domain;
 import io.trino.spi.predicate.Range;

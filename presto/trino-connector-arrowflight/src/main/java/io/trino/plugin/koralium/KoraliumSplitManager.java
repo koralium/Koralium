@@ -11,14 +11,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.koralium;
+package io.trino.plugin.koralium;
 
 import com.google.common.collect.ImmutableList;
-import io.prestosql.plugin.koralium.cache.QueryCacheFactory;
-import io.prestosql.plugin.koralium.cache.QueryCacheSplitManager;
-import io.prestosql.plugin.koralium.client.FilterExtractor;
-import io.prestosql.plugin.koralium.client.KoraliumClient;
-import io.prestosql.plugin.koralium.client.QueryBuilder;
+import io.trino.plugin.koralium.cache.QueryCacheFactory;
+import io.trino.plugin.koralium.cache.QueryCacheSplitManager;
+import io.trino.plugin.koralium.client.FilterExtractor;
+import io.trino.plugin.koralium.client.KoraliumClient;
+import io.trino.plugin.koralium.client.QueryBuilder;
 import io.trino.spi.HostAddress;
 import io.trino.spi.connector.ConnectorPartitionHandle;
 import io.trino.spi.connector.ConnectorSession;

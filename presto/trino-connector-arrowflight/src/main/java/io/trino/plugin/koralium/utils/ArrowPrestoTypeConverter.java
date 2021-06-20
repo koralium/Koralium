@@ -11,10 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.koralium.utils;
+package io.trino.plugin.koralium.utils;
 
 import com.google.common.collect.ImmutableList;
-import io.prestosql.plugin.koralium.KoraliumType;
+import io.trino.plugin.koralium.KoraliumType;
 import io.trino.spi.type.ArrayType;
 import io.trino.spi.type.RowType;
 import org.apache.arrow.vector.types.pojo.ArrowType;

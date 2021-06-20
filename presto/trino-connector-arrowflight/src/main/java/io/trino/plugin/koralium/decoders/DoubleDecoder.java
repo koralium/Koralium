@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.koralium.decoders;
+package io.trino.plugin.koralium.decoders;
 
 import io.trino.spi.block.BlockBuilder;
 import io.trino.spi.connector.ConnectorSession;

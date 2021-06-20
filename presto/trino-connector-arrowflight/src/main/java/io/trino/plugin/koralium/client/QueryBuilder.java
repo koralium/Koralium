@@ -11,10 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.koralium.client;
+package io.trino.plugin.koralium.client;
 
-import io.prestosql.plugin.koralium.KoraliumPrestoColumn;
-import io.prestosql.plugin.koralium.KoraliumSortItem;
+import io.trino.plugin.koralium.KoraliumPrestoColumn;
+import io.trino.plugin.koralium.KoraliumSortItem;
 
 import java.util.ArrayList;
 import java.util.List;

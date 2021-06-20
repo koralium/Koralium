@@ -11,18 +11,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.koralium.client;
+package io.trino.plugin.koralium.client;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import io.prestosql.plugin.koralium.KoraliumConfig;
-import io.prestosql.plugin.koralium.KoraliumPrestoColumn;
-import io.prestosql.plugin.koralium.KoraliumPrestoTable;
-import io.prestosql.plugin.koralium.KoraliumTableHandle;
-import io.prestosql.plugin.koralium.KoraliumTableIndex;
-import io.prestosql.plugin.koralium.utils.ArrowPrestoTypeConverter;
-import io.prestosql.plugin.koralium.utils.SqlUtils;
-import io.prestosql.plugin.koralium.utils.TypeConvertResult;
+import io.trino.plugin.koralium.KoraliumConfig;
+import io.trino.plugin.koralium.KoraliumPrestoColumn;
+import io.trino.plugin.koralium.KoraliumPrestoTable;
+import io.trino.plugin.koralium.KoraliumTableHandle;
+import io.trino.plugin.koralium.KoraliumTableIndex;
+import io.trino.plugin.koralium.utils.ArrowPrestoTypeConverter;
+import io.trino.plugin.koralium.utils.SqlUtils;
+import io.trino.plugin.koralium.utils.TypeConvertResult;
 import io.trino.spi.connector.ColumnHandle;
 import io.trino.spi.connector.ConnectorTableMetadata;
 import io.trino.spi.connector.SchemaTableName;

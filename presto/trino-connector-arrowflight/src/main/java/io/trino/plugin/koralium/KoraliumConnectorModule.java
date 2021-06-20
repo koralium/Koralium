@@ -11,16 +11,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.koralium;
+package io.trino.plugin.koralium;
 
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.FromStringDeserializer;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
-import io.prestosql.plugin.koralium.cache.QueryCacheFactory;
-import io.prestosql.plugin.koralium.client.KoraliumClient;
-import io.prestosql.plugin.koralium.client.PrestoKoraliumMetadataClient;
+import io.trino.plugin.koralium.cache.QueryCacheFactory;
+import io.trino.plugin.koralium.client.KoraliumClient;
+import io.trino.plugin.koralium.client.PrestoKoraliumMetadataClient;
 import io.trino.spi.NodeManager;
 import io.trino.spi.type.Type;
 import io.trino.spi.type.TypeId;

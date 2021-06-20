@@ -11,14 +11,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.koralium;
+package io.trino.plugin.koralium;
 
 import com.google.common.collect.ImmutableMap;
-import io.prestosql.plugin.koralium.cache.QueryCache;
-import io.prestosql.plugin.koralium.cache.QueryCacheEntry;
-import io.prestosql.plugin.koralium.client.KoraliumClient;
-import io.prestosql.plugin.koralium.decoders.KoraliumDecoder;
-import io.prestosql.plugin.koralium.utils.SchemaToDecoders;
+import io.trino.plugin.koralium.cache.QueryCache;
+import io.trino.plugin.koralium.cache.QueryCacheEntry;
+import io.trino.plugin.koralium.client.KoraliumClient;
+import io.trino.plugin.koralium.decoders.KoraliumDecoder;
+import io.trino.plugin.koralium.utils.SchemaToDecoders;
 import io.trino.spi.Page;
 import io.trino.spi.block.Block;
 import io.trino.spi.block.BlockBuilder;

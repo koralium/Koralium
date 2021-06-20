@@ -11,25 +11,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.koralium;
+package io.trino.plugin.koralium;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.airlift.slice.Slice;
-import io.prestosql.plugin.koralium.decoders.BinaryDecoder;
-import io.prestosql.plugin.koralium.decoders.BoolDecoder;
-import io.prestosql.plugin.koralium.decoders.DoubleDecoder;
-import io.prestosql.plugin.koralium.decoders.FloatDecoder;
-import io.prestosql.plugin.koralium.decoders.Int16Decoder;
-import io.prestosql.plugin.koralium.decoders.Int32Decoder;
-import io.prestosql.plugin.koralium.decoders.Int64Decoder;
-import io.prestosql.plugin.koralium.decoders.KoraliumDecoder;
-import io.prestosql.plugin.koralium.decoders.ListDecoder;
-import io.prestosql.plugin.koralium.decoders.ObjectTypeDecoder;
-import io.prestosql.plugin.koralium.decoders.StringDecoder;
-import io.prestosql.plugin.koralium.decoders.TimestampDecoder;
-import io.prestosql.plugin.koralium.decoders.UInt32Decoder;
-import io.prestosql.plugin.koralium.decoders.UInt64Decoder;
-import io.prestosql.plugin.koralium.decoders.UInt8Decoder;
+import io.trino.plugin.koralium.decoders.BinaryDecoder;
+import io.trino.plugin.koralium.decoders.BoolDecoder;
+import io.trino.plugin.koralium.decoders.DoubleDecoder;
+import io.trino.plugin.koralium.decoders.FloatDecoder;
+import io.trino.plugin.koralium.decoders.Int16Decoder;
+import io.trino.plugin.koralium.decoders.Int32Decoder;
+import io.trino.plugin.koralium.decoders.Int64Decoder;
+import io.trino.plugin.koralium.decoders.KoraliumDecoder;
+import io.trino.plugin.koralium.decoders.ListDecoder;
+import io.trino.plugin.koralium.decoders.ObjectTypeDecoder;
+import io.trino.plugin.koralium.decoders.StringDecoder;
+import io.trino.plugin.koralium.decoders.TimestampDecoder;
+import io.trino.plugin.koralium.decoders.UInt32Decoder;
+import io.trino.plugin.koralium.decoders.UInt64Decoder;
+import io.trino.plugin.koralium.decoders.UInt8Decoder;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

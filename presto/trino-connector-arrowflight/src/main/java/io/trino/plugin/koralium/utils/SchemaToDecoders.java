@@ -11,10 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.koralium.utils;
+package io.trino.plugin.koralium.utils;
 
-import io.prestosql.plugin.koralium.KoraliumPrestoColumn;
-import io.prestosql.plugin.koralium.decoders.KoraliumDecoder;
+import io.trino.plugin.koralium.KoraliumPrestoColumn;
+import io.trino.plugin.koralium.decoders.KoraliumDecoder;
 import io.trino.spi.connector.ConnectorSession;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.Schema;

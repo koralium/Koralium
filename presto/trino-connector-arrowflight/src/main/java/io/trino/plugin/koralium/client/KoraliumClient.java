@@ -11,9 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.prestosql.plugin.koralium.client;
+package io.trino.plugin.koralium.client;
 
-import io.prestosql.plugin.koralium.KoraliumConfig;
+import io.trino.plugin.koralium.KoraliumConfig;
 import org.apache.arrow.flight.FlightClient;
 import org.apache.arrow.flight.FlightDescriptor;
 import org.apache.arrow.flight.FlightInfo;
