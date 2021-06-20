@@ -139,7 +139,7 @@ public class TestKoraliumSmokeTest
     @Test
     public void testGetSecureData()
     {
-        assertQuery("select orderkey from secure", "select orderkey from orders");
+        assertQuery("select orderkey from secure", "select orderkey from orders where custkey > 10 AND custkey < 100");
     }
 
     @Override
