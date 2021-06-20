@@ -28,12 +28,13 @@ import io.trino.spi.type.Type;
 import io.trino.spi.type.VarbinaryType;
 import io.trino.spi.type.VarcharType;
 import io.trino.sql.analyzer.FeaturesConfig;
-import io.trino.testing.AbstractTestIntegrationSmokeTest;
+import io.trino.testing.BaseConnectorSmokeTest;
 import io.trino.testing.DistributedQueryRunner;
 import io.trino.testing.MaterializedResult;
 import io.trino.testing.MaterializedRow;
 import io.trino.testing.QueryRunner;
 import io.trino.testing.ResultWithQueryId;
+import io.trino.testing.TestingConnectorBehavior;
 import io.trino.testing.assertions.Assert;
 import io.trino.tpch.TpchTable;
 import org.assertj.core.api.Assertions;
@@ -44,8 +45,8 @@ import java.nio.ByteBuffer;
 
 import static io.trino.SystemSessionProperties.JOIN_DISTRIBUTION_TYPE;
 
-public class TestKoraliumSmokeTest
-        extends AbstractTestIntegrationSmokeTest
+public class TestKoraliumConnectorSmokeTest
+        extends BaseConnectorSmokeTest
 {
     private QueryServer server;
 
@@ -55,6 +56,37 @@ public class TestKoraliumSmokeTest
         server = new QueryServer();
         String accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlRlc3QgdGVzdCIsInVuaXF1ZV9uYW1lIjoidGVzdCIsImlhdCI6MTUxNjIzOTAyMn0.aF80OiteMckPhSQcAL549V4AcyKHJA8LUs4mhzBnf2w";
         return KoraliumQueryRunner.createGrpcQueryRunner("127.0.0.1:5016", ImmutableMap.of(), "koralium", "default", TpchTable.getTables(), server, accessToken, ImmutableMap.of());
+    }
+
+    @Override
+    protected boolean hasBehavior(TestingConnectorBehavior connectorBehavior)
+    {
+        switch (connectorBehavior) {
+            case SUPPORTS_CREATE_SCHEMA:
+                return false;
+
+            case SUPPORTS_CREATE_VIEW:
+                return false;
+
+            case SUPPORTS_CREATE_TABLE:
+                return false;
+
+            case SUPPORTS_CREATE_TABLE_WITH_DATA:
+                return false;
+
+            case SUPPORTS_INSERT:
+                return false;
+
+            case SUPPORTS_RENAME_TABLE:
+                return false;
+
+            case SUPPORTS_COMMENT_ON_TABLE:
+            case SUPPORTS_COMMENT_ON_COLUMN:
+                return false;
+
+            default:
+                return super.hasBehavior(connectorBehavior);
+        }
     }
 
     @AfterClass(alwaysRun = true)
@@ -199,23 +231,23 @@ public class TestKoraliumSmokeTest
         Assert.assertEquals(result, expectedResult);
     }
 
-    @Override
-    public void testDescribeTable()
-    {
-        MaterializedResult expectedColumns = MaterializedResult.resultBuilder(this.getQueryRunner().getDefaultSession(),
-                new Type[]{VarcharType.VARCHAR, VarcharType.VARCHAR, VarcharType.VARCHAR, VarcharType.VARCHAR})
-                .row(new Object[]{"orderkey", "bigint", "", ""})
-                .row(new Object[]{"custkey", "bigint", "", ""})
-                .row(new Object[]{"orderstatus", "varchar", "", ""})
-                .row(new Object[]{"totalprice", "double", "", ""})
-                .row(new Object[]{"orderdate", "timestamp(3)", "", ""})
-                .row(new Object[]{"orderpriority", "varchar", "", ""})
-                .row(new Object[]{"clerk", "varchar", "", ""})
-                .row(new Object[]{"shippriority", "integer", "", ""})
-                .row(new Object[]{"comment", "varchar", "", ""}).build();
-        MaterializedResult actualColumns = this.computeActual("DESCRIBE orders");
-        Assert.assertEquals(actualColumns, expectedColumns);
-    }
+//    @Override
+//    public void testDescribeTable()
+//    {
+//        MaterializedResult expectedColumns = MaterializedResult.resultBuilder(this.getQueryRunner().getDefaultSession(),
+//                new Type[]{VarcharType.VARCHAR, VarcharType.VARCHAR, VarcharType.VARCHAR, VarcharType.VARCHAR})
+//                .row(new Object[]{"orderkey", "bigint", "", ""})
+//                .row(new Object[]{"custkey", "bigint", "", ""})
+//                .row(new Object[]{"orderstatus", "varchar", "", ""})
+//                .row(new Object[]{"totalprice", "double", "", ""})
+//                .row(new Object[]{"orderdate", "timestamp(3)", "", ""})
+//                .row(new Object[]{"orderpriority", "varchar", "", ""})
+//                .row(new Object[]{"clerk", "varchar", "", ""})
+//                .row(new Object[]{"shippriority", "integer", "", ""})
+//                .row(new Object[]{"comment", "varchar", "", ""}).build();
+//        MaterializedResult actualColumns = this.computeActual("DESCRIBE orders");
+//        Assert.assertEquals(actualColumns, expectedColumns);
+//    }
 
     @Test
     public void testDateTime()
