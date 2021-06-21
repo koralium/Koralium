@@ -15,6 +15,19 @@ import { QueryOptions } from "./queryOptions";
 import { Metadata, QueryResult } from "./queryResult";
 
 import axios from 'axios'
+import { URL } from "url";
+
+function isValidHttpUrl(value: string) {
+  let url;
+  
+  try {
+    url = new URL(value);
+  } catch (_) {
+    return false;  
+  }
+
+  return url.protocol === "http:" || url.protocol === "https:";
+}
 
 
 export class KoraliumClient {
@@ -23,6 +36,9 @@ export class KoraliumClient {
 
   constructor(url: string) {
     this.url = url;
+    if (!isValidHttpUrl(this.url)) {
+      throw new Error(`'${url}' is not a valid http url.`);
+    }
   }
 
   async queryScalar(sql: string, parameters: {} | null = null, headers: {} = {}): Promise<any> {

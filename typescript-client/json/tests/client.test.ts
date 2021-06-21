@@ -92,4 +92,12 @@ test("query scalar count", async () => {
   const result = await client.queryScalar("select count(*) from orders");
 
   expect(result).toEqual(expected);
-})
+});
+
+test.only("Invalid url", async () => {
+  const t = () => {
+    new KoraliumClient("127.0.0.1:80");
+  };
+
+  expect(t).toThrowError("'127.0.0.1:80' is not a valid http url.");
+});
