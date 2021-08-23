@@ -11,6 +11,7 @@ Koralium SQL API
    :caption: Contents:
 
    gettingstarted
+   configuration
    authorization
    entityframeworkclient
    joins

@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 
 namespace Koralium.Utils
 {
@@ -54,19 +55,19 @@ namespace Koralium.Utils
             return null;
         }
 
-        public static List<TableColumn> CollectMetadata(Type type, Dictionary<Type, IReadOnlyList<TableColumn>> typeLookup)
+        public static List<TableColumn> CollectMetadata(Type type, Dictionary<Type, IReadOnlyList<TableColumn>> typeLookup, JsonNamingPolicy namingPolicy)
         {
-            return CollectMetadata(type, ref index, typeLookup);
+            return CollectMetadata(type, ref index, typeLookup, namingPolicy);
         }
 
-        public static List<TableColumn> CollectMetadata(Type type, ref int globalIndex, Dictionary<Type, IReadOnlyList<TableColumn>> typeLookup)
+        public static List<TableColumn> CollectMetadata(Type type, ref int globalIndex, Dictionary<Type, IReadOnlyList<TableColumn>> typeLookup, JsonNamingPolicy namingPolicy)
         {
             List<TableColumn> columns = new List<TableColumn>();
             var properties = type.GetProperties();
 
             for (int i = 0; i < properties.Length; i++)
             {
-                columns.AddRange(CollectColumnMetadata(type, properties[i], ref globalIndex, typeLookup));
+                columns.AddRange(CollectColumnMetadata(type, properties[i], ref globalIndex, typeLookup, namingPolicy));
             }
 
             if (!typeLookup.ContainsKey(type))
@@ -77,14 +78,14 @@ namespace Koralium.Utils
             return columns;
         }
 
-        private static IEnumerable<TableColumn> CollectSubObjectMetadata(string name, Type propertyType, Func<object, object> getDelegate, MemberInfo memberInfo, ref int globalIndex, Dictionary<Type, IReadOnlyList<TableColumn>> typeLookup)
+        private static IEnumerable<TableColumn> CollectSubObjectMetadata(string name, Type propertyType, Func<object, object> getDelegate, MemberInfo memberInfo, ref int globalIndex, Dictionary<Type, IReadOnlyList<TableColumn>> typeLookup, JsonNamingPolicy namingPolicy)
         {
             List<TableColumn> columns = new List<TableColumn>();
 
             //Check so this type has not been read already
             if(!typeLookup.TryGetValue(propertyType, out var children))
             {
-                children = CollectMetadata(propertyType, typeLookup);
+                children = CollectMetadata(propertyType, typeLookup, namingPolicy);
             }
 
             columns.Add(new TableColumn(
@@ -97,7 +98,7 @@ namespace Koralium.Utils
             return columns;
         }
 
-        private static IEnumerable<TableColumn> CollectArrayMetadata(string name, Type propertyType, Func<object, object> getDelegate, MemberInfo memberInfo, ref int globalIndex, Dictionary<Type, IReadOnlyList<TableColumn>> typeLookup)
+        private static IEnumerable<TableColumn> CollectArrayMetadata(string name, Type propertyType, Func<object, object> getDelegate, MemberInfo memberInfo, ref int globalIndex, Dictionary<Type, IReadOnlyList<TableColumn>> typeLookup, JsonNamingPolicy namingPolicy)
         {
             //Get the inner type of the list
             Type innerType = propertyType.GetGenericArguments()[0];
@@ -105,7 +106,7 @@ namespace Koralium.Utils
             //Create query column for the inner type
             if(!typeLookup.TryGetValue(propertyType, out var children))
             {
-                children = CollectColumnMetadata("", innerType, x => x, ref globalIndex, typeLookup).ToList();
+                children = CollectColumnMetadata("", innerType, x => x, ref globalIndex, typeLookup, namingPolicy).ToList();
                 typeLookup.Add(propertyType, children);
             }
 
@@ -120,31 +121,46 @@ namespace Koralium.Utils
         }
 
 
-        private static IEnumerable<TableColumn> CollectColumnMetadata(string name, Type propertyType, Func<object, object> getDelegate, ref int globalIndex, Dictionary<Type, IReadOnlyList<TableColumn>> typeLookup, MemberInfo memberInfo = null)
+        private static IEnumerable<TableColumn> CollectColumnMetadata(string name, Type propertyType, Func<object, object> getDelegate, ref int globalIndex, Dictionary<Type, IReadOnlyList<TableColumn>> typeLookup, JsonNamingPolicy namingPolicy, MemberInfo memberInfo = null)
         {
             var (columnType, _) = ColumnTypeHelper.GetKoraliumType(propertyType);
             if (columnType == ColumnType.Object || columnType == ColumnType.List)
             {
                 if (columnType == ColumnType.List)
                 {
-                    return CollectArrayMetadata(name, propertyType, getDelegate, memberInfo, ref globalIndex, typeLookup);
+                    return CollectArrayMetadata(name, propertyType, getDelegate, memberInfo, ref globalIndex, typeLookup, namingPolicy);
                 }
                 else
                 {
-                    return CollectSubObjectMetadata(name, propertyType, getDelegate, memberInfo, ref globalIndex, typeLookup);
+                    return CollectSubObjectMetadata(name, propertyType, getDelegate, memberInfo, ref globalIndex, typeLookup, namingPolicy);
                 }
             }
 
             return new List<TableColumn>() { new TableColumn(name, getDelegate, memberInfo, propertyType, new List<TableColumn>()) };
         }
 
-        private static IEnumerable<TableColumn> CollectColumnMetadata(Type objectType, PropertyInfo propertyInfo, ref int globalIndex, Dictionary<Type, IReadOnlyList<TableColumn>> typeLookup)
+        private static string GetColumnName(PropertyInfo propertyInfo, JsonNamingPolicy namingPolicy)
+        {
+            var attribute = propertyInfo.GetCustomAttribute<ColumnNameAttribute>();
+            if (attribute != null)
+            {
+                return attribute.Name;
+            }
+            if (namingPolicy != null)
+            {
+                return namingPolicy.ConvertName(propertyInfo.Name);
+            }
+            return propertyInfo.Name;
+        }
+
+        private static IEnumerable<TableColumn> CollectColumnMetadata(Type objectType, PropertyInfo propertyInfo, ref int globalIndex, Dictionary<Type, IReadOnlyList<TableColumn>> typeLookup, JsonNamingPolicy namingPolicy)
         {
             if(propertyInfo.GetCustomAttribute<KoraliumIgnoreAttribute>() != null)
             {
                 return Enumerable.Empty<TableColumn>();
             }
-            return CollectColumnMetadata(propertyInfo.Name, propertyInfo.PropertyType, CreateGetDelegate(objectType, propertyInfo.GetGetMethod()), ref globalIndex, typeLookup, propertyInfo);
+            var name = GetColumnName(propertyInfo, namingPolicy);
+            return CollectColumnMetadata(name, propertyInfo.PropertyType, CreateGetDelegate(objectType, propertyInfo.GetGetMethod()), ref globalIndex, typeLookup, namingPolicy, propertyInfo);
         }
 
         private static bool IsBaseType(Type type)

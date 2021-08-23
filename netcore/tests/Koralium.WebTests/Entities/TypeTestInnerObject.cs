@@ -17,6 +17,7 @@ namespace Koralium.WebTests.Entities
 {
     public class TypeTestInnerObject
     {
+        [ColumnName("StringValue")]
         public string StringValue { get; set; }
 
         public List<int> IntList { get; set; }

@@ -14,6 +14,7 @@
 using Koralium.Interfaces;
 using System.Collections.Generic;
 using Koralium.SqlToExpression.Interfaces;
+using System.Text.Json;
 
 namespace Koralium.Builders
 {
@@ -22,7 +23,9 @@ namespace Koralium.Builders
         private readonly List<TableIndex> indicies = new List<TableIndex>();
         private IOperationsProvider _operationsProvider;
         public string TableName { get; set; }
-        
+
+        public JsonNamingPolicy PropertyNamingPolicy { get; set; } = JsonNamingPolicy.CamelCase;
+
         internal PartitionResolver PartitionResolver { get; private set; }
 
         internal IReadOnlyList<TableIndex> Indicies

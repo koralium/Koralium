@@ -39,17 +39,14 @@ namespace Koralium.Builders
             Services = services;
         }
 
-        
-
         public IKoraliumBuilder AddTableResolver<Resolver, T>(Action<ITableResolverBuilder<T>> options = null) 
             where Resolver : TableResolver<T>
         {
-            CircularDependencyHelper.CheckCircularDependency(typeof(T));
-            var columns = MetadataHelper.CollectMetadata(typeof(T), typeLookup);
-
             TableResolverBuilder<T> opt = new TableResolverBuilder<T>();
-
             options?.Invoke(opt);
+
+            CircularDependencyHelper.CheckCircularDependency(typeof(T));
+            var columns = MetadataHelper.CollectMetadata(typeof(T), typeLookup, opt.PropertyNamingPolicy);
 
             if (opt.TableName == null)
             {
