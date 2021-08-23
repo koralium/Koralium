@@ -110,6 +110,12 @@ namespace Koralium.WebTests
                     o.UseInMemoryOperations();
                 });
 
+                opt.AddTableResolver<NoNamingPolicyResolver, NoNamingPolicyTest>(o =>
+                {
+                    o.PropertyNamingPolicy = null;
+                    o.TableName = "nonamingpolicy";
+                });
+
                 //Specific
                 opt.AddTableResolver<AutoMapperCustomerResolver, AutoMapperCustomer>();
                 opt.AddTableResolver<EmptyResolver, Empty>();

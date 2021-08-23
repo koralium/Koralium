@@ -37,3 +37,5 @@ It is also possible to set a default naming policy during configuration:
   }
 
 The default naming policy is camelCase.
+
+To remove the naming policy simple set *PropertyNamingPolicy = null*.
