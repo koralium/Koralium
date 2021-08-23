@@ -12,12 +12,15 @@
  * limitations under the License.
  */
 using Koralium.SqlToExpression.Interfaces;
+using System.Text.Json;
 
 namespace Koralium.Interfaces
 {
     public interface ITableResolverBuilder<T>
     {
         string TableName { get; set; }
+
+        JsonNamingPolicy PropertyNamingPolicy { get; set; }
 
         ITableResolverBuilder<T> SetOperationsProvider(IOperationsProvider operationsProvider);
 

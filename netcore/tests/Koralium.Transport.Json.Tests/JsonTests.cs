@@ -115,5 +115,13 @@ namespace Koralium.Transport.Json.Tests
             actual.Should().BeEquivalentTo(expected);
         }
 
+        [Test]
+        public async Task TestPropertyNaming()
+        {
+            var response = await httpClient.GetAsync($"{url}?query=select object from typetest limit 1");
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            responseContent.Should().Be(@"{""values"":[{""object"":{""stringValue"":""test"",""intList"":[1,2,3],""object"":{""stringValue"":""test""},""intValue"":321}}]}");
+        }
     }
 }
