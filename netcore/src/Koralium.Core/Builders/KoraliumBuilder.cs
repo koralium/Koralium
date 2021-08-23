@@ -39,8 +39,6 @@ namespace Koralium.Builders
             Services = services;
         }
 
-        
-
         public IKoraliumBuilder AddTableResolver<Resolver, T>(Action<ITableResolverBuilder<T>> options = null) 
             where Resolver : TableResolver<T>
         {
@@ -49,8 +47,6 @@ namespace Koralium.Builders
 
             CircularDependencyHelper.CheckCircularDependency(typeof(T));
             var columns = MetadataHelper.CollectMetadata(typeof(T), typeLookup, opt.PropertyNamingPolicy);
-
-            
 
             if (opt.TableName == null)
             {
