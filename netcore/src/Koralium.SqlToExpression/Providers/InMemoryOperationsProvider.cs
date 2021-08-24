@@ -109,6 +109,11 @@ namespace Koralium.SqlToExpression.Providers
             return Expression.Call(instance: null, method: StringStartsWith, arguments: new[] { left, right });
         }
 
+        public override Expression MakeAnyCall(in Expression column, in Expression anyCall)
+        {
+            return Expression.Condition(Expression.Equal(column, Expression.Constant(null, column.Type)), Expression.Constant(false), anyCall);
+        }
+
         #endregion
 
         #region Object subfield select

@@ -27,5 +27,13 @@ namespace Koralium.SqlToExpression.Interfaces
         Expression GetStringContainsExpression(in Expression left, in Expression right);
 
         Expression MakeSubfieldMemberAccessExpression(in Expression expression, PropertyInfo propertyInfo);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="column">The column that the any call is applied on.</param>
+        /// <param name="anyCall">The any call</param>
+        /// <returns></returns>
+        Expression MakeAnyCall(in Expression column, in Expression anyCall);
     }
 }
