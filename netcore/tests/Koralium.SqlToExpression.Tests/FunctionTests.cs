@@ -14,6 +14,7 @@
 using Koralium.Shared;
 using Koralium.SqlToExpression.Tests.Helpers;
 using NUnit.Framework;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -32,12 +33,39 @@ namespace Koralium.SqlToExpression.Tests
 
         #region any_match
         [Test]
-        public async Task TestSelectAnyMatch()
+        public async Task TestSelectAnyMatchInMemoryProvider()
         {
             var actual = (await SqlExecutor.Execute("SELECT any_match(IntList, x -> x = 1) FROM typetest"));
             var expected = WebTests.TestData.GetTypeTests().Select(x => new { P0 = (x.IntList != null) && x.IntList.Any(y => y == 1) });
 
             AssertAreEqual(expected, actual.Result);
+        }
+
+        [Test]
+        public async Task TestSelectAnyMatchDefaultProvider()
+        {
+            //This test should fail since there are intlists that are null
+            Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                var actual = (await SqlExecutor.Execute("SELECT any_match(IntList, x -> x = 1) FROM typetestdefaultoperationprovider"));
+                var enumerator = actual.Result.GetEnumerator();
+
+                while (enumerator.MoveNext()) 
+                { 
+                //Do nothing
+                }
+            });
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                var actual = (await SqlExecutor.Execute("SELECT any_match(IntList, x -> x = 1) FROM typetestdefaultoperationprovider WHERE IntList is not null"));
+                var enumerator = actual.Result.GetEnumerator();
+
+                while (enumerator.MoveNext())
+                {
+                    //Do nothing
+                }
+            });
+            
         }
 
         [Test]
