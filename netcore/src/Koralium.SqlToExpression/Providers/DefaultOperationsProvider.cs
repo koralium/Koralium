@@ -46,6 +46,11 @@ namespace Koralium.SqlToExpression.Providers
             return Expression.Call(instance: left, method: StringStartsWith, arguments: new[] { right });
         }
 
+        public virtual Expression MakeAnyCall(in Expression column, in Expression anyCall)
+        {
+            return anyCall;
+        }
+
         public virtual Expression MakeSubfieldMemberAccessExpression(in Expression expression, PropertyInfo propertyInfo)
         {
             return Expression.MakeMemberAccess(expression, propertyInfo);

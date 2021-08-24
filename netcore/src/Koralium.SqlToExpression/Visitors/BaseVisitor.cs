@@ -353,9 +353,8 @@ namespace Koralium.SqlToExpression.Visitors
             //Create an expression that calls Any() on the array with the lambda.
             var anyCall = ArrayFunctionUtils.CallAny(elementType, column, lambda);
 
-            var nullCheck = Expression.Condition(Expression.Equal(column, Expression.Constant(null, column.Type)), Expression.Constant(false), anyCall);
-
-            AddExpressionToStack(nullCheck);
+            var result = _visitorMetadata.OperationsProvider.MakeAnyCall(column, anyCall);
+            AddExpressionToStack(result);
         }
 
         private void VisitFilter(FunctionCall functionCall)
