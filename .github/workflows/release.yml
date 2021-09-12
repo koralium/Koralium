@@ -18,6 +18,8 @@ jobs:
     - name: Extract tag name
       id: tag
       run: echo ::set-output name=VERSION::$(echo ${GITHUB_REF##*/v})
+    - run: yarn install
+      working-directory: typescript-client
     - run: yarn bootstrap
       working-directory: typescript-client
     - name: Update package version
