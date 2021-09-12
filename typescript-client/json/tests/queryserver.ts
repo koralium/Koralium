@@ -19,11 +19,11 @@ export class QueryServer {
   container?: StartedTestContainer;
 
   async start() {
-     this.container = await new GenericContainer("koraliumwebtest")
-      .withExposedPorts(5015)
-      .withBindMount(path.resolve(__dirname, "../../TestData/"), "/app/Data/", "ro")
-      .withWaitStrategy(Wait.forLogMessage('Application started. Press Ctrl+C to shut down.'))
-      .start();
+    const t = new GenericContainer("koraliumwebtest")
+    .withExposedPorts(5015)
+    //.withBindMount(path.resolve(__dirname, "../../TestData/"), "/app/Data/", "ro")
+    .withWaitStrategy(Wait.forLogMessage('Application started. Press Ctrl+C to shut down.'));
+     this.container = await t.start();
   }
 
   async stop() {

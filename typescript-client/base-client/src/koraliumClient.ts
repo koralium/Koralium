@@ -11,4 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from "./client"
+import { QueryOptions, QueryResult } from ".";
+
+export interface KoraliumClient {
+  queryScalar(sql: string, parameters?: {} | null, headers?: {}): Promise<any>
+  query(sql: string, queryOptions?: QueryOptions): Promise<QueryResult>;
+}

@@ -43,7 +43,8 @@ namespace Koralium.WebTests
                              }
                              else if (context.HostingEnvironment.IsProduction())
                              {
-                                 options.Listen(IPEndPoint.Parse("0.0.0.0:5015"), l => l.Protocols = HttpProtocols.Http2);
+                                 options.Listen(IPEndPoint.Parse("0.0.0.0:5015"), l => l.Protocols = HttpProtocols.Http1);
+                                 options.Listen(IPEndPoint.Parse("0.0.0.0:5016"), l => l.Protocols = HttpProtocols.Http2);
                              }
                          })
                         .UseStartup<Startup>();

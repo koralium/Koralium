@@ -11,7 +11,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { KoraliumClient } from "../src/client"
+import { KoraliumClient } from "@koralium/base-client";
+import { KoraliumJsonClient } from "../src/client"
 import { QueryServer } from "./queryserver"
 import TpchData from "./tpchdata";
 
@@ -31,11 +32,13 @@ beforeAll(async () => {
   tpchData = new TpchData();
   await tpchData.load();
 
-  client = new KoraliumClient(`${server.getIpAddress()}:${server.getPort()}`);
+  client = new KoraliumJsonClient(`http://${server.getIpAddress()}:${server.getPort()}/sql`);
 });
 
 afterAll(async () => {
-  await server.stop();
+  if (server) {
+    await server.stop();
+  }
 })
 
 test("Get orders", async () => {
@@ -45,7 +48,7 @@ test("Get orders", async () => {
 });
 
 test("Get secure data", async () => {
-  const expected = tpchData.getOrders();
+  const expected = tpchData.getOrders().filter(x => x.custkey > 10 && x.custkey < 100);
   const results = await client.query(
     "select orderkey, custkey, orderstatus, totalprice, orderdate, orderpriority, clerk, shippriority, comment from secure",
     {headers: { Authorization: `Bearer ${accessToken}` }}
