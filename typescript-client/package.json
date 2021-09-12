@@ -9,6 +9,6 @@
     "lerna": "lerna",
     "set-version": "lerna version --skip-git --yes",
     "build": "lerna run build",
-    "publish": "lerna publish --no-git-reset --yes"
+    "publish-packages": "lerna run publish-package"
   }
 }
