@@ -22,17 +22,13 @@ jobs:
       working-directory: typescript-client
     - run: yarn bootstrap
       working-directory: typescript-client
-    - name: Update package version
-      run: yarn set-version ${PACKAGE_VERSION}
-      working-directory: typescript-client
-      env:
-        PACKAGE_VERSION: ${{ steps.tag.outputs.VERSION }}
     - run: yarn build
       working-directory: typescript-client
-    - run: yarn publish-packages
+    - run: yarn publish-packages ${PACKAGE_VERSION}
       working-directory: typescript-client
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_KEY }}
+        PACKAGE_VERSION: ${{ steps.tag.outputs.VERSION }}
   
   publishNuget:
     runs-on: ubuntu-latest
