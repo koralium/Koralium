@@ -20,8 +20,6 @@ jobs:
       run: echo ::set-output name=VERSION::$(echo ${GITHUB_REF##*/v})
     - run: yarn install
       working-directory: typescript-client
-    - run: yarn bootstrap
-      working-directory: typescript-client
     - name: Update package version
       run: yarn set-version ${PACKAGE_VERSION}
       working-directory: typescript-client
