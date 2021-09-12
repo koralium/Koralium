@@ -11,13 +11,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { QueryOptions } from "./queryOptions";
-import { Metadata, QueryResult } from "./queryResult";
+import { QueryOptions, KoraliumClient } from "@koralium/base-client";
+import { Metadata, QueryResult } from "@koralium/base-client";
 
 import axios from 'axios'
 
-
-export class KoraliumClient {
+export class KoraliumJsonClient implements KoraliumClient {
 
   private url: string;
 

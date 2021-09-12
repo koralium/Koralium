@@ -11,4 +11,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from "./client"
+export * from "./queryBuilder"
+export * from "./objectToSelectMapper"
+export * from "./queryOptions"
+export * from "./queryResult"
+export * from "./koraliumClient"

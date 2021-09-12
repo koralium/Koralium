@@ -1,5 +1,5 @@
 {
-  "name": "@koralium/koralium-json",
+  "name": "@koralium/base-client",
   "version": "1.0.5",
   "main": "./lib/index.js",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "devDependencies": {
     "@types/chai": "^4.2.11",
     "@types/google-protobuf": "^3.7.2",
-    "@types/jest": "^26.0.3",
+    "@types/jest": "^26.0.24",
     "@types/node": "^14.0.14",
     "chai": "4.2.0",
     "chai-arrays": "^2.2.0",
@@ -26,9 +26,5 @@
     "ts-jest": "^26.1.1",
     "ts-node": "^8.10.2",
     "typescript": "^3.2.2"
-  },
-  "dependencies": {
-    "axios": "^0.21.1",
-    "@koralium/base-client": "^1.0.5"
   }
 }
