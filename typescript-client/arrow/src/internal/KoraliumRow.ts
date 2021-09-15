@@ -11,26 +11,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export class Metadata {
-  customMetadata: {};
+import { DataType } from "apache-arrow";
+import { RowLike } from "apache-arrow/type";
 
-  constructor(customMetadata: {}) {
-    this.customMetadata = customMetadata;
-  }
-}
-
-export interface ResultArray<T> extends Iterable<T> {
-  length: number
-  get(index: number): T;
-  toArray: () => Array<T>
-}
-
-export class QueryResult<T extends { [key: string]: any; } = any> {
-  rows: ResultArray<T>;
-  metadata: Metadata;
-
-  constructor(rows: ResultArray<T>, metadata: Metadata) {
-    this.rows = rows;
-    this.metadata = metadata;
+export class KoraliumRow<T extends { [key: string]: DataType } = any> {
+  constructor(row: RowLike<T>, proxyHandler: ProxyHandler<T>) {
+    return new Proxy(row, proxyHandler as any)
   }
 }

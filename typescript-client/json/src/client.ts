@@ -11,10 +11,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { QueryOptions, KoraliumClient } from "@koralium/base-client";
+import { QueryOptions, KoraliumClient, ResultArray } from "@koralium/base-client";
 import { Metadata, QueryResult } from "@koralium/base-client";
 
 import axios from 'axios'
+
+export class JsonQueryResultArray<T> implements ResultArray<T> {
+  private results: Array<T>;
+  /**
+   *
+   */
+  constructor(results: Array<T>) {
+    this.results = results;
+  }
+  public get length(): number {
+    return this.results.length
+  };
+
+  get(index: number): T {
+    return this.results[index]
+  }
+
+  toArray() {
+    return this.results
+  }
+
+  [Symbol.iterator](): Iterator<T, any, undefined> {
+    return this.results[Symbol.iterator]()
+  }
+}
 
 export class KoraliumJsonClient implements KoraliumClient {
 
@@ -35,12 +60,12 @@ export class KoraliumJsonClient implements KoraliumClient {
           return null;
         }
 
-        const firstRow = result.rows[0] as {[key: string]: any;};
+        const firstRow = result.rows.get(0) as {[key: string]: any;};
         return firstRow[Object.keys(firstRow)[0]];
       });
   }
 
-  async query(sql: string, queryOptions?: QueryOptions): Promise<QueryResult> {
+  async query<T extends { [key: string]: any } = any>(sql: string, queryOptions?: QueryOptions): Promise<QueryResult<T>> {
 
     const headers: {[key: string]: any;} = {
       ...queryOptions?.headers
@@ -56,7 +81,7 @@ export class KoraliumJsonClient implements KoraliumClient {
       headers: headers
     })
       .then(response => {
-        return new QueryResult(response.data.values, new Metadata({}));
+        return new QueryResult(new JsonQueryResultArray<T>(response.data.values), new Metadata({}));
       })
       .catch(error => {
           throw error;

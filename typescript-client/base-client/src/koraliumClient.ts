@@ -14,6 +14,6 @@
 import { QueryOptions, QueryResult } from ".";
 
 export interface KoraliumClient {
-  queryScalar(sql: string, parameters?: {} | null, headers?: {}): Promise<any>
+  queryScalar(sql: string, queryOptions?: QueryOptions): Promise<any>
   query(sql: string, queryOptions?: QueryOptions): Promise<QueryResult>;
 }

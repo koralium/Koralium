@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "esnext",
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "paths": {
+      "*" : ["./node_modules/@types/*", "src/*"]
+    },
+    "lib": ["dom", "esnext", "esnext.asynciterable"],
+    "sourceMap": true,
+    "outDir": "lib",
+    "esModuleInterop": true,
+    "allowJs": true,
+    "declaration": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts", "perf/**/*.ts"],
+  // "exclude": [
+  //   "node_modules",
+  //   "tests",
+  //   "lib",
+  //   "jest.config.*"
+  // ]
+}
