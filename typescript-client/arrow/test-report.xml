@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+  <file path="C:\Users\seosal\source\repos\Koralium\new\Koralium\typescript-client\arrow\tests\arrowclient.test.ts">
+    <testCase name="Get orders" duration="2142"/>
+    <testCase name="Get secure data" duration="288"/>
+    <testCase name="Test limit" duration="29"/>
+    <testCase name="Test limit with parameter" duration="20"/>
+    <testCase name="filter on date in parameter" duration="1512"/>
+    <testCase name="select single field" duration="1012"/>
+    <testCase name="query scalar count" duration="31"/>
+    <testCase name="bool value" duration="47"/>
+    <testCase name="bool value nullable" duration="49"/>
+    <testCase name="double value" duration="6"/>
+    <testCase name="double value nullable" duration="15"/>
+    <testCase name="double value nullable" duration="5"/>
+    <testCase name="date time" duration="6"/>
+    <testCase name="date time nullable" duration="6"/>
+    <testCase name="Long value" duration="6"/>
+    <testCase name="Long value nullable" duration="9"/>
+    <testCase name="String Value" duration="46"/>
+    <testCase name="Int List Value" duration="10"/>
+    <testCase name="Test object value" duration="11"/>
+  </file>
+  <file path="C:\Users\seosal\source\repos\Koralium\new\Koralium\typescript-client\arrow\tests\graphqltest.test.ts">
+    <testCase name="Can fetch data" duration="470"/>
+  </file>
+</testExecutions>

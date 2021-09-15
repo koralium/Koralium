@@ -11,26 +11,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export class Metadata {
-  customMetadata: {};
-
-  constructor(customMetadata: {}) {
-    this.customMetadata = customMetadata;
-  }
-}
-
-export interface ResultArray<T> extends Iterable<T> {
-  length: number
-  get(index: number): T;
-  toArray: () => Array<T>
-}
-
-export class QueryResult<T extends { [key: string]: any; } = any> {
-  rows: ResultArray<T>;
-  metadata: Metadata;
-
-  constructor(rows: ResultArray<T>, metadata: Metadata) {
-    this.rows = rows;
-    this.metadata = metadata;
-  }
-}
+export * from './koraliumarrowclient'
