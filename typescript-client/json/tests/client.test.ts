@@ -44,7 +44,7 @@ afterAll(async () => {
 test("Get orders", async () => {
   const expected = tpchData.getOrders();
   const results = await client.query("select orderkey, custkey, orderstatus, totalprice, orderdate, orderpriority, clerk, shippriority, comment from orders");
-  expect(results.rows.toArray()).toEqual(expected);
+  expect(results.rows).toEqual(expected);
 });
 
 test("Get secure data", async () => {
@@ -54,13 +54,13 @@ test("Get secure data", async () => {
     {headers: { Authorization: `Bearer ${accessToken}` }}
   );
     
-  expect(results.rows.toArray()).toEqual(expected);
+  expect(results.rows).toEqual(expected);
 });
 
 test("Test limit", async () => {
   const expected = tpchData.getOrders().slice(0, 100);
   const results = await client.query("select orderkey, custkey, orderstatus, totalprice, orderdate, orderpriority, clerk, shippriority, comment from orders limit 100");
-  expect(results.rows.toArray()).toEqual(expected);
+  expect(results.rows).toEqual(expected);
 });
 
 test("Test limit with parameter", async () => {
@@ -69,7 +69,7 @@ test("Test limit with parameter", async () => {
     "select orderkey, custkey, orderstatus, totalprice, orderdate, orderpriority, clerk, shippriority, comment from orders limit @limit",
     {parameters: { limit: 100 }}
   );
-  expect(results.rows.toArray()).toEqual(expected);
+  expect(results.rows).toEqual(expected);
 });
 
 test("filter on date in parameter", async () => {
@@ -79,7 +79,7 @@ test("filter on date in parameter", async () => {
     { parameters: { date: '1993-01-01'}}
   );
 
-  expect(results.rows.toArray()).toEqual(expected);
+  expect(results.rows).toEqual(expected);
 });
 
 test("select single field", async () => {
@@ -87,7 +87,7 @@ test("select single field", async () => {
   const results = await client.query(
     "select orderkey from orders"
   );
-  expect(results.rows.toArray()).toEqual(expected);
+  expect(results.rows).toEqual(expected);
 });
 
 test("query scalar count", async () => {

@@ -52,7 +52,6 @@ declare global {
 }
 
 function compareResults(actual, expected) {
-  actual = actual.toArray()
   const expectedIterator = expected[Symbol.iterator]()
   const actualIterator = actual[Symbol.iterator]()
 

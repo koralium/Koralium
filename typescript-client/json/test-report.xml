@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testExecutions version="1">
-  <file path="C:\Users\seosal\source\repos\Koralium\new\Koralium\typescript-client\json\tests\client.test.ts">
-    <testCase name="Get orders" duration="809"/>
-    <testCase name="Get secure data" duration="175"/>
-    <testCase name="Test limit" duration="22"/>
-    <testCase name="Test limit with parameter" duration="20"/>
-    <testCase name="filter on date in parameter" duration="473"/>
-    <testCase name="select single field" duration="135"/>
-    <testCase name="query scalar count" duration="27"/>
-  </file>
   <file path="C:\Users\seosal\source\repos\Koralium\new\Koralium\typescript-client\json\tests\apolloserverintegration.test.ts">
-    <testCase name="Can fetch data" duration="350"/>
+    <testCase name="Can fetch data" duration="390"/>
+  </file>
+  <file path="C:\Users\seosal\source\repos\Koralium\new\Koralium\typescript-client\json\tests\client.test.ts">
+    <testCase name="Get orders" duration="764"/>
+    <testCase name="Get secure data" duration="153"/>
+    <testCase name="Test limit" duration="28"/>
+    <testCase name="Test limit with parameter" duration="19"/>
+    <testCase name="filter on date in parameter" duration="588"/>
+    <testCase name="select single field" duration="131"/>
+    <testCase name="query scalar count" duration="16"/>
   </file>
 </testExecutions>
