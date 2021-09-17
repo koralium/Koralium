@@ -3,8 +3,8 @@
   "version": "1.0.5",
   "main": "./lib/index.js",
   "license": "MIT",
+  "files":["lib"],
   "scripts": {
-    "prebuild": "rimraf ./node_modules/apache-arrow/builder/map.ts",
     "build": "tsc --build",
     "clean": "tsc --build --clean",
     "test": "jest",
@@ -34,7 +34,7 @@
     "graphql": "^15.5.3"
   },
   "dependencies": {
-    "apache-arrow": "^5.0.0",
+    "apache-arrow": "~4.0.1",
     "grpc": "^1.24.11",
     "@koralium/base-client": "^1.0.5"
   }
