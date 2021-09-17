@@ -19,17 +19,11 @@ export class Metadata {
   }
 }
 
-export interface ResultArray<T> extends Iterable<T> {
-  length: number
-  get(index: number): T;
-  toArray: () => Array<T>
-}
-
 export class QueryResult<T extends { [key: string]: any; } = any> {
-  rows: ResultArray<T>;
+  rows: Array<T>;
   metadata: Metadata;
 
-  constructor(rows: ResultArray<T>, metadata: Metadata) {
+  constructor(rows: Array<T>, metadata: Metadata) {
     this.rows = rows;
     this.metadata = metadata;
   }

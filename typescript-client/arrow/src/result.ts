@@ -11,13 +11,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ResultArray } from "@koralium/base-client";
 import { DataType, Table } from "apache-arrow";
 import { RowLike } from "apache-arrow/type";
 import { KoraliumRow } from "./internal/KoraliumRow";
 import { createProxyHandler } from "./internal/typevisitor";
 
-export class ArrowResult<T extends { [key: string]: DataType } = any> implements ResultArray<T> {
+export class ArrowResult<T extends { [key: string]: DataType } = any> {
   private table: Table<T>;
   private proxyHandler: ProxyHandler<T>
   /**

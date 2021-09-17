@@ -53,7 +53,7 @@ export class KoraliumArrowClient implements KoraliumClient {
       metadata: {
         customMetadata: {}
       },
-      rows: new ArrowResult(table)
+      rows: new ArrowResult(table).toArray()
     }
   }
 
