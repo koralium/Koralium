@@ -18,11 +18,10 @@
     "strictNullChecks": false,
     "skipLibCheck": true
   },
-  "include": ["src/**/*.ts", "test/**/*.ts", "perf/**/*.ts"],
-  // "exclude": [
-  //   "node_modules",
-  //   "tests",
-  //   "lib",
-  //   "jest.config.*"
-  // ]
+  "exclude": [
+    "node_modules",
+    "tests",
+    "lib",
+    "jest.config.*"
+  ]
 }
