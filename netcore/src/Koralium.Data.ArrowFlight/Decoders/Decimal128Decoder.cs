@@ -20,9 +20,39 @@ namespace Koralium.Data.ArrowFlight.Decoders
             return typeof(decimal);
         }
 
+        public override TType GetFieldValue<TType>(in int index)
+        {
+            var value = GetValue(index);
+
+            if (value is TType toTypeValue)
+            {
+                return toTypeValue;
+            }
+
+            return (TType)Convert.ChangeType(value, typeof(TType));
+        }
+
         public override object GetFieldValue(in int index, Type type)
         {
-            throw new NotImplementedException();
+            if (Equals(type, typeof(decimal)))
+            {
+                return GetValue(index);
+            }
+            var nullableInnerType = Nullable.GetUnderlyingType(type);
+
+            if (nullableInnerType == null)
+            {
+                return Convert.ChangeType(GetValue(index), type);
+            }
+
+            if (Equals(nullableInnerType, typeof(decimal)))
+            {
+                return GetValue(index);
+            }
+            else
+            {
+                return Convert.ChangeType(GetValue(index), nullableInnerType);
+            }
         }
 
         public override object GetValue(in int index)
@@ -39,6 +69,8 @@ namespace Koralium.Data.ArrowFlight.Decoders
         {
             return _array.GetValue(index).Value;
         }
+
+        
 
         internal override void NewBatch(IArrowArray arrowArray)
         {
