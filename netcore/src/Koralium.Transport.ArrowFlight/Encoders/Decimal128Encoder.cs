@@ -34,7 +34,6 @@ namespace Koralium.Transport.ArrowFlight.Encoders
             if (_nullable && val == null)
             {
                 _builder.AppendNull();
-
             }
             else
             {
