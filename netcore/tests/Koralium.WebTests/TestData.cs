@@ -222,13 +222,15 @@ namespace Koralium.WebTests
                     Object = new TypeTestInnerInnerObject()
                     {
                         StringValue = "test"
-                    }
+                    },
+                    DecimalValue = 3
                 },
                 new TypeTestInnerObject()
                 {
                     StringValue = "test2",
                     IntList = new List<int>(),
-                    Object = null
+                    Object = null,
+                    DecimalValue = 17
                 },
                 null
             };

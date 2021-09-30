@@ -25,5 +25,7 @@ namespace Koralium.WebTests.Entities
         public TypeTestInnerInnerObject Object { get; set; }
 
         public int IntValue { get; set; }
+
+        public decimal DecimalValue { get; set; }
     }
 }
