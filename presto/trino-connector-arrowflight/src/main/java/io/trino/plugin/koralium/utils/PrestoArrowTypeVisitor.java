@@ -16,6 +16,7 @@ package io.trino.plugin.koralium.utils;
 import io.trino.plugin.koralium.KoraliumType;
 import io.trino.spi.type.BigintType;
 import io.trino.spi.type.BooleanType;
+import io.trino.spi.type.DecimalType;
 import io.trino.spi.type.DoubleType;
 import io.trino.spi.type.IntegerType;
 import io.trino.spi.type.RealType;
@@ -156,7 +157,7 @@ public class PrestoArrowTypeVisitor
     @Override
     public TypeConvertResult visit(ArrowType.Decimal decimal)
     {
-        throw new IllegalArgumentException("Decimal is not supported");
+        return new TypeConvertResult(DecimalType.createDecimalType(decimal.getPrecision(), decimal.getScale()), KoraliumType.DECIMAL);
     }
 
     @Override

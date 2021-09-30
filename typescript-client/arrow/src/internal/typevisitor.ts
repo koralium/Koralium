@@ -13,9 +13,12 @@
  */
 import { Field, ListVector, Schema, Visitor } from "apache-arrow";
 import { DataType, RowLike } from "apache-arrow/type";
+import { bignumToBigInt } from "apache-arrow/util/bn";
 import * as type from './arrow/type';
 import { KoraliumList } from "./KoraliumList";
 import { KoraliumRow } from "./KoraliumRow";
+import BigInt from 'big-integer'
+import Decimal from "decimal.js";
 
 export class TypeVisitor extends Visitor {
 
@@ -36,10 +39,19 @@ export class TypeVisitor extends Visitor {
   }
 
   public visitDecimal<T extends type.Decimal>(type: T) {
-    return (data) => data
+    return (data: Int32Array) => {
+      const a = BigInt(data[3]).shiftLeft(96)
+      const b = BigInt(data[2]).shiftLeft(64)
+      const c = BigInt(data[1]).shiftLeft(32)
+      const d = BigInt(data[0])
+      const final = a.or(b).or(c).or(d)
+      
+      return new Decimal(`${final.toString()}e-${type.scale}`)
+    }
   }
 
   public visitInt<T extends type.Int>(type: T) { 
+    
     return (data) => data
   }
 

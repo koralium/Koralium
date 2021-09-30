@@ -129,6 +129,9 @@
   <data name="ExpectedBinaryArray" xml:space="preserve">
     <value>Expected binary array</value>
   </data>
+  <data name="ExpectedDecimalArray" xml:space="preserve">
+    <value>Expected decimal128 array</value>
+  </data>
   <data name="ExpectedStringArray" xml:space="preserve">
     <value>Expected string array</value>
   </data>

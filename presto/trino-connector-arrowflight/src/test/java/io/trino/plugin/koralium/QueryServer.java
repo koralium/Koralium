@@ -17,12 +17,10 @@ import org.testcontainers.containers.GenericContainer;
 
 import java.io.Closeable;
 
-import static org.testcontainers.utility.MountableFile.forHostPath;
-
 public class QueryServer
         implements Closeable
 {
-    private static final int PORT = 5015;
+    private static final int PORT = 5016;
 
     private GenericContainer<?> dockerContainer;
 
@@ -32,15 +30,7 @@ public class QueryServer
     {
         if (this.dockerContainer == null) {
             this.dockerContainer = new GenericContainer<>("koraliumwebtest")
-                    .withExposedPorts(PORT)
-                    .withCopyFileToContainer(forHostPath("./tmpData/customer.csv"), "/app/Data/tpch/customer.csv")
-                    .withCopyFileToContainer(forHostPath("./tmpData/lineitem.csv"), "/app/Data/tpch/lineitem.csv")
-                    .withCopyFileToContainer(forHostPath("./tmpData/nation.csv"), "/app/Data/tpch/nation.csv")
-                    .withCopyFileToContainer(forHostPath("./tmpData/orders.csv"), "/app/Data/tpch/orders.csv")
-                    .withCopyFileToContainer(forHostPath("./tmpData/part.csv"), "/app/Data/tpch/part.csv")
-                    .withCopyFileToContainer(forHostPath("./tmpData/partsupp.csv"), "/app/Data/tpch/partsupp.csv")
-                    .withCopyFileToContainer(forHostPath("./tmpData/region.csv"), "/app/Data/tpch/region.csv")
-                    .withCopyFileToContainer(forHostPath("./tmpData/supplier.csv"), "/app/Data/tpch/supplier.csv");
+                    .withExposedPorts(PORT);
 
             dockerContainer.start();
         }

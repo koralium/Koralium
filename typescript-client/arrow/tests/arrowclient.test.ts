@@ -13,6 +13,7 @@
  */
 import { KoraliumClient } from "@koralium/base-client";
 import { DataFrame, ListVector, Table } from "apache-arrow";
+import Decimal from "decimal.js";
 import { credentials } from "grpc";
 import { KoraliumArrowClient } from "../src/koraliumarrowclient"
 import { QueryServer } from "./queryserver"
@@ -431,5 +432,27 @@ test("Test object value", async () => {
   ]
   const result = await client.query("select object from typetest");
 
+  compareResults(result.rows, expected)
+})
+
+test("Decimal Value", async () => {
+  const expected = [
+    {
+      decimalvalue: new Decimal(1)
+    },
+    {
+      decimalvalue: new Decimal(3)
+    },
+    {
+      decimalvalue: new Decimal(17)
+    },
+    {
+      decimalvalue: new Decimal(1)
+    },
+    {
+      decimalvalue: new Decimal(3)
+    },
+  ]
+  const result = await client.query("select decimalvalue from typetest");
   compareResults(result.rows, expected)
 })

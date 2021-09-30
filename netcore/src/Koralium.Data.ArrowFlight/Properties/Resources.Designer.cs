@@ -40,6 +40,12 @@ namespace Koralium.Data.ArrowFlight.Properties
             => GetString("ExpectedBinaryArray");
 
         /// <summary>
+        /// Expected decimal128 array
+        /// </summary>
+        public static string ExpectedDecimalArray
+            => GetString("ExpectedDecimalArray");
+
+        /// <summary>
         /// Expected string array
         /// </summary>
         public static string ExpectedStringArray

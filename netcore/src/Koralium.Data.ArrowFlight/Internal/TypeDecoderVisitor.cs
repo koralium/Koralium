@@ -38,7 +38,8 @@ namespace Koralium.Data.ArrowFlight.Internal
         IArrowTypeVisitor<TimestampType>,
         IArrowTypeVisitor<ListType>,
         IArrowTypeVisitor<UnionType>,
-        IArrowTypeVisitor<StructType>
+        IArrowTypeVisitor<StructType>,
+        IArrowTypeVisitor<Decimal128Type>
 
     {
         public ColumnDecoder ColumnDecoder { get; private set; }
@@ -151,6 +152,11 @@ namespace Koralium.Data.ArrowFlight.Internal
         public void Visit(StructType type)
         {
             ColumnDecoder = new StructDecoder(type);
+        }
+
+        public void Visit(Decimal128Type type)
+        {
+            ColumnDecoder = new Decimal128Decoder();
         }
     }
 }

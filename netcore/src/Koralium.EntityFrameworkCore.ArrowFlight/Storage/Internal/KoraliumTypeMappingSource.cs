@@ -31,7 +31,8 @@ namespace Koralium.EntityFrameworkCore.ArrowFlight.Storage.Internal
                 { typeof(long), new LongTypeMapping("int64", System.Data.DbType.Int64) },
                 { typeof(ulong), new ULongTypeMapping("uint64", System.Data.DbType.UInt64) },
                 { typeof(double), new DoubleTypeMapping("double", System.Data.DbType.Double) },
-                { typeof(DateTime), new KoraliumDateTimeTypeMapping("timestamp", System.Data.DbType.DateTime) }
+                { typeof(DateTime), new KoraliumDateTimeTypeMapping("timestamp", System.Data.DbType.DateTime) },
+                { typeof(decimal), new DecimalTypeMapping("decimal", System.Data.DbType.Decimal) }
             };
 
         public KoraliumTypeMappingSource(TypeMappingSourceDependencies dependencies,

@@ -90,6 +90,10 @@ namespace Koralium.Utils
             {
                 return (ColumnType.Binary, true);
             }
+            if (type.Equals(typeof(decimal)))
+            {
+                return (ColumnType.Decimal, false);
+            }
             if (type.IsEnum)
             {
                 return (ColumnType.Enum, true);

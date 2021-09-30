@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.airlift.slice.Slice;
 import io.trino.plugin.koralium.decoders.BinaryDecoder;
 import io.trino.plugin.koralium.decoders.BoolDecoder;
+import io.trino.plugin.koralium.decoders.Decimal128Decoder;
 import io.trino.plugin.koralium.decoders.DoubleDecoder;
 import io.trino.plugin.koralium.decoders.FloatDecoder;
 import io.trino.plugin.koralium.decoders.Int16Decoder;
@@ -63,7 +64,9 @@ public enum KoraliumType
     @JsonProperty("UINT8")
     UINT8(KoraliumType::simpleToStringConverter, new UInt8Decoder()),
     @JsonProperty("BINARY")
-    BINARY(null, new BinaryDecoder());
+    BINARY(null, new BinaryDecoder()),
+    @JsonProperty("DECIMAL")
+    DECIMAL(KoraliumType::simpleToStringConverter, new Decimal128Decoder());
 
     private final ToStringConverter toStringConverter;
     private final KoraliumDecoder decoder;

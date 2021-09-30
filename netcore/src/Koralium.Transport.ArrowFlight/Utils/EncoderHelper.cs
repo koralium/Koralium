@@ -52,6 +52,8 @@ namespace Koralium.Transport.ArrowFlight.Utils
                     return new BinaryEncoder(column);
                 case ColumnType.Enum:
                     return new EnumEncoder(column);
+                case ColumnType.Decimal:
+                    return new Decimal128Encoder(column);
             }
 
             throw new NotImplementedException();
