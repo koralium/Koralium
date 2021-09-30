@@ -20,18 +20,6 @@ namespace Koralium.Data.ArrowFlight.Decoders
             return typeof(decimal);
         }
 
-        public override TType GetFieldValue<TType>(in int index)
-        {
-            var value = GetValue(index);
-
-            if (value is TType toTypeValue)
-            {
-                return toTypeValue;
-            }
-
-            return (TType)Convert.ChangeType(value, typeof(TType));
-        }
-
         public override object GetFieldValue(in int index, Type type)
         {
             if (Equals(type, typeof(decimal)))

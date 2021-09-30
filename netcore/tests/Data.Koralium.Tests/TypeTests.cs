@@ -116,5 +116,4 @@ namespace Data.Koralium.Tests
             Assert.AreEqual("decimal", actual);
         }
     }
-   
 }
