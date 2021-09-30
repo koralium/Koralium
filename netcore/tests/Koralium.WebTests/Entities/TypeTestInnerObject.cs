@@ -27,5 +27,7 @@ namespace Koralium.WebTests.Entities
         public int IntValue { get; set; }
 
         public decimal DecimalValue { get; set; }
+
+        public decimal? DecimalNullableValue { get; set; }
     }
 }

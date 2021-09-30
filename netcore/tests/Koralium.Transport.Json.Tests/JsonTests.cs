@@ -121,7 +121,7 @@ namespace Koralium.Transport.Json.Tests
             var response = await httpClient.GetAsync($"{url}?query=select object from typetest limit 1");
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            responseContent.Should().Be(@"{""values"":[{""object"":{""StringValue"":""test"",""intList"":[1,2,3],""object"":{""stringValue"":""test""},""intValue"":321,""decimalValue"":3}}]}");
+            responseContent.Should().Be(@"{""values"":[{""object"":{""StringValue"":""test"",""intList"":[1,2,3],""object"":{""stringValue"":""test""},""intValue"":321,""decimalValue"":3,""decimalNullableValue"":3}}]}");
         }
 
         [Test]

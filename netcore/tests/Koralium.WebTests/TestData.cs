@@ -223,14 +223,16 @@ namespace Koralium.WebTests
                     {
                         StringValue = "test"
                     },
-                    DecimalValue = 3
+                    DecimalValue = 3,
+                    DecimalNullableValue = 3
                 },
                 new TypeTestInnerObject()
                 {
                     StringValue = "test2",
                     IntList = new List<int>(),
                     Object = null,
-                    DecimalValue = 17
+                    DecimalValue = 17,
+                    DecimalNullableValue = null
                 },
                 null
             };
