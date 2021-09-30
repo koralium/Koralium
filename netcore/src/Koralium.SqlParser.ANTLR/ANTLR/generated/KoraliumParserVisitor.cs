@@ -56,6 +56,24 @@ public interface IKoraliumParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitSet_variable_statement([NotNull] KoraliumParser.Set_variable_statementContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="KoraliumParser.set_variable"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitSet_variable([NotNull] KoraliumParser.Set_variableContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="KoraliumParser.stored_procedure_parameter"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStored_procedure_parameter([NotNull] KoraliumParser.Stored_procedure_parameterContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="KoraliumParser.stored_procedure_statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStored_procedure_statement([NotNull] KoraliumParser.Stored_procedure_statementContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="KoraliumParser.select_statement"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

@@ -916,17 +916,17 @@ namespace Koralium.SqlParser.ANTLR
             return base.VisitOrder_by_element(context);
         }
 
-        public override object VisitSet_variable_statement([NotNull] KoraliumParser.Set_variable_statementContext context)
+        public override object VisitSet_variable([NotNull] KoraliumParser.Set_variableContext context)
         {
             var variableReference = Visit(context.variable_reference()) as VariableReference;
-            
-            if(variableReference == null)
+
+            if (variableReference == null)
             {
                 throw new SqlParserException("Could not parse variable reference");
             }
 
             ScalarExpression scalarExpression = null;
-            if(context.b64 != null)
+            if (context.b64 != null)
             {
                 scalarExpression = new Base64Literal()
                 {
@@ -938,16 +938,80 @@ namespace Koralium.SqlParser.ANTLR
                 scalarExpression = Visit(context.scalar_expression()) as ScalarExpression;
             }
 
-            if(scalarExpression == null)
+            if (scalarExpression == null)
             {
                 throw new SqlParserException("Could not parse scalar expression");
             }
-
             return new SetVariableStatement()
             {
                 VariableReference = variableReference,
                 ScalarExpression = scalarExpression
             };
+        }
+
+        public override object VisitStored_procedure_parameter([NotNull] KoraliumParser.Stored_procedure_parameterContext context)
+        {
+            if (context.variable != null) 
+            {
+                var setVariable = Visit(context.variable) as SetVariableStatement;
+
+                if (setVariable == null)
+                {
+                    throw new SqlParserException("Could not get the variable.");
+                }
+
+                return setVariable;
+            }
+            else if (context.scalar != null)
+            {
+                var scalar = Visit(context.scalar) as ScalarExpression;
+
+                if (scalar == null)
+                {
+                    throw new SqlParserException("Could not a scalar value.");
+                }
+
+                return new SetVariableStatement()
+                {
+                    ScalarExpression = scalar
+                };
+            }
+            else
+            {
+                throw new SqlParserException("Could not parse the stored procedure parameter");
+            }
+        }
+
+        public override object VisitStored_procedure_statement([NotNull] KoraliumParser.Stored_procedure_statementContext context)
+        {
+            var parameters = context.stored_procedure_parameter();
+
+            var name = context.name.Text;
+            if (parameters == null)
+            {
+                return new StoredProcedure()
+                {
+                    ProcedureName = name,
+                    Variables = new List<SetVariableStatement>()
+                };
+            }
+
+            List<SetVariableStatement> variables = new List<SetVariableStatement>();
+            foreach(var parameter in parameters)
+            {
+                var setVariable = Visit(parameter) as SetVariableStatement;
+                variables.Add(setVariable);
+            }
+            return new StoredProcedure()
+            {
+                ProcedureName = name,
+                Variables = variables
+            };
+        }
+
+        public override object VisitSet_variable_statement([NotNull] KoraliumParser.Set_variable_statementContext context)
+        {
+            return Visit(context.set_variable());
         }
 
         public override object VisitVariable_reference([NotNull] KoraliumParser.Variable_referenceContext context)

@@ -10,14 +10,19 @@ statements_list: ';'* sql_statement (';'+ sql_statement)* ';'*;
 
 sql_statement
 	: set_variable_statement
+	| stored_procedure_statement
 	| select_statement
 	;
 
-set_variable_statement: SET variable_reference '=' (b64=BASE64_LITERAL | scalar_expression);
+set_variable_statement: SET set_variable;
 
+set_variable: variable_reference '=' (b64=BASE64_LITERAL | scalar_expression);
+
+stored_procedure_parameter: variable=set_variable | scalar=scalar_expression;
+stored_procedure_statement: name=IDENTIFIER (stored_procedure_parameter) (',' stored_procedure_parameter)*;
 
 select_statement: (
-  SELECT (DISTINCT)? select_expression (',' select_expression)*
+  SELECT (DISTINCT)? (select_expression (',' select_expression)*)?
 	// START FROM
   (FROM from_clause
 	(WHERE where_clause)?

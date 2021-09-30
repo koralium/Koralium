@@ -13,6 +13,7 @@
  */
 using Koralium.SqlToExpression.Executors.AggregateFunction;
 using Koralium.SqlToExpression.Executors.Offset;
+using Koralium.SqlToExpression.Interfaces;
 using Koralium.SqlToExpression.Stages.ExecuteStages;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -32,6 +33,7 @@ namespace Koralium.SqlToExpression.Executors
         private readonly IOffsetExecutorFactory _offsetExecutorFactory;
         private readonly IDistinctExecutorFactory _distinctExecutorFactory;
         private readonly IAggregateFunctionExecutorFactory _aggregateFunctionExecutorFactory;
+        private readonly IStoredProcedureResolver _storedProcedureResolver;
 
         IQueryable queryable = null;
         IImmutableList<ColumnMetadata> columns = null;
@@ -46,7 +48,8 @@ namespace Koralium.SqlToExpression.Executors
             IOrderByExecutorFactory orderByExecutorFactory,
             IOffsetExecutorFactory offsetExecutorFactory,
             IDistinctExecutorFactory distinctExecutorFactory,
-            IAggregateFunctionExecutorFactory aggregateFunctionExecutorFactory
+            IAggregateFunctionExecutorFactory aggregateFunctionExecutorFactory,
+            IStoredProcedureResolver storedProcedureResolver = null
             )
         {
             Debug.Assert(tableResolver != null);
@@ -68,6 +71,7 @@ namespace Koralium.SqlToExpression.Executors
             _offsetExecutorFactory = offsetExecutorFactory;
             _distinctExecutorFactory = distinctExecutorFactory;
             _aggregateFunctionExecutorFactory = aggregateFunctionExecutorFactory;
+            _storedProcedureResolver = storedProcedureResolver;
         }
 
         public async ValueTask<QueryResult> Execute(IImmutableList<IExecuteStage> stages, object data)

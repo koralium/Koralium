@@ -83,6 +83,42 @@ public partial class KoraliumParserBaseListener : IKoraliumParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitSet_variable_statement([NotNull] KoraliumParser.Set_variable_statementContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="KoraliumParser.set_variable"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterSet_variable([NotNull] KoraliumParser.Set_variableContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="KoraliumParser.set_variable"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitSet_variable([NotNull] KoraliumParser.Set_variableContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="KoraliumParser.stored_procedure_parameter"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterStored_procedure_parameter([NotNull] KoraliumParser.Stored_procedure_parameterContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="KoraliumParser.stored_procedure_parameter"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitStored_procedure_parameter([NotNull] KoraliumParser.Stored_procedure_parameterContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="KoraliumParser.stored_procedure_statement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterStored_procedure_statement([NotNull] KoraliumParser.Stored_procedure_statementContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="KoraliumParser.stored_procedure_statement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitStored_procedure_statement([NotNull] KoraliumParser.Stored_procedure_statementContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="KoraliumParser.select_statement"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

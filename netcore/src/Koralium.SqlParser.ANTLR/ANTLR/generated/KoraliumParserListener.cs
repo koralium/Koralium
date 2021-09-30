@@ -71,6 +71,36 @@ public interface IKoraliumParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitSet_variable_statement([NotNull] KoraliumParser.Set_variable_statementContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="KoraliumParser.set_variable"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterSet_variable([NotNull] KoraliumParser.Set_variableContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="KoraliumParser.set_variable"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitSet_variable([NotNull] KoraliumParser.Set_variableContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="KoraliumParser.stored_procedure_parameter"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStored_procedure_parameter([NotNull] KoraliumParser.Stored_procedure_parameterContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="KoraliumParser.stored_procedure_parameter"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStored_procedure_parameter([NotNull] KoraliumParser.Stored_procedure_parameterContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="KoraliumParser.stored_procedure_statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStored_procedure_statement([NotNull] KoraliumParser.Stored_procedure_statementContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="KoraliumParser.stored_procedure_statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStored_procedure_statement([NotNull] KoraliumParser.Stored_procedure_statementContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="KoraliumParser.select_statement"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
