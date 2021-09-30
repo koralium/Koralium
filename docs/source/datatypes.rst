@@ -18,6 +18,7 @@ The supported data types are:
 * Objects
 * Byte[] (binary)
 * Enums
+* Decimal
 
 Enums
 ------
