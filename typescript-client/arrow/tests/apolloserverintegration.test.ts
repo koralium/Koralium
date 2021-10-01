@@ -54,14 +54,12 @@ afterAll(async () => {
 const resolvers = {
   Query: {
     test: async () => {
-      //TODO: Investigate why select * does not work
       const v = await client.query("select * from typetest")
       return v.rows;
     }
   },
 };
 
-//TODO: Activate test again
 test("Can fetch data", async () => {
   const server = new ApolloServer({
     typeDefs,
