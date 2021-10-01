@@ -87,5 +87,9 @@ namespace Koralium.WebTests.Entities
         public TestTypeEnum EnumValue { get; set; }
 
         public IEnumerable<int> EnumerableList { get; set; }
+
+        public decimal DecimalValue { get; set; }
+
+        public decimal? DecimalValueNullable { get; set; }
     }
 }

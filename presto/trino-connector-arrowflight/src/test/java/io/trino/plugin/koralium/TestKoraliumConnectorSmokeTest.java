@@ -20,10 +20,12 @@ import io.trino.SystemSessionProperties;
 import io.trino.spi.type.ArrayType;
 import io.trino.spi.type.BigintType;
 import io.trino.spi.type.BooleanType;
+import io.trino.spi.type.DecimalType;
 import io.trino.spi.type.IntegerType;
 import io.trino.spi.type.RealType;
 import io.trino.spi.type.RowType;
 import io.trino.spi.type.SmallintType;
+import io.trino.spi.type.SqlDecimal;
 import io.trino.spi.type.Type;
 import io.trino.spi.type.VarbinaryType;
 import io.trino.spi.type.VarcharType;
@@ -363,6 +365,24 @@ public class TestKoraliumConnectorSmokeTest
                 .build();
 
         MaterializedResult result = this.computeActual("SELECT BinaryValue FROM typetest");
+
+        Assert.assertEquals(result, expectedResult);
+    }
+
+    @Test
+    public void TestDecimal()
+    {
+        MaterializedResult expectedResult = MaterializedResult.resultBuilder(this.getQueryRunner().getDefaultSession(),
+                DecimalType.createDecimalType(24, 8))
+                .row(SqlDecimal.of(100000000, 24, 8))
+                .row(SqlDecimal.of(300000000, 24, 8))
+                .row(SqlDecimal.of(1700000000, 24, 8))
+                .row(SqlDecimal.of(100000000, 24, 8))
+                .row(SqlDecimal.of(300000000, 24, 8))
+                .build()
+                .toTestTypes();
+
+        MaterializedResult result = this.computeActual("SELECT DecimalValue FROM typetest");
 
         Assert.assertEquals(result, expectedResult);
     }

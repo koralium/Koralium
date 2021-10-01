@@ -222,13 +222,17 @@ namespace Koralium.WebTests
                     Object = new TypeTestInnerInnerObject()
                     {
                         StringValue = "test"
-                    }
+                    },
+                    DecimalValue = 3,
+                    DecimalNullableValue = 3
                 },
                 new TypeTestInnerObject()
                 {
                     StringValue = "test2",
                     IntList = new List<int>(),
-                    Object = null
+                    Object = null,
+                    DecimalValue = 17,
+                    DecimalNullableValue = null
                 },
                 null
             };
@@ -260,7 +264,8 @@ namespace Koralium.WebTests
             SetTypeTestValue<ulong?>(arr, (t, x) => t.ULongValueNullable = x, 1, 3, 17, null);
             SetTypeTestValue<byte>(arr, (t, x) => t.ByteValue = x, 1, 3, 17);
             SetTypeTestValue<byte?>(arr, (t, x) => t.ByteValueNullable = x, 1, 3, 17, null);
-
+            SetTypeTestValue<decimal>(arr, (t, x) => t.DecimalValue = x, 1, 3, 17);
+            SetTypeTestValue<decimal?>(arr, (t, x) => t.DecimalValueNullable = x, 1, 3, 17, null);
 
             //Complex
             SetTypeTestValue(arr, (t, x) => t.Object = x, GetTypeTestInnerObjects());

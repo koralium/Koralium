@@ -55,6 +55,8 @@ namespace Koralium.Transport.ArrowFlight.Utils
                     return UInt8Type.Default;
                 case ColumnType.Binary:
                     return BinaryType.Default;
+                case ColumnType.Decimal:
+                    return new Decimal128Type(24, 8);
             }
             throw new NotImplementedException();
         }
