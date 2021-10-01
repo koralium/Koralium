@@ -40,6 +40,10 @@ export class TypeVisitor extends Visitor {
 
   public visitDecimal<T extends type.Decimal>(type: T) {
     return (data: Int32Array) => {
+      if (!data) {
+        return null;
+      }
+
       const a = BigInt(data[3]).shiftLeft(96)
       const b = BigInt(data[2]).shiftLeft(64)
       const c = BigInt(data[1]).shiftLeft(32)

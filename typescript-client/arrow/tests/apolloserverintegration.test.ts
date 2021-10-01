@@ -26,7 +26,7 @@ const typeDefs = gql`
   type TestType {
     intvalue: Int
 
-    listinlist: [[Int]]
+    intlist: [Int]
 
     decimalvalue: Float
   }
@@ -55,39 +55,55 @@ const resolvers = {
   Query: {
     test: async () => {
       //TODO: Investigate why select * does not work
-      const v = await client.query("select decimalvalue from typetest")
+      const v = await client.query("select * from typetest")
       return v.rows;
     }
   },
 };
 
 //TODO: Activate test again
-// test("Can fetch data", async () => {
-//   const server = new ApolloServer({
-//     typeDefs,
-//     resolvers,
-//   });
+test("Can fetch data", async () => {
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+  });
 
-//   const result = await server.executeOperation({
-//     query: "{ test { intvalue listinlist } }"
-//   })
+  const result = await server.executeOperation({
+    query: "{ test { intvalue intlist } }"
+  })
 
-//   expect(result.data).toEqual({
-//     test: [
-//     {
-//       intvalue: 1,
-//       listinlist: [
-//         [6, 7]
-//       ]
-//     },
-//     {
-//       intvalue: 2,
-//       listinlist: [
-//         [7, 8]
-//       ]
-//     }
-//   ]})
-// })
+  expect(result.data).toEqual({
+    test: [
+    {
+      intvalue: 1,
+      intlist: [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      intvalue: 3,
+      intlist: []
+    },
+    {
+      intvalue: 17,
+      intlist: null
+    },
+    {
+      intvalue: 1,
+      intlist: [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      intvalue: 3,
+      intlist: []
+    },
+  ]})
+})
 
 test("Can fetch decimal data", async () => {
   const server = new ApolloServer({

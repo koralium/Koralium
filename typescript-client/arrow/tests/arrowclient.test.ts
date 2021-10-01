@@ -456,3 +456,31 @@ test("Decimal Value", async () => {
   const result = await client.query("select decimalvalue from typetest");
   compareResults(result.rows, expected)
 })
+
+test.only("Decimal Null Value", async () => {
+  const expected = [
+    {
+      decimalvaluenullable: new Decimal(1)
+    },
+    {
+      decimalvaluenullable: new Decimal(3)
+    },
+    {
+      decimalvaluenullable: new Decimal(17)
+    },
+    {
+      decimalvaluenullable: null
+    },
+    {
+      decimalvaluenullable: new Decimal(1)
+    },
+  ]
+  const result = await client.query("select decimalvaluenullable from typetest");
+  compareResults(result.rows, expected)
+})
+
+test.only("select all types", async () => {
+  expect(async () => {
+    const result = await client.query("select * from typetest");
+  }).not.toThrow()
+})
