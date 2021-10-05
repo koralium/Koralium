@@ -50,7 +50,7 @@ export class KoraliumList implements Iterable<any> {
     for (let i = 0; i < this.length; i++) {
       let val = this.get(i);
 
-      if (val.toObject) {
+      if (val && val.toObject) {
         val = val.toObject();
       }
 
