@@ -307,3 +307,39 @@ test("IN filter with booleans", () => {
 
     expect(result).toEqual(expected);
 });
+
+test("Select distinct no parameter", () => {
+  const expected = "SELECT DISTINCT * FROM testtable"
+
+  const queryBuilder = new QueryBuilder("testtable");
+  const result = queryBuilder
+    .addSelectElement("*")
+    .setDistinct()
+    .buildQuery();
+
+    expect(result).toEqual(expected);
+})
+
+test("Select distinct parameter true", () => {
+  const expected = "SELECT DISTINCT * FROM testtable"
+
+  const queryBuilder = new QueryBuilder("testtable");
+  const result = queryBuilder
+    .addSelectElement("*")
+    .setDistinct(true)
+    .buildQuery();
+
+    expect(result).toEqual(expected);
+})
+
+test("Select distinct parameter false", () => {
+  const expected = "SELECT * FROM testtable"
+
+  const queryBuilder = new QueryBuilder("testtable");
+  const result = queryBuilder
+    .addSelectElement("*")
+    .setDistinct(false)
+    .buildQuery();
+
+    expect(result).toEqual(expected);
+})

@@ -30,6 +30,8 @@ export class QueryBuilder {
 
   private mapper?: ObjectToSelectMapper;
 
+  private distinct: boolean = false
+
   constructor(table: string, mapper?: ObjectToSelectMapper) {
     this.table = table;
     this.mapper = mapper;
@@ -57,6 +59,15 @@ export class QueryBuilder {
 
   setOffset(offset: number): QueryBuilder {
     this.offset = offset;
+    return this;
+  }
+
+  setDistinct(distinct?: boolean): QueryBuilder {
+    if (distinct !== undefined) {
+      this.distinct = distinct
+    } else {
+      this.distinct = true
+    }
     return this;
   }
 
@@ -132,7 +143,13 @@ export class QueryBuilder {
   buildQuery(): string {
     var selectElements = this.selects.join(", ");
 
-    let sql = `SELECT ${selectElements} FROM ${this.table}`;
+    let selectString = "SELECT";
+
+    if (this.distinct) {
+      selectString = "SELECT DISTINCT"
+    }
+
+    let sql = `${selectString} ${selectElements} FROM ${this.table}`;
 
     if(this.filters.length > 0) {
       //Try and filter out any empty filters

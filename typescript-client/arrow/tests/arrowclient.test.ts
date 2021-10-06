@@ -457,7 +457,7 @@ test("Decimal Value", async () => {
   compareResults(result.rows, expected)
 })
 
-test.only("Decimal Null Value", async () => {
+test("Decimal Null Value", async () => {
   const expected = [
     {
       decimalvaluenullable: new Decimal(1)
@@ -479,7 +479,7 @@ test.only("Decimal Null Value", async () => {
   compareResults(result.rows, expected)
 })
 
-test.only("select all types", async () => {
+test("select all types", async () => {
   expect(async () => {
     const result = await client.query("select * from typetest");
   }).not.toThrow()
