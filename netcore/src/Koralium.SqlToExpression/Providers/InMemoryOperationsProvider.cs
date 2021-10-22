@@ -12,8 +12,11 @@
  * limitations under the License.
  */
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Linq;
 
 namespace Koralium.SqlToExpression.Providers
 {
@@ -28,6 +31,15 @@ namespace Koralium.SqlToExpression.Providers
         private static readonly MethodInfo StringEndsWith = typeof(InMemoryOperationsProvider).GetMethod("InternalStringEndsWith", BindingFlags.NonPublic | BindingFlags.Static);
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Only used in this class")]
         private static readonly MethodInfo StringEquals = typeof(InMemoryOperationsProvider).GetMethod("InternalStringEquals", BindingFlags.NonPublic | BindingFlags.Static);
+
+        private static readonly MethodInfo ListContainsMethod = FindStringListContainsMethodInfo();
+
+        private static MethodInfo FindStringListContainsMethodInfo()
+        {
+            var methods = typeof(Enumerable).GetMethods().Where(x => x.Name == "Contains" && x.ContainsGenericParameters && x.GetParameters().Length == 3);
+
+            return methods.First();
+        }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1144:Unused private types or members should be removed", Justification = "Used in reflection")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Used in reflection")]
@@ -112,6 +124,16 @@ namespace Koralium.SqlToExpression.Providers
         public override Expression MakeAnyCall(in Expression column, in Expression anyCall)
         {
             return Expression.Condition(Expression.Equal(column, Expression.Constant(null, column.Type)), Expression.Constant(false), anyCall);
+        }
+
+        public override Expression GetListContains(in Expression memberExpression, IList list)
+        {
+            if (list is List<string> stringList)
+            {
+                var method = ListContainsMethod.MakeGenericMethod(memberExpression.Type);
+                return Expression.Call(null, method, arguments: new[] { Expression.Constant(stringList), memberExpression, Expression.Constant(StringComparer.OrdinalIgnoreCase) });
+            }
+            return base.GetListContains(memberExpression, list);
         }
 
         #endregion

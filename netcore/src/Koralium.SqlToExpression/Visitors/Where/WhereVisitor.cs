@@ -156,7 +156,7 @@ namespace Koralium.SqlToExpression.Visitors.Where
                     throw new SqlErrorException("IN predicate only supports literal or parameter values.");
                 }
             }
-            var inPredicate = PredicateUtils.ListContains(memberExpression, memberExpression.Type, list);
+            var inPredicate =_visitorMetadata.OperationsProvider.GetListContains(memberExpression, list);
             AddExpressionToStack(inPredicate);
         }
 

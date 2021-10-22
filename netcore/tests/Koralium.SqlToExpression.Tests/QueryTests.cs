@@ -1011,11 +1011,25 @@ namespace Koralium.SqlToExpression.Tests
         [Test]
         public async Task TestInPredicateString()
         {
-            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority in ('5-L')");
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority in ('5-LOW')");
 
-            var expectedList = new List<string> { "5-L" };
+            var expectedList = new List<string> { "5-LOW" };
             var expected = TpchData.Orders
                 .Where(x => expectedList.Contains(x.Orderpriority))
+                .Select(x => new { x.Orderkey, x.Orderpriority })
+                .AsQueryable();
+
+            AssertAreEqual(expected, result.Result);
+        }
+
+        [Test]
+        public async Task TestInPredicateStringIgnoreCase()
+        {
+            var result = await SqlExecutor.Execute("SELECT Orderkey, Orderpriority FROM \"order\" WHERE Orderpriority in ('5-low')");
+
+            var expectedList = new List<string> { "5-low" };
+            var expected = TpchData.Orders
+                .Where(x => expectedList.Contains(x.Orderpriority, StringComparer.OrdinalIgnoreCase))
                 .Select(x => new { x.Orderkey, x.Orderpriority })
                 .AsQueryable();
 

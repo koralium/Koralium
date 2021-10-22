@@ -11,6 +11,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using System;
+using System.Collections;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -35,5 +37,7 @@ namespace Koralium.SqlToExpression.Interfaces
         /// <param name="anyCall">The any call</param>
         /// <returns></returns>
         Expression MakeAnyCall(in Expression column, in Expression anyCall);
+
+        Expression GetListContains(in Expression memberExpression, IList list);
     }
 }

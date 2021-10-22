@@ -1,5 +1,7 @@
 ﻿using Koralium.SqlToExpression.Interfaces;
+using Koralium.SqlToExpression.Utils;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -25,6 +27,11 @@ namespace Koralium.SqlToExpression.Providers
         private static readonly MethodInfo StringStartsWith = typeof(string).GetMethod("StartsWith", new Type[] { typeof(string) });
         private static readonly MethodInfo StringContains = typeof(string).GetMethod("Contains", new Type[] { typeof(string) });
         private static readonly MethodInfo StringEndsWith = typeof(string).GetMethod("EndsWith", new Type[] { typeof(string) });
+
+        public virtual Expression GetListContains(in Expression memberExpression, IList list)
+        {
+            return PredicateUtils.ListContains(memberExpression, memberExpression.Type, list);
+        }
 
         public virtual Expression GetStringContainsExpression(in Expression left, in Expression right)
         {
