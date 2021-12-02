@@ -307,3 +307,23 @@ test("IN filter with booleans", () => {
 
     expect(result).toEqual(expected);
 });
+
+test("filter with åäö", () => {
+  const expected = "SELECT count(*) FROM testtable WHERE (name IN (@P0))"
+
+  const queryBuilder = new QueryBuilder("testtable");
+  const result = queryBuilder
+    .addSelectElement("count(*)")
+    .addFilter({
+      name: {in: ["åäö"]}
+    })
+    .buildQuery();
+
+    const parametersResult = queryBuilder.getParameters();
+    const expectedParameters = {
+      P0: encodeURIComponent("åäö")
+    };
+
+    expect(result).toEqual(expected);
+    expect(parametersResult).toEqual(expectedParameters);
+})

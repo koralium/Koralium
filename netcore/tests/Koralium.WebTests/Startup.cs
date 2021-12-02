@@ -130,6 +130,12 @@ namespace Koralium.WebTests
                     o.TableName = "indextest";
                     o.UseInMemoryOperations();
                 });
+
+                opt.AddTableResolver<SpecialCharacterResolver, SpecialCharactersTest>(o =>
+                {
+                    o.TableName = "specialcharactertest";
+                    o.UseInMemoryOperations();
+                });
             });
             
             var tpchDataPath = Path.Join(Configuration.GetValue<string>(WebHostDefaults.ContentRootKey), Configuration.GetValue<string>("TestDataLocation"));
