@@ -138,8 +138,8 @@ namespace Koralium.Transport.Json.Tests
         [Test]
         public async Task TestUriEncodedParameter()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"{url}?query=select * from specialcharactertest");
-            request.Headers.Add("P_P0", HttpUtility.UrlEncode("åäö", Encoding.UTF8));
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{url}?query=select * from specialcharactertest WHERE name = @P0");
+            request.Headers.Add("P_P0", HttpUtility.UrlEncode("Ã¥Ã¤Ã¶", Encoding.UTF8));
             var response = await httpClient.SendAsync(request);
             var responseContent = await response.Content.ReadAsStringAsync();
             var actual = Newtonsoft.Json.JsonConvert.DeserializeObject<Response<SpecialCharactersTest>>(responseContent);
