@@ -24,6 +24,9 @@ P_p1: "123"
 
 This would create a sql parameter named p1 and can be used in queries with '@p1'.
 
+In the case of special characters such as 'åäö' it is required to URI encode the parameter.
+Example would be that 'å' would be translated to '%C3%A5'
+
 SQL Statement
 --------------
 
