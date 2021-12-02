@@ -33,6 +33,7 @@ using Koralium.Core.RowLevelSecurity;
 using Koralium.Shared.Extensions.Logging;
 using Koralium.Core.Utils;
 using Koralium.SqlParser.Expressions;
+using System.Web;
 
 namespace Koralium
 {
@@ -86,6 +87,8 @@ namespace Koralium
                         throw new SqlErrorException("Two parameters found with the same name in the http headers.");
                     }
                     var value = header.Value.First();
+                    // URL decode 
+                    value = HttpUtility.UrlDecode(value);
 
                     sqlParameters.Add(SqlParameter.Create(parameterName, value));
                 }

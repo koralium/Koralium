@@ -165,6 +165,17 @@ namespace Koralium.WebTests
             }.AsQueryable();
         }
 
+        public static IQueryable<SpecialCharactersTest> GetSpecialCharactersTests()
+        {
+            return new List<SpecialCharactersTest>()
+            {
+                new SpecialCharactersTest()
+                {
+                    Name = "åäö"
+                }
+            }.AsQueryable();
+        }
+
         public static IQueryable<Company> GetCompanies()
         {
             return new List<Company>()

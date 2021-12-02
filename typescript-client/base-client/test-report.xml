@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testExecutions version="1">
   <file path="C:\Users\seosal\source\repos\Koralium\new\Koralium\typescript-client\base-client\tests\queryBuilder.test.ts">
-    <testCase name="count with filter" duration="4"/>
-    <testCase name="Select same column" duration="0"/>
-    <testCase name="Select with limit and offset" duration="0"/>
-    <testCase name="Select multiple columns, filter, limit, offset" duration="0"/>
-    <testCase name="Object mapper" duration="0"/>
+    <testCase name="count with filter" duration="8"/>
+    <testCase name="Select same column" duration="1"/>
+    <testCase name="Select with limit and offset" duration="1"/>
+    <testCase name="Select multiple columns, filter, limit, offset" duration="1"/>
+    <testCase name="Object mapper" duration="2"/>
     <testCase name="Object mapper, missing mapping" duration="1"/>
-    <testCase name="Filter builder equals" duration="1"/>
+    <testCase name="Filter builder equals" duration="3"/>
     <testCase name="test in predicate for numbers" duration="0"/>
-    <testCase name="test in predicate for strings" duration="1"/>
-    <testCase name="Order by with object ascending" duration="0"/>
+    <testCase name="test in predicate for strings" duration="0"/>
+    <testCase name="Order by with object ascending" duration="1"/>
     <testCase name="Order by with object descending" duration="0"/>
     <testCase name="Empty filter string" duration="1"/>
     <testCase name="Empty filter object" duration="0"/>
-    <testCase name="Search filter all fields" duration="0"/>
-    <testCase name="Search filter two fields" duration="0"/>
-    <testCase name="Boolean filter" duration="0"/>
+    <testCase name="Search filter all fields" duration="1"/>
+    <testCase name="Search filter two fields" duration="1"/>
+    <testCase name="Boolean filter" duration="1"/>
     <testCase name="IN filter with strings" duration="1"/>
-    <testCase name="IN filter with numbers" duration="0"/>
-    <testCase name="IN filter with booleans" duration="1"/>
+    <testCase name="IN filter with numbers" duration="2"/>
+    <testCase name="IN filter with booleans" duration="2"/>
+    <testCase name="filter with åäö" duration="1"/>
   </file>
 </testExecutions>

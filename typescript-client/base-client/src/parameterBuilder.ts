@@ -29,7 +29,7 @@ export class ParameterBuilder {
   getParameters(): {} {
     const output: {[key: string]: string;} = {};
     for (let [key, value] of Object.entries(this.valuesToParameters)) {
-      output[value] = key;
+      output[value] = encodeURIComponent(key);
     }
     return output;
   }
