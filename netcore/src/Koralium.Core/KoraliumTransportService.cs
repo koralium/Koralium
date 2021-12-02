@@ -88,7 +88,7 @@ namespace Koralium
                     }
                     var value = header.Value.First();
                     // URL decode 
-                    value = HttpUtility.UrlDecode(value);
+                    value = HttpUtility.UrlDecode(value, Encoding.UTF8);
 
                     sqlParameters.Add(SqlParameter.Create(parameterName, value));
                 }

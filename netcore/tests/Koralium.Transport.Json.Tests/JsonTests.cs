@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -138,7 +139,7 @@ namespace Koralium.Transport.Json.Tests
         public async Task TestUriEncodedParameter()
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"{url}?query=select * from specialcharactertest WHERE name = @P0");
-            request.Headers.Add("P_P0", HttpUtility.UrlEncode("едц"));
+            request.Headers.Add("P_P0", HttpUtility.UrlEncode("едц", Encoding.UTF8));
             var response = await httpClient.SendAsync(request);
             var responseContent = await response.Content.ReadAsStringAsync();
             var actual = Newtonsoft.Json.JsonConvert.DeserializeObject<Response<SpecialCharactersTest>>(responseContent);
