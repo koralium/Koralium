@@ -18,7 +18,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.101
+        dotnet-version: '3.1.x'
     - uses: actions/setup-java@v1
       with:
         java-version: '11' # The JDK version to make available on the path.
