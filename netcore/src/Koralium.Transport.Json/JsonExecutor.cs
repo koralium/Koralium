@@ -32,17 +32,15 @@ namespace Koralium.Transport.Json
         {
             var queryValue = context.Request.Query["query"];
 
-            if(queryValue.Count > 1)
+            if (queryValue.Count > 1)
             {
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsync("Only one parameter named 'query' can be sent in");
+                await WriteError(context, StatusCodes.Status400BadRequest, "Only one parameter named 'query' can be sent in");
                 return;
             }
 
-            if(queryValue.Count == 0)
+            if (queryValue.Count == 0)
             {
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsync("Missing parameter 'query'");
+                await WriteError(context, StatusCodes.Status400BadRequest, "Missing paramter 'query'");
                 return;
             }
 
@@ -53,9 +51,17 @@ namespace Koralium.Transport.Json
 
         private static async Task WriteError(HttpContext context, int statusCode, string error)
         {
-            context.Response.StatusCode = statusCode;
-            context.Response.ContentType = "text/plain";
-            await context.Response.WriteAsync(error);
+            var errorWriter = context.RequestServices.GetService<IErrorWriter>();
+            if (errorWriter != null)
+            {
+                await errorWriter.WriteAsync(context, statusCode, error);
+            }
+            else
+            {
+                context.Response.StatusCode = statusCode;
+                context.Response.ContentType = "text/plain";
+                await context.Response.WriteAsync(error);
+            }
         }
 
         private static async Task Execute(string sql, HttpContext context)
@@ -71,19 +77,19 @@ namespace Koralium.Transport.Json
             {
                 result = await koraliumService.Execute(sql, new Shared.SqlParameters(), context);
             }
-            catch(SqlErrorException error)
+            catch (SqlErrorException error)
             {
                 logger.LogWarning(error.Message);
                 await WriteError(context, 400, error.Message);
                 return;
             }
-            catch(AuthorizationFailedException authFailed)
+            catch (AuthorizationFailedException authFailed)
             {
                 logger.LogWarning(authFailed.Message, authFailed);
                 await WriteError(context, 401, authFailed.Message);
                 return;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 logger.LogError(e, "Unexpected exception thrown");
                 await WriteError(context, 500, "Internal error");
