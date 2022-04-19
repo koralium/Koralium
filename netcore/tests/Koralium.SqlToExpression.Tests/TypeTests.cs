@@ -36,6 +36,14 @@ namespace Koralium.SqlToExpression.Tests
             AssertAreEqual(expectedInt, actualInt.Result);
         }
 
-        
+        [Test]
+        public async Task TestFilterDateTimeNullableAsParameter()
+        {
+            var actual = await SqlExecutor.Execute("SELECT DateTimeNullable from typetest where DateTimeNullable > @P0", new SqlParameters().Add(SqlParameter.Create("P0", "1990-03-12")));
+            var expected = WebTests.TestData.GetTypeTests().Where(x => x.DateTimeNullable > DateTime.Parse("1990-03-12")).Select(x => new { P0 = x.DateTimeNullable }).ToList().AsQueryable();
+
+            AssertAreEqual(expected, actual.Result);
+        }
+
     }
 }

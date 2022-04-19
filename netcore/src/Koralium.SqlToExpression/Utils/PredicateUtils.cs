@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 using Koralium.Shared;
+using Koralium.Shared.Utils;
 using Koralium.SqlParser.Expressions;
 using Koralium.SqlToExpression.Interfaces;
 using System;
@@ -44,30 +45,6 @@ namespace Koralium.SqlToExpression.Utils
             return Expression.Call(null, method, arguments: new[] { Expression.Constant(values), parameter });
         }
 
-        private static Expression ChangeTypeWithNullable(object value, Type toType)
-        {
-            Type nullableType = Nullable.GetUnderlyingType(toType);
-
-            if(nullableType != null)
-            {
-                object safeValue = (value == null) ? null : Convert.ChangeType(value, nullableType);
-                return Expression.Convert(Expression.Constant(safeValue), toType);
-            }
-            else
-            {
-                //Enum conversion
-                if (toType.IsEnum && value is string s)
-                {
-                    if(!Enum.TryParse(toType, s, true, out var enumValue))
-                    {
-                        throw new SqlErrorException($"'{s}' is not a valid value of the enum '{toType.Name}'");
-                    }
-                    return Expression.Constant(enumValue);
-                }
-                return Expression.Constant(Convert.ChangeType(value, toType));
-            }
-        }
-
         internal static void ConvertExpressionTypes(ref Expression leftExpression, ref Expression rightExpression)
         {
             {
@@ -75,7 +52,7 @@ namespace Koralium.SqlToExpression.Utils
                 {
                     if(constantExpressionLeft.Value != null)
                     {
-                        var changedTypeValue = ChangeTypeWithNullable(constantExpressionLeft.Value, rightExpression.Type);
+                        var changedTypeValue = TypeConvertUtils.ChangeTypeWithNullableExpression(constantExpressionLeft.Value, rightExpression.Type);
                         leftExpression = changedTypeValue;
                     }
                 }
@@ -83,7 +60,7 @@ namespace Koralium.SqlToExpression.Utils
                 {
                     if(constantExpressionRight.Value != null)
                     {
-                        var changedTypeValue = ChangeTypeWithNullable(constantExpressionRight.Value, leftExpression.Type);
+                        var changedTypeValue = TypeConvertUtils.ChangeTypeWithNullableExpression(constantExpressionRight.Value, leftExpression.Type);
                         rightExpression = changedTypeValue;
                     }
                 }
@@ -94,28 +71,14 @@ namespace Koralium.SqlToExpression.Utils
                     !sqlParameterLeft.GetValueType().Equals(rightExpression.Type)
                     )
                 {
-                    if(sqlParameterLeft.TryGetValue(rightExpression.Type, out var value))
-                    {
-                        leftExpression = Expression.Constant(value);
-                    }
-                    else
-                    {
-                        throw new SqlErrorException($"Could not cast {sqlParameterLeft.GetValueType().Name} to {rightExpression.Type}");
-                    }
+                    leftExpression = sqlParameterLeft.GetValueAsExpression(rightExpression.Type);  
                 }
                 else if (rightExpression is MemberExpression memberExpressionRight &&
                     memberExpressionRight.Expression is ConstantExpression constantExpressionRightVariable &&
                     constantExpressionRightVariable.Value is SqlParameter sqlParameter &&
                     !sqlParameter.GetValueType().Equals(leftExpression.Type))
                 {
-                    if (sqlParameter.TryGetValue(leftExpression.Type, out var value))
-                    {
-                        rightExpression = Expression.Constant(value);
-                    }
-                    else
-                    {
-                        throw new SqlErrorException($"Could not cast {sqlParameter.GetValueType().Name} to {leftExpression.Type}");
-                    }
+                    rightExpression = sqlParameter.GetValueAsExpression(leftExpression.Type);
                 }
                 //If the types still does not match, we convert on the right
                 else if (!leftExpression.Type.Equals(rightExpression.Type))
