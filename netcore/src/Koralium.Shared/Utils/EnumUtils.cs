@@ -10,7 +10,7 @@ namespace Koralium.Shared.Utils
         {
             if (val is string stringValue)
             {
-                return Enum.Parse(enumType, stringValue);
+                return Enum.Parse(enumType, stringValue, true);
             }
             else
             {

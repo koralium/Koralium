@@ -29,6 +29,8 @@ namespace Koralium.Shared
 
         internal abstract Expression GetValueAsExpression();
 
+        internal abstract Expression GetValueAsExpression(Type type);
+
 
         public static SqlParameter<T> Create<T>(string name, T value)
         {
@@ -113,6 +115,11 @@ namespace Koralium.Shared
                 return true;
             }
             return TypeConvertUtils.TryConvertToType(Value, type, out value);
+        }
+
+        internal override Expression GetValueAsExpression(Type type)
+        {
+            return TypeConvertUtils.ChangeTypeWithNullableExpression(Value, type);
         }
     }
 }
