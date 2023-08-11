@@ -13,6 +13,7 @@
  */
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -20,14 +21,14 @@ namespace Koralium.SqlToExpression.Utils
 {
     internal static class ListUtils
     {
-        private static Dictionary<Type, Func<IList>> newListFunctions = new Dictionary<Type, Func<IList>>();
+        private static ConcurrentDictionary<Type, Func<IList>> newListFunctions = new ConcurrentDictionary<Type, Func<IList>>();
 
         public static Func<IList> GetNewListFunction(Type type)
         {
             if(!newListFunctions.TryGetValue(type, out var func))
             {
                 func = CreateNewListDelegate(type);
-                newListFunctions.Add(type, func);
+                newListFunctions.AddOrUpdate(type, func, (key, old) => func);
             }
             return func;
         }
