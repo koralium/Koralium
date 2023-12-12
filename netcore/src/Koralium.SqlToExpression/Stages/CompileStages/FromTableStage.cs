@@ -14,6 +14,8 @@
 using Koralium.Shared;
 using Koralium.SqlToExpression.Models;
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq.Expressions;
 
@@ -60,6 +62,8 @@ namespace Koralium.SqlToExpression.Stages.CompileStages
         public bool ContainsFullTextSearch { get; set; }
 
         public IReadSqlParameters Parameters { get; }
+
+        public IImmutableList<SortItem> SortItems { get; set; }
 
         public FromTableStage(
             string tableName, 

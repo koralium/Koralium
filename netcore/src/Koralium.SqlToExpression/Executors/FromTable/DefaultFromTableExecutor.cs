@@ -11,9 +11,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Koralium.SqlToExpression.Models;
 using Koralium.SqlToExpression.Stages.ExecuteStages;
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Koralium.SqlToExpression.Executors
@@ -33,29 +35,76 @@ namespace Koralium.SqlToExpression.Executors
 
             var queryable = (IQueryable<Entity>)await tableResolver.ResolveTableName(executeFromTableStage.TableName, additionalData, queryOptions);
 
-            //Check that we are not using any in memory queryable, since this select will only cost extra operations
-            //without any gain
-            if(!((queryable is EnumerableQuery) || (queryable is Array)) && queryOptions.TryGetSelectExpression<Entity>(out var select))
-            {
-                queryable = queryable.Select(select);
-            }
-            
-            if(queryOptions.TryGetWhereExpression<Entity>(out var where))
+            if (queryOptions.TryGetWhereExpression<Entity>(out var where))
             {
                 queryable = queryable.Where(where);
             }
 
-            if(queryOptions.TryGetOffset(out var offset))
+            if (executeFromTableStage.SortItems != null)
+            {
+                if (executeFromTableStage.SortItems.Count > 0)
+                {
+                    var sortItems = executeFromTableStage.SortItems;
+                    int i = 0;
+
+                    var sortItem = sortItems[i];
+                    var lambda = GetSortLambda(sortItem, executeFromTableStage.ParameterExpression);
+
+                    IOrderedQueryable<Entity> orderedQueryable;
+                    if (sortItem.Descending)
+                    {
+                        orderedQueryable = queryable.OrderByDescending(lambda);
+                    }
+                    else
+                    {
+                        orderedQueryable = queryable.OrderBy(lambda);
+                    }
+                    i++;
+
+                    for (; i < sortItems.Count; i++)
+                    {
+                        sortItem = sortItems[i];
+                        lambda = GetSortLambda(sortItem, executeFromTableStage.ParameterExpression);
+
+                        if (sortItem.Descending)
+                        {
+                            orderedQueryable = orderedQueryable.ThenByDescending(lambda);
+                        }
+                        else
+                        {
+                            orderedQueryable = orderedQueryable.ThenBy(lambda);
+                        }
+                    }
+                    queryable = orderedQueryable;
+                }
+            }
+
+            if (queryOptions.TryGetOffset(out var offset))
             {
                 queryable = queryable.Skip(offset);
             }
 
-            if(queryOptions.TryGetLimit(out var limit))
+            if (queryOptions.TryGetLimit(out var limit))
             {
                 queryable = queryable.Take(limit);
             }
+
+            //Check that we are not using any in memory queryable, since this select will only cost extra operations
+            //without any gain
+            if (!((queryable is EnumerableQuery) || (queryable is Array)) && queryOptions.TryGetSelectExpression<Entity>(out var select))
+            {
+                queryable = queryable.Select(select);
+            }
+            
+            
             
             return queryable;
+        }
+
+        protected Expression<Func<Entity, object>> GetSortLambda(SortItem sortItem, ParameterExpression parameterExpression)
+        {
+            var lambda = Expression.Lambda<Func<Entity, object>>(sortItem.Expression, parameterExpression);
+            return lambda;
         }
     }
 }

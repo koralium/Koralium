@@ -131,7 +131,15 @@ namespace Koralium.SqlToExpression.Visitors
         {
             if (selectStatement.OrderByClause != null)
             {
-                _stages.Add(OrderByHelper.GetOrderByStage(LastStage, selectStatement.OrderByClause, _visitorMetadata, _usedProperties));
+                var stage = OrderByHelper.GetOrderByStage(LastStage, selectStatement.OrderByClause, _visitorMetadata, _usedProperties);
+                if (LastStage is FromTableStage fromTableStage && stage is OrderByStage orderStage)
+                {
+                    fromTableStage.SortItems = orderStage.SortItems;
+                }
+                else
+                {
+                    _stages.Add(stage);
+                }
             }
         }
 
@@ -217,9 +225,10 @@ namespace Koralium.SqlToExpression.Visitors
             HandleGroupByClause(selectStatement, containsAggregates);
             HandleHavingClause(selectStatement);
             HandleOrderByClause(selectStatement);
+            HandleOffsetClause(selectStatement);
             HandleSelect(selectStatement, containsAggregates);
             HandleDistinct(selectStatement);
-            HandleOffsetClause(selectStatement);
+            
 
             //Add a select stage that selects all the properties required
             //This should be added to be done directly after the 'from table' stage
