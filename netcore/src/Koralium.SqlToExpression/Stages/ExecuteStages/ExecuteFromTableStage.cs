@@ -13,7 +13,9 @@
  */
 using Koralium.Shared;
 using Koralium.SqlToExpression.Executors;
+using Koralium.SqlToExpression.Models;
 using System;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -40,6 +42,8 @@ namespace Koralium.SqlToExpression.Stages.ExecuteStages
 
         public IReadSqlParameters Parameters { get; }
 
+        public IImmutableList<SortItem> SortItems { get; }
+
         public ExecuteFromTableStage(
             string tableName,
             Type entityType,
@@ -49,7 +53,8 @@ namespace Koralium.SqlToExpression.Stages.ExecuteStages
             int? limit,
             int? offset,
             bool containsFullTextSearch,
-            IReadSqlParameters parameters)
+            IReadSqlParameters parameters,
+            IImmutableList<SortItem> sortItems)
         {
             TableName = tableName;
             EntityType = entityType;
@@ -60,6 +65,7 @@ namespace Koralium.SqlToExpression.Stages.ExecuteStages
             Offset = offset;
             ContainsFullTextSearch = containsFullTextSearch;
             Parameters = parameters;
+            SortItems = sortItems;
         }
 
         public ValueTask<IQueryable> Accept(IQueryExecutor queryExecutor)
