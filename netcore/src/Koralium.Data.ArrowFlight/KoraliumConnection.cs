@@ -96,6 +96,7 @@ namespace Koralium.Data.ArrowFlight
             if (!_manuallySetChannel)
             {
                 _grpcChannel.Dispose();
+                _grpcChannel = null;
             }
 
             Debug.Assert(_commands.Count == 0);
