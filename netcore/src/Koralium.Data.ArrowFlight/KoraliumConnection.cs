@@ -23,6 +23,7 @@ namespace Koralium.Data.ArrowFlight
     public class KoraliumConnection : DbConnection
     {
         private GrpcChannel _grpcChannel;
+        private bool _manuallySetChannel;
         private string _connectionString = string.Empty;
         private ConnectionState _state;
         private readonly List<WeakReference<KoraliumCommand>> _commands = new List<WeakReference<KoraliumCommand>>();
@@ -92,11 +93,21 @@ namespace Koralium.Data.ArrowFlight
                 }
             }
 
-            _grpcChannel.Dispose();
+            if (!_manuallySetChannel)
+            {
+                _grpcChannel.Dispose();
+                _grpcChannel = null;
+            }
 
             Debug.Assert(_commands.Count == 0);
             _state = ConnectionState.Closed;
             OnStateChange(new StateChangeEventArgs(ConnectionState.Open, ConnectionState.Closed));
+        }
+
+        public void SetGrpcChannel(GrpcChannel channel)
+        {
+            _grpcChannel = channel;
+            _manuallySetChannel = true;
         }
 
         public override void Open()
@@ -111,7 +122,10 @@ namespace Koralium.Data.ArrowFlight
                 throw new InvalidOperationException("No connection string set.");
             }
 
-            _grpcChannel = GrpcChannel.ForAddress(DataSource);
+            if (_grpcChannel == null)
+            {
+                _grpcChannel = GrpcChannel.ForAddress(DataSource);
+            }
 
             _state = ConnectionState.Open;
 
